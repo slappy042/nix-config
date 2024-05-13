@@ -7,6 +7,13 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 * Follow https://unmovedcentre.com/technology/2024/02/24/anatomy-of-a-nixos-config.html
 * Git repo: [EmergentMind](https://github.com/EmergentMind/nix-config)
 
+## changes to my fork
+
+* remove cd-gitroot - doesn't seem useful
+* grief -> dworkin.  Nix Dev VM
+* user ta -> jeff.  Main user
+* leave guppy/gusto stuff - maybe this will be useful to me someday (VM test lab for remote install, media machine)
+
 ## TODO
 
 * do sops setup

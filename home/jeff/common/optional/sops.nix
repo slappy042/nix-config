@@ -13,27 +13,15 @@ in
   ];
 
   sops = {
-    # This is the location of the host specific age-key for ta and will to have been extracted to this location via hosts/common/core/sops.nix on the host
+    # This is the location of the host specific age-key for jeff and will to have been extracted to this location via hosts/common/core/sops.nix on the host
     age.keyFile = "${homeDirectory}/.config/sops/age/keys.txt";
 
     defaultSopsFile = "${secretsFile}";
     validateSopsFiles = false;
 
     secrets = {
-      "ssh_keys/maya" = {
-        path = "${homeDirectory}/.ssh/id_maya";
-      };
-      "ssh_keys/mara" = {
-        path = "${homeDirectory}/.ssh/id_mara";
-      };
-      "ssh_keys/manu" = {
-        path = "${homeDirectory}/.ssh/id_manu";
-      };
-      "ssh_keys/mila" = {
-        path = "${homeDirectory}/.ssh/id_mila";
-      };
-      "ssh_keys/meek" = {
-        path = "${homeDirectory}/.ssh/id_meek";
+      "ssh_keys/camelot" = {
+        path = "${homeDirectory}/.ssh/id_camelot";
       };
     };
   };

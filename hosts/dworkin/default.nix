@@ -17,9 +17,6 @@
     (configLib.relativeToRoot "hosts/common/core")
 
     #################### Host-specific Optional Configs ####################
-    (configLib.relativeToRoot "hosts/common/optional/yubikey")
-    (configLib.relativeToRoot "hosts/common/optional/services/clamav.nix") # depends on optional/msmtp.nix
-    (configLib.relativeToRoot "hosts/common/optional/msmtp.nix") # required for emailing clamav alerts
     (configLib.relativeToRoot "hosts/common/optional/services/openssh.nix")
 
     # Desktop
@@ -27,13 +24,13 @@
     (configLib.relativeToRoot "hosts/common/optional/hyprland.nix") # window manager
 
     #################### Users to Create ####################
-   (configLib.relativeToRoot "hosts/common/users/ta")
+   (configLib.relativeToRoot "hosts/common/users/jeff")
 
   ];
   # set custom autologin options. see greetd.nix for details
   # TODO is there a better spot for this?
   autoLogin.enable = true;
-  autoLogin.username = "ta";
+  autoLogin.username = "jeff";
 
   services.gnome.gnome-keyring.enable = true;
   # TODO enable and move to greetd area? may need authentication dir or something?
@@ -62,5 +59,5 @@
   programs.nix-ld.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.05";
+  system.stateVersion = "23.11";
 }

@@ -6,7 +6,7 @@
   services.ssh-agent.enable = true;
 
   home = {
-    username = lib.mkDefault "ta";
+    username = lib.mkDefault "jeff";
     homeDirectory = lib.mkDefault "/home/${config.home.username}";
     stateVersion = lib.mkDefault "23.05";
     sessionPath = [
