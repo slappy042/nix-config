@@ -102,14 +102,14 @@
     # Building configurations available through `just rebuild` or `nixos-rebuild --flake .#hostname`
 
     nixosConfigurations = {
-      # Qemu VM dev lab
-      grief = lib.nixosSystem {
+      # VirtualBox devlab
+      dworkin = lib.nixosSystem {
         inherit specialArgs;
         modules = [
           home-manager.nixosModules.home-manager{
             home-manager.extraSpecialArgs = specialArgs;
           }
-          ./hosts/grief
+          ./hosts/dworkin
         ];
       };
       # Qemu VM deployment test lab

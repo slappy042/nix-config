@@ -118,10 +118,10 @@
       ns = "nix-shell";
 
       #-----------Remotes----------------
-      cakes = "ssh -l freshcakes freshcakes.memeoid.cx";
-      gooey = "ssh -l pi 10.13.37.69";
-      gusto = "ssh -l ta 10.13.37.5";
-      grief = "ssh -l ta 10.13.37.7";
+      # cakes = "ssh -l freshcakes freshcakes.memeoid.cx";
+      # gooey = "ssh -l pi 10.13.37.69";
+      # gusto = "ssh -l ta 10.13.37.5";
+      dworkin = "ssh -l jeff dworkin";
 
       #-------------Git Goodness-------------
       # just reference `$ alias` and use the defautls, they're good.

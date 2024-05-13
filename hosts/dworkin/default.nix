@@ -1,47 +1,35 @@
 #############################################################
 #
-#  Grief - Dev Lab
-#  NixOS running on Qemu VM
+#  Dworkin - Dev Lab
+#  NixOS running on VirtualBox VM
 #
 ###############################################################
 
 { inputs, configLib, ... }: {
   imports = [
-    #################### Every Host Needs This ####################
-    ./hardware-configuration.nix
-    
     #################### Hardware Modules ####################
     inputs.hardware.nixosModules.common-cpu-amd
     inputs.hardware.nixosModules.common-gpu-amd
     inputs.hardware.nixosModules.common-pc-ssd
 
-    #################### Disk Layout ####################
-    inputs.disko.nixosModules.disko
-    (configLib.relativeToRoot "hosts/common/disks/standard-disk-config.nix")
-    {
-      _module.args = {
-        disk = "/dev/vda";
-        withSwap = false;
-      };
-    }
-  ]
-  ++ (map configLib.relativeToRoot [
     #################### Required Configs ####################
-    "hosts/common/core"
+    ./hardware-configuration.nix
+    (configLib.relativeToRoot "hosts/common/core")
 
     #################### Host-specific Optional Configs ####################
-    "hosts/common/optional/yubikey"
-    "hosts/common/optional/services/clamav.nix" # depends on optional/msmtp.nix
-    "hosts/common/optional/msmtp.nix" # required for emailing clamav alerts
-    "hosts/common/optional/services/openssh.nix"
+    (configLib.relativeToRoot "hosts/common/optional/yubikey")
+    (configLib.relativeToRoot "hosts/common/optional/services/clamav.nix") # depends on optional/msmtp.nix
+    (configLib.relativeToRoot "hosts/common/optional/msmtp.nix") # required for emailing clamav alerts
+    (configLib.relativeToRoot "hosts/common/optional/services/openssh.nix")
 
     # Desktop
-    "hosts/common/optional/services/greetd.nix" # display manager
-    "hosts/common/optional/hyprland.nix" # window manager
+    (configLib.relativeToRoot "hosts/common/optional/services/greetd.nix") # display manager
+    (configLib.relativeToRoot "hosts/common/optional/hyprland.nix") # window manager
 
     #################### Users to Create ####################
-    "hosts/common/users/ta"
-  ]);
+   (configLib.relativeToRoot "hosts/common/users/ta")
+
+  ];
   # set custom autologin options. see greetd.nix for details
   # TODO is there a better spot for this?
   autoLogin.enable = true;
@@ -52,8 +40,8 @@
   # services.pam.services.greetd.enableGnomeKeyring = true;
 
   networking = {
-    hostName = "grief";
-    networkmanager.enable = true;
+    hostName = "dworkin";
+    # networkmanager.enable = true;
     enableIPv6 = false;
   };
 
@@ -65,10 +53,14 @@
     };
   };
 
-  # This is a fix to enable VSCode to successfully remote SSH on a client to a NixOS host
+  # VirtualBox settings for Hyprland to display correctly
+  # environment.sessionVariables.WLR_NO_HARDWARE_CURSORS = "1";
+  # environment.sessionVariables.WLR_RENDERER_ALLOW_SOFTWARE = "1";
+
+  # Fix to enable VSCode to successfully remote SSH on a client to a NixOS host
   # https://nixos.wiki/wiki/Visual_Studio_Code # Remote_SSH
   programs.nix-ld.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.11";
+  system.stateVersion = "23.05";
 }
