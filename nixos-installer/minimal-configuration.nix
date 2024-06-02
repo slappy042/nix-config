@@ -43,6 +43,9 @@
     };
   };
 
+  # ssh-agent is used to pull my private secrets repo from gitlab when deploying nix-config.
+  programs.ssh.startAgent = true;
+
   environment.systemPackages = builtins.attrValues {
     inherit(pkgs)
     wget

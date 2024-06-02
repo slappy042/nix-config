@@ -7,6 +7,10 @@
 
 { inputs, configLib, ... }: {
   imports = [
+    #################### Disko Spec ####################
+    inputs.disko.nixosModules.disko
+    (configLib.relativeToRoot "hosts/common/disks/std-disk-config.nix")
+
     #################### Hardware Modules ####################
     inputs.hardware.nixosModules.common-cpu-amd
     inputs.hardware.nixosModules.common-gpu-amd
@@ -19,22 +23,10 @@
     #################### Host-specific Optional Configs ####################
     (configLib.relativeToRoot "hosts/common/optional/services/openssh.nix")
 
-    # Desktop
-    (configLib.relativeToRoot "hosts/common/optional/services/greetd.nix") # display manager
-    (configLib.relativeToRoot "hosts/common/optional/hyprland.nix") # window manager
-
     #################### Users to Create ####################
    (configLib.relativeToRoot "hosts/common/users/jeff")
 
   ];
-  # set custom autologin options. see greetd.nix for details
-  # TODO is there a better spot for this?
-  autoLogin.enable = true;
-  autoLogin.username = "jeff";
-
-  services.gnome.gnome-keyring.enable = true;
-  # TODO enable and move to greetd area? may need authentication dir or something?
-  # services.pam.services.greetd.enableGnomeKeyring = true;
 
   networking = {
     hostName = "dworkin";

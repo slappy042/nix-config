@@ -1,4 +1,7 @@
 { pkgs, lib, config, configVars, ... }:
+let 
+  homeDirectory = config.home.homeDirectory;
+in
 {
   sops.secrets = {
     "ssh_keys/github_benway" = {
@@ -24,28 +27,6 @@
         condition = "gitdir:~/src/github/slappy/";
       }
     ];
-    home.file.".src/github/benway/.gitconfig.benway".text = ''
-      [user]
-      email = 75365523+benway7000@users.noreply.github.com
-      name = benway7000
-       
-      [github]
-      user = "Benway"
-       
-      [core]
-      sshCommand = "ssh -i ~/.ssh/id_github_benway"
-    '';
-    home.file.".src/github/slappy/.gitconfig.slappy".text = ''
-      [user]
-      email = 75365007+slappy042@users.noreply.github.com
-      name = slappy042
-       
-      [github]
-      user = "slappy"
-       
-      [core]
-      sshCommand = "ssh -i ~/.ssh/id_github_slappy"
-    '';
 
     extraConfig = {
       init.defaultBranch = "main";
@@ -67,4 +48,26 @@
     # lfs.enable = true;
     ignores = [ ".direnv" "result" ];
   };
+  home.file.".src/github/benway/.gitconfig.benway".text = ''
+    [user]
+    email = 75365523+benway7000@users.noreply.github.com
+    name = benway7000
+      
+    [github]
+    user = "Benway"
+      
+    [core]
+    sshCommand = "ssh -i ~/.ssh/id_github_benway"
+  '';
+  home.file.".src/github/slappy/.gitconfig.slappy".text = ''
+    [user]
+    email = 75365007+slappy042@users.noreply.github.com
+    name = slappy042
+      
+    [github]
+    user = "slappy"
+      
+    [core]
+    sshCommand = "ssh -i ~/.ssh/id_github_slappy"
+  '';
 }

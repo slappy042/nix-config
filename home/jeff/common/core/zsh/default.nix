@@ -27,10 +27,6 @@
         src = "${pkgs.zsh-term-title}/share/zsh/zsh-term-title/";
       }
       {
-        name = "cd-gitroot";
-        src = "${pkgs.cd-gitroot}/share/zsh/cd-gitroot";
-      }
-      {
         name = "zhooks";
         src = "${pkgs.zhooks}/share/zsh/zhooks";
       }

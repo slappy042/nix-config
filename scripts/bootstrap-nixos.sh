@@ -50,6 +50,7 @@ function yes_or_no() {
 
 function sync() {
 	# $1 = user, $2 = source, $3 = destination
+	yellow "sync: 1=$1 2=$2 target_destination=$target_destination"
 	rsync -av --filter=':- .gitignore' -e "ssh -l $1" $2 $1@${target_destination}:
 }
 
@@ -152,7 +153,9 @@ function nixos_anywhere() {
 	green "Generating hardware-config.nix for $target_hostname and adding it to the nix-config."
 	$ssh_root_cmd "nixos-generate-config --no-filesystems --root /mnt"
 	$scp_cmd root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix "${git_root}"/hosts/"$target_hostname"/hardware-configuration.nix
+	git add ../hosts/$target_hostname/hardware-configuration.nix
 
+	green "Running nixos-anywhere."
 	# --extra-files here picks up the ssh host key we generated earlier and puts it onto the target machine
 	SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- --ssh-port "$ssh_port" --extra-files "$temp" --flake .#"$target_hostname" root@"$target_destination"
 
@@ -172,6 +175,7 @@ function generate_age_keys() {
 	target_key=$(ssh-keyscan -p "$ssh_port" -t ssh-ed25519 "$target_destination" 2>&1 | grep ssh-ed25519 | cut -f2- -d" ")
 	age_key=$(nix shell nixpkgs#ssh-to-age.out -c sh -c "echo $target_key | ssh-to-age")
 
+	green "target=$target_key and age = $age_key"
 	if grep -qv '^age1' <<<"$age_key"; then
 		red "The result from generated age key does not match the expected format."
 		yellow "Result: $age_key"
@@ -190,12 +194,12 @@ function generate_age_keys() {
 	/[*&]$target_hostname/ d;
 	# Inject a new age: entry
 	# n matches the first line following age: and p prints it, then we transform it while reusing the spacing
-	/age:/{n; p; s/\(.*- \*\).*/\1$target_hostname/};
+	/age:/{n; p; s/\([^-]*- \*\).*/\1$target_hostname/};
 	# Inject a new hosts: entry
-	/&hosts:/{n; p; s/\(.*- &\).*/\1$target_hostname $age_key/}
+	/&hosts:/{n; p; s/\([^-]*- &\).*/\1$target_hostname $age_key/}
 	}" $SOPS_FILE
 
-	green "Updating nix-secrets/.sops.yaml"
+	green "Updating nix-secrets/.sops.yaml - rekey"
 	cd -
 	just rekey
 
@@ -258,7 +262,7 @@ fi
 
 if yes_or_no "You can now commit and push the nix-config, which includes the hardware-configuration.nix for $target_hostname?"; then
 	(pre-commit run --all-files 2>/dev/null || true) &&
-		git add hosts/$target_hostname/hardware-configuration.nix && (git commit -m "feat: hardware-configuration.nix for $target_hostname" || true) && git push
+		(git commit -m "feat: hardware-configuration.nix for $target_hostname" || true) && git push
 fi
 
 #TODO prune all previous generations?
