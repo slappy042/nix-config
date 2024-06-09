@@ -67,6 +67,9 @@ iso-install DRIVE:
   just iso
   sudo dd if=$(eza --sort changed result/iso/*.iso | tail -n1) of={{DRIVE}} bs=4M status=progress oflag=sync
 
+upload-iso:
+  scp /root/git/nix-config/result/iso/*.iso root@192.168.1.100:/var/lib/vz/template/iso
+
 disko DRIVE PASSWORD:
   echo "{{PASSWORD}}" > /tmp/disko-password
   sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- \

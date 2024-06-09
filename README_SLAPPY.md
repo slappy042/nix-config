@@ -29,3 +29,15 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 * [Baby Steps with NixOS](https://seanrmurphy.medium.com/baby-steps-with-nixos-1ce7c4b0610)
   * first things to do after installing NixOS, like sshd, create user
 * [Flake book](https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/inputs)
+
+
+## Copy ISO to Proxmox
+
+`scp /root/git/nix-config/result/iso/*.iso root@192.168.1.100:/var/lib/vz/template/iso`
+
+## Bootstrap command
+
+```
+nix develop
+./scripts/bootstrap-nixos.sh -n=dworkin -d=192.168.1.171 -k=/root/.ssh/id_camelot
+```

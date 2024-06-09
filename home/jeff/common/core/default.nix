@@ -8,7 +8,7 @@
   home = {
     username = lib.mkDefault "jeff";
     homeDirectory = lib.mkDefault "/home/${config.home.username}";
-    stateVersion = lib.mkDefault "23.11";
+    stateVersion = lib.mkDefault "24.05";
     sessionPath = [
       "$HOME/.local/bin"
     ];
@@ -17,7 +17,7 @@
       SHELL = "zsh";
       TERM = "kitty";
       TERMINAL = "kitty";
-      EDITOR = "nvim";
+      EDITOR = "micro";
       MANPAGER = "batman"; # see ./cli/bat.nix
     };
   };
@@ -38,6 +38,7 @@
       findutils# find
       fzf# fuzzy search
       jq# JSON pretty printer and manipulator
+      micro# a small editor
       nix-tree# nix package tree viewer
       ncdu# TUI disk usage
       pciutils

@@ -35,9 +35,7 @@
   # yubikey login / sudo
   # this potentially causes a security issue that we mitigated above
   security.pam = {
-    enableSSHAgentAuth = true;
-    #FIXME the above is deprecated in 24.05 but we will wait until release
-    #sshAgentAuth.enable = true;
+    sshAgentAuth.enable = true;
     services = {
       sudo.u2fAuth = true;
     };
@@ -57,5 +55,5 @@
       experimental-features = [ "nix-command" "flakes" ];
       warn-dirty = false;
   };
-  system.stateVersion = "23.11";
+  system.stateVersion = "24.05";
 }

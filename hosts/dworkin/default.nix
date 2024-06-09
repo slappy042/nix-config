@@ -7,26 +7,34 @@
 
 { inputs, configLib, ... }: {
   imports = [
-    #################### Disko Spec ####################
-    inputs.disko.nixosModules.disko
-    (configLib.relativeToRoot "hosts/common/disks/std-disk-config.nix")
-
+    #################### Every Host Needs This ####################
+    ./hardware-configuration.nix
+    
     #################### Hardware Modules ####################
     inputs.hardware.nixosModules.common-cpu-amd
     inputs.hardware.nixosModules.common-gpu-amd
     inputs.hardware.nixosModules.common-pc-ssd
 
+    #################### Disk Layout ####################
+    inputs.disko.nixosModules.disko
+    (configLib.relativeToRoot "hosts/common/disks/standard-disk-config.nix")
+    {
+      _module.args = {
+        disk = "/dev/vda";
+        withSwap = false;
+      };
+    }
+  ]
+  ++ (map configLib.relativeToRoot [
     #################### Required Configs ####################
-    ./hardware-configuration.nix
-    (configLib.relativeToRoot "hosts/common/core")
+    "hosts/common/core"
 
     #################### Host-specific Optional Configs ####################
-    (configLib.relativeToRoot "hosts/common/optional/services/openssh.nix")
+    "hosts/common/optional/services/openssh.nix"
 
     #################### Users to Create ####################
-   (configLib.relativeToRoot "hosts/common/users/jeff")
-
-  ];
+    "hosts/common/users/jeff"
+  ]);
 
   networking = {
     hostName = "dworkin";
@@ -51,5 +59,5 @@
   programs.nix-ld.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.11";
+  system.stateVersion = "24.05";
 }

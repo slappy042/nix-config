@@ -48,7 +48,7 @@ in
     # lfs.enable = true;
     ignores = [ ".direnv" "result" ];
   };
-  home.file.".src/github/benway/.gitconfig.benway".text = ''
+  home.file."src/github/benway/.gitconfig.benway".text = ''
     [user]
     email = 75365523+benway7000@users.noreply.github.com
     name = benway7000
@@ -59,7 +59,7 @@ in
     [core]
     sshCommand = "ssh -i ~/.ssh/id_github_benway"
   '';
-  home.file.".src/github/slappy/.gitconfig.slappy".text = ''
+  home.file."src/github/slappy/.gitconfig.slappy".text = ''
     [user]
     email = 75365007+slappy042@users.noreply.github.com
     name = slappy042

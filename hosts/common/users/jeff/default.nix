@@ -44,7 +44,7 @@ in
 
     # Proper root use required for borg and some other specific operations
     users.users.root = {
-      hashedPasswordFile = config.users.users.${configVars.username}.hashedPasswordFile;
+      # hashedPasswordFile = config.users.users.${configVars.username}.hashedPasswordFile;
       password = lib.mkForce config.users.users.${configVars.username}.password;
       # root's ssh keys are mainly used for remote deployment.
       openssh.authorizedKeys.keys = config.users.users.${configVars.username}.openssh.authorizedKeys.keys;

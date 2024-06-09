@@ -132,6 +132,9 @@ function nixos_anywhere() {
 
 	# Generate host ssh key pair without a passphrase
 	ssh-keygen -t ed25519 -f "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key" -C root@"$target_hostname" -N ""
+	# Copy private github key
+	# ssh-copy-id -i ~/.ssh/id_github_slappy root@"$target_hostname"
+	$scp_cmd ~/.ssh/id_github_slappy $target_user@"$target_destination":~/.ssh/id_github_slappy
 
 	# Set the correct permissions so sshd will accept the key
 	chmod 600 "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key"
