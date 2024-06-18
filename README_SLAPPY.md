@@ -39,5 +39,5 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 
 ```
 nix develop
-./scripts/bootstrap-nixos.sh -n=dworkin -d=192.168.1.171 -k=/root/.ssh/id_camelot
+./scripts/bootstrap-nixos.sh -n dworkin -d 192.168.1.171 -k /root/.ssh/id_camelot
 ```

@@ -141,9 +141,6 @@ function nixos_anywhere() {
 
 	# Generate host ssh key pair without a passphrase
 	ssh-keygen -t ed25519 -f "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key" -C root@"$target_hostname" -N ""
-	# Copy private github key
-	# ssh-copy-id -i ~/.ssh/id_github_slappy root@"$target_hostname"
-	$scp_cmd ~/.ssh/id_github_slappy $target_user@"$target_destination":~/.ssh/id_github_slappy
 
 	# Set the correct permissions so sshd will accept the key
 	chmod 600 "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key"
@@ -290,6 +287,10 @@ if yes_or_no "Add ssh host fingerprints for git{lab,hub}? If this is the first t
 	fi
 	green "Adding ssh host fingerprints for git{lab,hub}"
 	$ssh_cmd "mkdir -p $home_path/.ssh/; ssh-keyscan -t ssh-ed25519 gitlab.com github.com >>$home_path/.ssh/known_hosts"
+	# Copy private github key
+	# ssh-copy-id -i ~/.ssh/id_github_slappy root@"$target_hostname"
+	# $scp_cmd /root/.ssh/id_github_slappy $target_user@"$target_destination":~/.ssh/id_github_slappy
+
 fi
 
 if yes_or_no "Do you want to copy your full nix-config and nix-secrets to $target_hostname?"; then
@@ -308,7 +309,7 @@ if yes_or_no "Do you want to rebuild immediately?"; then
 fi
 else
 	echo
-	green "NixOS was succcefully installed!"
+	green "NixOS was successfully installed!"
 	echo "Post-install config build instructions:"
 	echo "To copy nix-config from this machine to the $target_hostname, run the following command from ~/nix-config"
 	echo "just sync $target_user $target_destination"

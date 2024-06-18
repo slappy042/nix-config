@@ -26,6 +26,9 @@
     };
   };
 
+  # ssh-agent is used to pull my private secrets repo from gitlab when deploying nix-config.
+  programs.ssh.startAgent = true;
+
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     supportedFilesystems = lib.mkForce [ "btrfs" "vfat" ];
