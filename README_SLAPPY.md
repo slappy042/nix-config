@@ -39,7 +39,9 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 
 ```
 eval "$(ssh-agent -s)"
+ssh-add /root/.ssh/id_github_slappy
 ```
+
 
 ## Bootstrap command
 
