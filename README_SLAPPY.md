@@ -35,9 +35,17 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 
 `scp /root/git/nix-config/result/iso/*.iso root@192.168.1.100:/var/lib/vz/template/iso`
 
+## ssh-agent
+
+```
+eval "$(ssh-agent -s)"
+```
+
 ## Bootstrap command
 
 ```
 nix develop
 ./scripts/bootstrap-nixos.sh -n dworkin -d 192.168.1.171 -k /root/.ssh/id_camelot
 ```
+
+SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- --ssh-port "22"  --flake .#"dworkin" root@"192.168.1.171"

@@ -6,9 +6,11 @@ in
   sops.secrets = {
     "ssh_keys/github_benway" = {
       path = "${homeDirectory}/.ssh/id_github_benway";
+      mode = "0400";
     };
     "ssh_keys/github_slappy" = {
       path = "${homeDirectory}/.ssh/id_github_slappy";
+      mode = "0400";
     };
   };
   programs.git = {
@@ -38,6 +40,9 @@ in
           insteadOf = "https://gitlab.com";
         };
       };
+      core = {
+        sshCommand = "ssh -i ~/.ssh/id_github_slappy"
+      };
 
       # user.signing.key = "41B7B2ECE0FAEF890343124CE8AA1A8F75B56D39";
       #TODO sops - Re-enable once sops setup complete
@@ -53,21 +58,18 @@ in
     email = 75365523+benway7000@users.noreply.github.com
     name = benway7000
       
-    [github]
-    user = "Benway"
-      
     [core]
     sshCommand = "ssh -i ~/.ssh/id_github_benway"
   '';
-  home.file."src/github/slappy/.gitconfig.slappy".text = ''
-    [user]
-    email = 75365007+slappy042@users.noreply.github.com
-    name = slappy042
+  # home.file."src/github/slappy/.gitconfig.slappy".text = ''
+  #   [user]
+  #   email = 75365007+slappy042@users.noreply.github.com
+  #   name = slappy042
       
-    [github]
-    user = "slappy"
+  #   [github]
+  #   user = "slappy"
       
-    [core]
-    sshCommand = "ssh -i ~/.ssh/id_github_slappy"
-  '';
+  #   [core]
+  #   sshCommand = "ssh -i ~/.ssh/id_github_slappy"
+  # '';
 }

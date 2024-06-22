@@ -5,7 +5,7 @@
 #
 ###############################################################
 
-{ inputs, configLib, ... }: {
+{ pkgs, inputs, configLib, ... }: {
   imports = [
     #################### Every Host Needs This ####################
     ./hardware-configuration.nix
@@ -57,6 +57,7 @@
   # Fix to enable VSCode to successfully remote SSH on a client to a NixOS host
   # https://nixos.wiki/wiki/Visual_Studio_Code # Remote_SSH
   programs.nix-ld.enable = true;
+  programs.nix-ld.package = pkgs.nix-ld-rs;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "24.05";

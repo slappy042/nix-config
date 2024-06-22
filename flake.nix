@@ -28,12 +28,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # vim4LMFQR!
-    nixvim = {
-      #url = "github:nix-community/nixvim/nixos-23.11";
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+    # # vim4LMFQR!
+    # nixvim = {
+    #   #url = "github:nix-community/nixvim/nixos-23.11";
+    #   url = "github:nix-community/nixvim";
+    #   inputs.nixpkgs.follows = "nixpkgs-unstable";
+    # };
 
     # Windows management
     # for now trying to avoid this one because I want stability for my wm

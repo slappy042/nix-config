@@ -166,6 +166,8 @@ function nixos_anywhere() {
 
 	green "Running nixos-anywhere."
 	# --extra-files here picks up the ssh host key we generated earlier and puts it onto the target machine
+	# extra debug:
+	# SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- --debug -L --ssh-port "$ssh_port" --extra-files "$temp" --flake .#"$target_hostname" root@"$target_destination"
 	SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- --ssh-port "$ssh_port" --extra-files "$temp" --flake .#"$target_hostname" root@"$target_destination"
 
 	echo "Updating ssh host fingerprint at $target_destination to ~/.ssh/known_hosts"
@@ -208,7 +210,7 @@ function generate_host_age_key() {
 	green "Generating an age key based on the new ssh_host_ed25519_key."
 
 	target_key=$(
-		ssh-keyscan -p "$ssh_port" -t ssh-ed25519 "$target_destination" 2>&1 |
+		ssh-keyscan -v -p "$ssh_port" -T 300 -t ssh-ed25519 "$target_destination" |
 			grep ssh-ed25519 |
 			cut -f2- -d" " ||
 			(
@@ -216,6 +218,7 @@ function generate_host_age_key() {
 				exit 1
 			)
 	)
+
 	host_age_key=$(nix shell nixpkgs#ssh-to-age.out -c sh -c "echo $target_key | ssh-to-age")
 
 	if grep -qv '^age1' <<<"$host_age_key"; then
@@ -305,6 +308,7 @@ if yes_or_no "Do you want to rebuild immediately?"; then
 	green "Rebuilding nix-config on $target_hostname"
 	#FIXME there are still a gitlab fingerprint request happening during the rebuild
 	#$ssh_cmd -oForwardAgent=yes "cd nix-config && sudo nixos-rebuild --show-trace --flake .#$target_hostname" switch"
+	# $ssh_cmd -oForwardAgent=yes "cd nix-config && just rebuild-host $target_hostname"
 	$ssh_cmd -oForwardAgent=yes "cd nix-config && just rebuild"
 fi
 else

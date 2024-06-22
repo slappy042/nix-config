@@ -3,10 +3,12 @@
   programs.ssh = {
     enable = true;
 
+    addKeysToAgent = "yes";
+
     # req'd for enabling yubikey-agent
-    extraConfig = ''
-      AddKeysToAgent yes
-    '';
+    # extraConfig = ''
+    #   AddKeysToAgent yes
+    # '';
 
     matchBlocks = {
       "git" = {

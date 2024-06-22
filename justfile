@@ -14,6 +14,14 @@ rebuild-post:
 rebuild: rebuild-pre
   scripts/system-flake-rebuild.sh
 
+# Add --option eval-cache false if you end up caching a failure you can't get around
+# rebuild-host host: rebuild-pre
+#   scripts/system-flake-rebuild.sh {{host}}
+
+# # Add --option eval-cache false if you end up caching a failure you can't get around
+# rebuild-host-trace host: rebuild-pre
+#   scripts/system-flake-rebuild-trace.sh {{host}}
+
 # Requires sops to be running and you must have reboot after initial rebuild
 rebuild-full: rebuild-pre && rebuild-post
   scripts/system-flake-rebuild.sh

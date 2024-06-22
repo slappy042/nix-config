@@ -6,4 +6,4 @@ else
 	export HOST=$(hostname)
 fi
 
-sudo nixos-rebuild --show-trace --impure --flake .#$HOST switch
+sudo nixos-rebuild --verbose --show-trace --impure --flake .#$HOST switch
