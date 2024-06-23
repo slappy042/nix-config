@@ -24,10 +24,6 @@ in
         path = "~/src/github/benway/.gitconfig.benway";
         condition = "gitdir:~/src/github/benway/";
       }
-      {
-        path = "~/src/github/slappy/.gitconfig.slappy";
-        condition = "gitdir:~/src/github/slappy/";
-      }
     ];
 
     extraConfig = {
@@ -41,7 +37,7 @@ in
         };
       };
       core = {
-        sshCommand = "ssh -i ~/.ssh/id_github_slappy"
+        sshCommand = "ssh -i ~/.ssh/id_github_slappy";
       };
 
       # user.signing.key = "41B7B2ECE0FAEF890343124CE8AA1A8F75B56D39";
@@ -61,15 +57,4 @@ in
     [core]
     sshCommand = "ssh -i ~/.ssh/id_github_benway"
   '';
-  # home.file."src/github/slappy/.gitconfig.slappy".text = ''
-  #   [user]
-  #   email = 75365007+slappy042@users.noreply.github.com
-  #   name = slappy042
-      
-  #   [github]
-  #   user = "slappy"
-      
-  #   [core]
-  #   sshCommand = "ssh -i ~/.ssh/id_github_slappy"
-  # '';
 }

@@ -5,11 +5,6 @@
 
     addKeysToAgent = "yes";
 
-    # req'd for enabling yubikey-agent
-    # extraConfig = ''
-    #   AddKeysToAgent yes
-    # '';
-
     matchBlocks = {
       "git" = {
         host = "gitlab.com github.com";
@@ -17,7 +12,7 @@
         forwardAgent = true;
         identitiesOnly = true;
         identityFile = [
-          "~/.ssh/id_github_benway"
+          # "~/.ssh/id_github_benway"
           "~/.ssh/id_github_slappy"
         ];
       };
