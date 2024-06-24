@@ -31,23 +31,30 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 * [Flake book](https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/inputs)
 
 
-## Copy ISO to Proxmox
+## Useful Commands
+
+### Copy ISO to Proxmox
 
 `scp /root/git/nix-config/result/iso/*.iso root@192.168.1.100:/var/lib/vz/template/iso`
 
-## ssh-agent
+### ssh-agent
 
 ```
 eval "$(ssh-agent -s)"
 ssh-add /root/.ssh/id_github_slappy
 ```
 
-
-## Bootstrap command
+### Bootstrap command
 
 ```
 nix develop
 ./scripts/bootstrap-nixos.sh -n dworkin -d 192.168.1.171 -k /root/.ssh/id_camelot
 ```
 
-SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- --ssh-port "22"  --flake .#"dworkin" root@"192.168.1.171"
+### git fork update
+update my fork from upstream
+
+```
+git fetch upstream
+git merge upstream/dev
+```
