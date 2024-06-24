@@ -4,7 +4,7 @@
 </h1>
 </div>
 
-# EmergentMind's Nix-Config
+# Slappy's fork of EmergentMind's Nix-Config
 
 > Where am I?
 >
