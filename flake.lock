@@ -56,13 +56,28 @@
         "type": "github"
       }
     },
+    "impermanence": {
+      "locked": {
+        "lastModified": 1731242966,
+        "narHash": "sha256-B3C3JLbGw0FtLSWCjBxU961gLNv+BOOBC6WvstKLYMw=",
+        "owner": "nix-community",
+        "repo": "impermanence",
+        "rev": "3ed3f0eaae9fcc0a8331e77e9319c8a4abd8a71a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "impermanence",
+        "type": "github"
+      }
+    },
     "nix-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1718948927,
-        "narHash": "sha256-0aiaOMO4ieq/RcypgwuRB4txritxN8k9Xojn5zcsLYM=",
+        "lastModified": 1731990802,
+        "narHash": "sha256-6xQeaB8w0xvOOhVzQeGdBj/CSQFr8yY8XyiYvwum9aE=",
         "ref": "main",
-        "rev": "c1f10377781d3912346e4621803af1f58f4b9b0b",
+        "rev": "c34d4569679a9d90c4eabfb351831a8fb2d8bde7",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/slappy042/nix-secrets"
@@ -127,6 +142,7 @@
         "disko": "disko",
         "hardware": "hardware",
         "home-manager": "home-manager",
+        "impermanence": "impermanence",
         "nix-secrets": "nix-secrets",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",

@@ -16,10 +16,15 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 
 ## TODO
 
-* do sops setup
-* test out nixdev VM
-* disko setup for host
+* ~~do sops setup~~
+* ~~test out nixdev VM~~
+* ~~disko setup for host~~
 * split host default.nix into smaller pieces?
+* erase your darlings / impermanence
+* zfs disko setup for NAS
+* copy .pub ssh keys alongside private keys
+* fix .ssh/config not having id_camelot as IdentityFile as default
+* nvim not installed? "vi" not working: "nvim is not found"
 
 ## Useful(?) links
 

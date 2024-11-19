@@ -1,6 +1,6 @@
 #############################################################
 #
-#  Dworkin - Dev Lab
+#  Brand - Dev Lab for Impermanence dev
 #  NixOS running on Proxmox VM
 #
 ###############################################################
@@ -31,14 +31,13 @@
 
     #################### Host-specific Optional Configs ####################
     "hosts/common/optional/services/openssh.nix"
-    "hosts/common/optional/smbclient.nix"
 
     #################### Users to Create ####################
     "hosts/common/users/jeff"
   ]);
 
   networking = {
-    hostName = "dworkin";
+    hostName = "brand";
     # networkmanager.enable = true;
     enableIPv6 = false;
   };

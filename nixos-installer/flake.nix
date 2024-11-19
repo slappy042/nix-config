@@ -50,6 +50,9 @@
       # host = newConfig "name" disk" "withSwap" "swapSize" 
       # Swap size is in GiB
       dworkin = newConfig "dworkin" "/dev/vda" false "0";
+      brand = newConfig "brand" "/dev/vda" false "0";
+      chaos = newConfig "chaos" "/dev/sda" true "8";
+
       # guppy = newConfig "guppy" "/dev/vda" false "0";
       # gusto = newConfig "gusto" "/dev/sda" true "8";
 

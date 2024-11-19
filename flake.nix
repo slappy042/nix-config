@@ -28,6 +28,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Impermanence - erase your darlings
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # # vim4LMFQR!
     # nixvim = {
     #   #url = "github:nix-community/nixvim/nixos-23.11";
@@ -57,7 +63,7 @@
     };
   };
 
-  outputs = { self, disko, nixpkgs, home-manager, ... } @ inputs:
+  outputs = { self, disko, nixpkgs, home-manager, impermanence, ... } @ inputs:
   let
     inherit (self) outputs;
     forAllSystems = nixpkgs.lib.genAttrs [
@@ -103,7 +109,7 @@
     # Building configurations available through `just rebuild` or `nixos-rebuild --flake .#hostname`
 
     nixosConfigurations = {
-      # VirtualBox devlab
+      # Qemu VM - NixOS devlab
       dworkin = lib.nixosSystem {
         inherit specialArgs;
         modules = [
@@ -111,6 +117,27 @@
             home-manager.extraSpecialArgs = specialArgs;
           }
           ./hosts/dworkin
+        ];
+      };
+      # Qemu VM - NixOS devlab - impermanence testbed
+      brand = lib.nixosSystem {
+        inherit specialArgs;
+        modules = [
+          home-manager.nixosModules.home-manager{
+            home-manager.extraSpecialArgs = specialArgs;
+          }
+          impermanence.nixosModules.impermanence
+          ./hosts/brand
+        ];
+      };
+      # Nixos Homelab
+      chaos = lib.nixosSystem {
+        inherit specialArgs;
+        modules = [
+          home-manager.nixosModules.home-manager{
+            home-manager.extraSpecialArgs = specialArgs;
+          }
+          ./hosts/chaos
         ];
       };
       # Qemu VM deployment test lab

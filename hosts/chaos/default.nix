@@ -38,7 +38,7 @@
   ]);
 
   networking = {
-    hostName = "dworkin";
+    hostName = "chaos";
     # networkmanager.enable = true;
     enableIPv6 = false;
   };

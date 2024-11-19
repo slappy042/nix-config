@@ -25,6 +25,7 @@ in
     users.users.${configVars.username} = {
       isNormalUser = true;
       password = "nixos"; # Overridden if sops is working
+      uid = 1000;
 
       extraGroups = [
         "wheel"
