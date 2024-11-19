@@ -18,7 +18,7 @@ let
     };
 in
 {
-  config = lib.recursiveUpdate fullUserConfig 
+  config = lib.recursiveUpdate fullUserConfig
     #this is the second argument to recursiveUpdate
     {
     users.mutableUsers = false; # Only allow declarative credentials; Required for sops

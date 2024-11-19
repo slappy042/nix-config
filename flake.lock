@@ -74,19 +74,19 @@
     "nix-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1731990802,
-        "narHash": "sha256-6xQeaB8w0xvOOhVzQeGdBj/CSQFr8yY8XyiYvwum9aE=",
+        "lastModified": 1731996258,
+        "narHash": "sha256-WgCBz8mVXOdzLkduDKuanGHDrPJVoa4anwka7OHfhAM=",
         "ref": "main",
-        "rev": "c34d4569679a9d90c4eabfb351831a8fb2d8bde7",
+        "rev": "28fce32bfc9ccd211321605aa9d6d6e88c2879ef",
         "shallow": true,
         "type": "git",
-        "url": "ssh://git@github.com/slappy042/nix-secrets"
+        "url": "ssh://git@github.com/slappy042/nix-secrets.git"
       },
       "original": {
         "ref": "main",
         "shallow": true,
         "type": "git",
-        "url": "ssh://git@github.com/slappy042/nix-secrets"
+        "url": "ssh://git@github.com/slappy042/nix-secrets.git"
       }
     },
     "nixpkgs": {

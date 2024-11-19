@@ -1,5 +1,5 @@
 { pkgs, lib, config, configVars, ... }:
-let 
+let
   homeDirectory = config.home.homeDirectory;
 in
 {
@@ -53,7 +53,7 @@ in
     [user]
     email = 75365523+benway7000@users.noreply.github.com
     name = benway7000
-      
+
     [core]
     sshCommand = "ssh -i ~/.ssh/id_github_benway"
   '';

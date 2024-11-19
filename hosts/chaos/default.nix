@@ -9,7 +9,7 @@
   imports = [
     #################### Every Host Needs This ####################
     ./hardware-configuration.nix
-    
+
     #################### Hardware Modules ####################
     inputs.hardware.nixosModules.common-cpu-amd
     inputs.hardware.nixosModules.common-gpu-amd
