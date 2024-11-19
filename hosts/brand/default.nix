@@ -1,7 +1,9 @@
 #############################################################
 #
+#  WIP WIP WIP
 #  Brand - Dev Lab for Impermanence dev
 #  NixOS running on Proxmox VM
+#  WIP WIP WIP
 #
 ###############################################################
 
