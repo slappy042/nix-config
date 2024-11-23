@@ -1,9 +1,16 @@
-{ outputs, lib, ... }:
+{ config, outputs, lib, ... }:
+let
+  identityFiles = [
+    "id_camelot" # Jeff's default key
+  ];
+in
 {
   programs.ssh = {
     enable = true;
 
     addKeysToAgent = "yes";
+
+    extraConfig = lib.strings.concatMapStrings(file: "IdentityFile ${config.home.homeDirectory}/.ssh/${file}\n") identityFiles;
 
     matchBlocks = {
       "git" = {
