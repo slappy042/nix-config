@@ -118,7 +118,7 @@
       # gooey = "ssh -l pi 10.13.37.69";
       # gusto = "ssh -l ta 10.13.37.5";
       dworkin = "ssh -l jeff dworkin";
-      chaos = "ssh -l jeff chaos";
+      nixxy1 = "ssh -l jeff nixxy1";
 
       #-------------Git Goodness-------------
       # just reference `$ alias` and use the defautls, they're good.

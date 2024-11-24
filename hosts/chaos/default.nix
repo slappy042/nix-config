@@ -38,7 +38,7 @@
   ]);
 
   networking = {
-    hostName = "chaos";
+    hostName = "nixxy1";
     # networkmanager.enable = true;
     enableIPv6 = false;
   };

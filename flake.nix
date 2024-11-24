@@ -131,13 +131,13 @@
         ];
       };
       # Nixos Homelab
-      chaos = lib.nixosSystem {
+      nixxy1 = lib.nixosSystem {
         inherit specialArgs;
         modules = [
           home-manager.nixosModules.home-manager{
             home-manager.extraSpecialArgs = specialArgs;
           }
-          ./hosts/chaos
+          ./hosts/nixxy1
         ];
       };
       # Qemu VM deployment test lab
