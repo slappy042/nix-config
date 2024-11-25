@@ -66,6 +66,7 @@ git merge upstream/dev
 
 
 # How to add a new host
+- hosts/<host>/
 - home/jeff/<host>.nix
 - home/jeff/common/core/zsh alias
 - nixos-installer/flake.nix
