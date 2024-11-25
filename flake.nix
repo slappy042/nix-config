@@ -151,7 +151,7 @@
           }
           ./hosts/nixxy2
         ];
-      };      
+      };
       # Qemu VM deployment test lab
       guppy = lib.nixosSystem {
         inherit specialArgs;

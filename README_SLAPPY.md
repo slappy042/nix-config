@@ -63,3 +63,10 @@ update my fork from upstream
 git fetch upstream
 git merge upstream/dev
 ```
+
+
+# How to add a new host
+- home/jeff/<host>.nix
+- home/jeff/common/core/zsh alias
+- nixos-installer/flake.nix
+- flake.nix
