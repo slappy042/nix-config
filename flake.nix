@@ -152,6 +152,16 @@
           ./hosts/nixxy2
         ];
       };
+      # Nixos Homelab
+      nixxy3 = lib.nixosSystem {
+        inherit specialArgs;
+        modules = [
+          home-manager.nixosModules.home-manager{
+            home-manager.extraSpecialArgs = specialArgs;
+          }
+          ./hosts/nixxy3
+        ];
+      };
       # Qemu VM deployment test lab
       guppy = lib.nixosSystem {
         inherit specialArgs;

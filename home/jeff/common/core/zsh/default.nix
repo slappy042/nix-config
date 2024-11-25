@@ -120,6 +120,7 @@
       dworkin = "ssh -l jeff dworkin";
       nixxy1 = "ssh -l jeff nixxy1";
       nixxy2 = "ssh -l jeff nixxy2";
+      nixxy3 = "ssh -l jeff nixxy3";
 
       #-------------Git Goodness-------------
       # just reference `$ alias` and use the defautls, they're good.

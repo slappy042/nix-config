@@ -53,6 +53,7 @@
       brand = newConfig "brand" "/dev/vda" false "0";
       nixxy1 = newConfig "nixxy1" "/dev/sda" true "8";
       nixxy2 = newConfig "nixxy2" "/dev/sda" true "8";
+      nixxy3 = newConfig "nixxy3" "/dev/sda" true "8";
 
       # guppy = newConfig "guppy" "/dev/vda" false "0";
       # gusto = newConfig "gusto" "/dev/sda" true "8";
