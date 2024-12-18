@@ -1,0 +1,35 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "./nix-secrets"
+		},
+		{
+			"path": "./src"
+		}
+	],
+	"settings": {
+		"workbench.colorCustomizations": {
+			"activityBar.activeBackground": "#540777",
+			"activityBar.background": "#540777",
+			"activityBar.foreground": "#e7e7e7",
+			"activityBar.inactiveForeground": "#e7e7e799",
+			"activityBarBadge.background": "#976a09",
+			"activityBarBadge.foreground": "#e7e7e7",
+			"commandCenter.border": "#e7e7e799",
+			"sash.hoverBorder": "#540777",
+			"statusBar.background": "#320447",
+			"statusBar.foreground": "#e7e7e7",
+			"statusBarItem.hoverBackground": "#540777",
+			"statusBarItem.remoteBackground": "#320447",
+			"statusBarItem.remoteForeground": "#e7e7e7",
+			"titleBar.activeBackground": "#320447",
+			"titleBar.activeForeground": "#e7e7e7",
+			"titleBar.inactiveBackground": "#32044799",
+			"titleBar.inactiveForeground": "#e7e7e799"
+		},
+		"peacock.remoteColor": "#320447"
+	}
+}
