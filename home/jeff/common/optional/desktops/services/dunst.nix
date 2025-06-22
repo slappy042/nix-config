@@ -1,20 +1,21 @@
 #
 # Dunst
-# Notifcation Daemon
+# Notification Daemon
 #
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   home.packages = builtins.attrValues {
-    inherit (pkgs)
-      libnotify; # required by dunst
+    inherit (pkgs) libnotify; # required by dunst
   };
 
   services.dunst = {
     enable = true;
+    #    package = pkgs.unstable.dunst;
     #    waylandDisplay = ""; # set the service's WAYLAND_DISPLAY environment variable
     #    configFile = "";
     iconTheme = {
       name = "Adwaita";
-      package = pkgs.gnome.adwaita-icon-theme;
+      package = pkgs.adwaita-icon-theme;
       size = "16x16";
     };
     settings = {
@@ -33,21 +34,16 @@
         #   %I  iconname (without its path)
         #   %p  progress value if set ([  0%] to [100%]) or nothing
         # Markup is allowed
-        format = "%I %s %p\n%b";
+        format = "%I %s %p\\n%b";
 
         #TODO dynamic fonts
-        font = "Droid Sans 9";
+        #font = "Droid Sans 12";
+        alignment = "left"; # Options are "left", "center", and "right".
 
-        # Options are "left", "center", and "right".
-        alignment = "left";
+        sort = "yes"; # Sort messages by urgency.
+        indicate_hidden = "yes"; # Show how many messages are currently hidden (because of geometry).
 
-        # Sort messages by urgency.
-        sort = "yes";
-
-        # Show how many messages are currently hidden (because of geometry).
-        indicate_hidden = "yes";
-
-        # The frequency with wich text that is longer than the notification
+        # The frequency with which text that is longer than the notification
         # window allows bounces back and forth.
         # This option conflicts with "word_wrap".
         # Set to 0 to disable.
@@ -130,13 +126,13 @@
         #  * foreground: use the same color as the foreground;
         #  * frame: use the same color as the frame;
         #  * anything else will be interpreted as a X color.
-        separator_color = "#454947";
+        # separator_color = "#454947";
 
         # Print a notification on startup.
         # This is mainly for error detection, since dbus (re-)starts dunst
         # automatically after a crash.
 
-        #FIXME change to false once working
+        #set to true for debugging
         startup_notification = false;
 
         # Align icons left/right/off
@@ -145,10 +141,11 @@
         width = 300;
         height = 300;
         offset = "30x50";
-        origin = "top-right";
+        #origin = "top-right";
+        origin = "top-center";
 
         #TODO dynamic theme colours
-        frame_color = "#dc7f41";
+        #      frame_color = "#dc7f41";
 
         # Browser for opening urls in context menu.
         browser = "firefox";
@@ -157,7 +154,7 @@
       frame = {
         width = 2;
         #TODO dynamic colours
-        color = "#dc7f41";
+        #        color = "#dc7f41";
       };
 
       shortcuts = {
@@ -181,22 +178,22 @@
 
       urgency_low = {
         #TODO dynamic colours
-        background = "#1e1e20";
-        foreground = "#c5c8c6";
+        #        background = "#1e1e20";
+        #        foreground = "#c5c8c6";
         timeout = 10;
       };
 
       urgency_normal = {
         #TODO dynamic colours
-        background = "#1e1e20";
-        foreground = "#c5c8c6";
+        #        background = "#1e1e20";
+        #        foreground = "#c5c8c6";
         timeout = 10;
       };
 
       urgency_critical = {
         #TODO dynamic colours
-        background = "#1e1e20";
-        foreground = "#c5c8c6";
+        #        background = "#1e1e20";
+        #        foreground = "#c5c8c6";
         timeout = 0;
       };
     };

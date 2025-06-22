@@ -1,0 +1,84 @@
+#############################################################
+#
+#  Nixxy3
+#  NixOS on Lenovo Tiny 910q
+#
+###############################################################
+
+{
+  inputs,
+  lib,
+  ...
+}:
+{
+  imports = lib.flatten [
+    #
+    # ========== Hardware ==========
+    #
+    ./hardware-configuration.nix
+    inputs.hardware.nixosModules.common-cpu-intel
+    inputs.hardware.nixosModules.common-pc-ssd
+
+    #
+    # ========== Disk Layout ==========
+    #
+    inputs.disko.nixosModules.disko
+    (lib.custom.relativeToRoot "hosts/common/disks/btrfs-disk.nix")
+    {
+      _module.args = {
+        disk = "/dev/vda";
+        withSwap = false;
+      };
+    }
+    (map lib.custom.relativeToRoot [
+      #
+      # ========== Required Configs ==========
+      #
+    "hosts/common/core"
+
+      #
+      # ========== Optional Configs ==========
+      #
+      "hosts/common/optional/services/openssh.nix"
+      "hosts/common/optional/smbclient.nix"
+    ])
+  ];
+
+  #
+  # ========== Host Specification ==========
+  #
+
+  hostSpec = {
+    hostName = "nixxy3";
+  };
+
+  networking = {
+    networkmanager.enable = true;
+    enableIPv6 = false;
+  };
+
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+    timeout = 3;
+  };
+  boot.initrd = {
+    systemd.enable = true;
+    # This mostly mirrors what is generated on qemu from nixos-generate-config in hardware-configuration.nix
+    kernelModules = [
+      "xhci_pci"
+      "ahci"
+      "usbhid"
+      "usb_storage"      
+      "sd_mod"
+    ];
+  };
+
+  # This is a fix to enable VSCode to successfully remote SSH on a client to a NixOS host
+  # https://wiki.nixos.org/wiki/Visual_Studio_Code # Remote_SSH
+  programs.nix-ld.enable = true;
+  programs.nix-ld.package = pkgs.nix-ld-rs;
+
+  # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
+  system.stateVersion = "24.05";
+}

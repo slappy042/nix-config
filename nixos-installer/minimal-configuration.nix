@@ -1,10 +1,28 @@
-{  lib, pkgs, configLib, configVars, ... }:
 {
-  imports = [
-    (configLib.relativeToRoot "hosts/common/users/${configVars.username}")
+  inputs,
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  imports = lib.flatten [
+    (map lib.custom.relativeToRoot [
+      "modules/common/host-spec.nix"
+      "hosts/common/core/ssh.nix"
+      "hosts/common/users/primary"
+      "hosts/common/users/primary/nixos.nix"
+      "hosts/common/optional/minimal-user.nix"
+    ])
   ];
 
-  fileSystems."/boot".options = ["umask=0077"]; # Removes permissions and security warnings.
+  hostSpec = {
+    isMinimal = lib.mkForce true;
+    hostName = "installer";
+    username = "ta";
+  };
+
+  fileSystems."/boot".options = [ "umask=0077" ]; # Removes permissions and security warnings.
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot = {
     enable = true;
@@ -13,10 +31,38 @@
     # pick the highest resolution for systemd-boot's console.
     consoleMode = lib.mkDefault "max";
   };
-  boot.initrd.systemd.enable = true;
+  boot.initrd = {
+    systemd.enable = true;
+    systemd.emergencyAccess = true; # Don't need to enter password in emergency mode
+    luks.forceLuksSupportInInitrd = true;
+  };
+  boot.kernelParams = [
+    "systemd.setenv=SYSTEMD_SULOGIN_FORCE=1"
+    "systemd.show_status=true"
+    #"systemd.log_level=debug"
+    "systemd.log_target=console"
+    "systemd.journald.forward_to_console=1"
+  ];
+
+  # allow sudo over ssh with yubikey
+  security.pam = {
+    rssh.enable = true;
+    services.sudo = {
+      rssh = true;
+      u2fAuth = true;
+    };
+  };
+
+  environment.systemPackages = builtins.attrValues {
+    inherit (pkgs)
+      wget
+      curl
+      rsync
+      git
+      ;
+  };
 
   networking = {
-    # configures the network interface(include wireless) via `nmcli` & `nmtui`
     networkmanager.enable = true;
   };
 
@@ -24,36 +70,25 @@
     qemuGuest.enable = true;
     openssh = {
       enable = true;
-      ports = [22]; # FIXME: Make this use configVars.networking
+      ports = [ 22 ];
       settings.PermitRootLogin = "yes";
-      # Fix LPE vulnerability with sudo use SSH_AUTH_SOCK: https://github.com/NixOS/nixpkgs/issues/31611
-      # this mitigates the security issue caused by enabling u2fAuth in pam
-      authorizedKeysFiles = lib.mkForce ["/etc/ssh/authorized_keys.d/%u"];
+      authorizedKeysFiles = lib.mkForce [ "/etc/ssh/authorized_keys.d/%u" ];
     };
   };
 
-  # yubikey login / sudo
-  # this potentially causes a security issue that we mitigated above
-  security.pam = {
-    sshAgentAuth.enable = true;
-    services = {
-      sudo.u2fAuth = true;
-    };
-  };
+  nix = {
+    #FIXME(installer): registry and nixPath shouldn't be required here because flakes but removal results in warning spam on build
+    registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
+    nixPath = lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
 
-  # start ssh-agent
-  programs.ssh.startAgent = true;
-
-  environment.systemPackages = builtins.attrValues {
-    inherit(pkgs)
-    wget
-    curl
-    rsync;
-  };
-
-  nix.settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       warn-dirty = false;
+    };
   };
-  system.stateVersion = "24.05";
+
+  system.stateVersion = "24.11";
 }

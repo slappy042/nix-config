@@ -1,7 +1,16 @@
-#
-# TODO this is a placeholder list for now
-#
+{ pkgs, ... }:
+{
+  #imports = [ ./foo.nix ];
 
-calibre
-  vlc
-  spotify
+  home.packages = builtins.attrValues {
+    inherit (pkgs)
+
+      ffmpeg
+      spotify
+      vlc
+      ;
+    # inherit (pkgs.stable)
+    #   calibre
+    #   ;
+  };
+}

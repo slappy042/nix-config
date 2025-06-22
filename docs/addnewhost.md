@@ -3,6 +3,7 @@
 [README](../README.md) > Adding A New Host
 
 FIXME These steps can and should be streamlined significantly during each roadmap stage. In particular, install from the liveISO rather than installing and then loading the config. I opted to forgo the latter until the config is more mature and I better understand the required process.
+FIXME(docs) Needs revision based on hostSpec and nixos/darwin support overhaul
 
 ### Requirements
 
@@ -10,9 +11,9 @@ Because this repo relies on a private `nix-secrets` repository input as a flake 
 
 ### In this repo
 
-1. Create a configuration file for the new host at `hosts/<hostname/default.nix`. Refer to existing host configs and define the config as needed.
+1. Create a configuration file for the new host at `hosts/nixos/<hostname/default.nix` (replace `nixos` with Darwin if that's what your using). Refer to existing host configs and define the config as needed.
 2. Add users to `hosts/common/users/<usern>.nix` if needed
-3. Create a host-specific home config for each user that will be accessing the host at `home/<user>/<hostname>.nix`. Refer to exiting user configs and defint the config as needed.
+3. Create a host-specific home config for each user that will be accessing the host at `home/<user>/<hostname>.nix`. Refer to exiting user configs and define [the](the) config as needed.
 4. Edit `flake.nix` to include a the following entries:
 
    - Host information, under the `nixosConfigurations` option.
@@ -25,8 +26,8 @@ Because this repo relies on a private `nix-secrets` repository input as a flake 
            modules = [ ./hosts/grief ];
            specialArgs = { inherit inputs outputs;};
          }
-         # Add a descripton of your host
-         yournewhostname = lib.nixosSystem {
+         # Add a description of your host
+         [yournewhostname](yournewhostname) = lib.nixosSystem {
            modules = [ ./hosts/yournewhostname ];
            specialArgs = { inherit inputs outputs;};
          }

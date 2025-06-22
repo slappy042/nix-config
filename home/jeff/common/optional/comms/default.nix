@@ -1,8 +1,15 @@
-#
-# TODO stage 4: this is a placeholder list for now
-#
+{ pkgs, ... }:
+{
+  #imports = [ ./foo.nix ];
 
-signal-desktop
-  telegram-desktop
-  discord
-  slack
+  home.packages = builtins.attrValues {
+    inherit (pkgs)
+      #telegram-desktop
+      discord
+      slack
+      ;
+    inherit (pkgs.unstable)
+      signal-desktop
+      ;
+  };
+}

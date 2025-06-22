@@ -1,11 +1,14 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  ...
+}:
 let
-  #FIXME: switch this to 10022 at some point. leaving it as 22 for now becuase I don't have time
-  # to add all the required matchblock entries
-  sshPort = 22;
+  sshPort = config.hostSpec.networking.ports.tcp.ssh;
 
   # Sops needs access to the keys before the persist dirs are even mounted; so
   # just persisting the keys won't work, we must point at /persist
+  #FIXME(impermanence): refactor this to how fb did it
   hasOptinPersistence = false;
 in
 
@@ -24,20 +27,18 @@ in
       GatewayPorts = "clientspecified";
     };
 
-    hostKeys = [{
-      path = "${lib.optionalString hasOptinPersistence "/persist"}/etc/ssh/ssh_host_ed25519_key";
-      type = "ed25519";
-    }];
-    # Fix LPE vulnerability with sudo use SSH_AUTH_SOCK: https://github.com/NixOS/nixpkgs/issues/31611
-    authorizedKeysFiles = lib.mkForce ["/etc/ssh/authorized_keys.d/%u"];
+    hostKeys = [
+      {
+        path = "${lib.optionalString hasOptinPersistence "/persist"}/etc/ssh/ssh_host_ed25519_key";
+        type = "ed25519";
+      }
+    ];
   };
+
   # yubikey login / sudo
-  # this potentially causes a security issue that we mitigated above
   security.pam = {
-    sshAgentAuth.enable = true;
-    services = {
-      sudo.u2fAuth = true;
-    };
+    rssh.enable = true;
+    services.sudo.rssh = true;
   };
 
   networking.firewall.allowedTCPPorts = [ sshPort ];

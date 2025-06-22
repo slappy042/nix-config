@@ -2,77 +2,91 @@
   description = "Minimal NixOS configuration for bootstrapping systems";
 
   inputs = {
-    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:NixOS/nixpkgs/release-24.05";
-    # Declarative partitioning and formatting
-    disko.url = "github:nix-community/disko";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    disko.url = "github:nix-community/disko"; # Declarative partitioning and formatting
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
-  let
-    inherit (self) outputs;
-    inherit (nixpkgs) lib;
-    configVars = import ../vars { inherit inputs lib; };
-    configLib = import ../lib { inherit lib; };
-    minimalConfigVars = lib.recursiveUpdate configVars {
-      isMinimal = true;
-    };
-    minimalSpecialArgs = {
-      inherit inputs outputs configLib;
-      configVars = minimalConfigVars;
-    };
+  outputs =
+    {
+      self,
+      nixpkgs,
+      ...
+    }@inputs:
+    let
+      inherit (self) outputs;
 
-    # FIXME: Specify arch eventually probably
-    # This mkHost is way better: https://github.com/linyinfeng/dotfiles/blob/8785bdb188504cfda3daae9c3f70a6935e35c4df/flake/hosts.nix#L358
-    newConfig =
-      name: disk: withSwap: swapSize:
-      (nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = minimalSpecialArgs;
-        modules = [
-          inputs.disko.nixosModules.disko
-          (configLib.relativeToRoot "hosts/common/disks/standard-disk-config.nix")
-          {
-            _module.args = {
-              inherit disk withSwap swapSize;
-            };
+      minimalSpecialArgs = {
+        inherit inputs outputs;
+        lib = nixpkgs.lib.extend (self: super: { custom = import ../lib { inherit (nixpkgs) lib; }; });
+      };
+
+      # This mkHost is way better: https://github.com/linyinfeng/dotfiles/blob/8785bdb188504cfda3daae9c3f70a6935e35c4df/flake/hosts.nix#L358
+      newConfig =
+        name: disk: swapSize: useLuks: useImpermanence:
+        (
+          let
+            diskSpecPath =
+              if useLuks && useImpermanence then
+                ../hosts/common/disks/btrfs-luks-impermanence-disk.nix
+              else if !useLuks && useImpermanence then
+                ../hosts/common/disks/btrfs-impermanence-disk.nix
+              else
+                ../hosts/common/disks/btrfs-disk.nix;
+          in
+          nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            specialArgs = minimalSpecialArgs;
+            modules = [
+              inputs.disko.nixosModules.disko
+              diskSpecPath
+              {
+                _module.args = {
+                  inherit disk;
+                  withSwap = swapSize > 0;
+                  swapSize = builtins.toString swapSize;
+                };
+              }
+              ./minimal-configuration.nix
+              ../hosts/nixos/${name}/hardware-configuration.nix
+
+              { networking.hostName = name; }
+            ];
           }
-          ./minimal-configuration.nix
-          {
-            networking.hostName = name;
-          }
-          (configLib.relativeToRoot "hosts/${name}/hardware-configuration.nix")
-        ];
-      });
-  in
-  {
-    nixosConfigurations = {
-      # host = newConfig "name" disk" "withSwap" "swapSize"
-      # Swap size is in GiB
-      dworkin = newConfig "dworkin" "/dev/vda" false "0";
-      brand = newConfig "brand" "/dev/vda" false "0";
-      nixxy1 = newConfig "nixxy1" "/dev/sda" true "8";
-      nixxy2 = newConfig "nixxy2" "/dev/sda" true "8";
-      nixxy3 = newConfig "nixxy3" "/dev/sda" true "8";
+        );
+    in
+    {
+      nixosConfigurations = {
+        # host = newConfig "name" disk" "withSwap" "swapSize"
+        # Swap size is in GiB
+        dworkin = newConfig "dworkin" "/dev/vda" 0 false false;
+        brand = newConfig "brand" "/dev/vda" 0 false false;
+        nixxy1 = newConfig "nixxy1" "/dev/sda" 8 false false;
+        nixxy2 = newConfig "nixxy2" "/dev/sda" 8 false false;
+        nixxy3 = newConfig "nixxy3" "/dev/sda" 8 false false;
 
-      # guppy = newConfig "guppy" "/dev/vda" false "0";
-      # gusto = newConfig "gusto" "/dev/sda" true "8";
+        # EmergentMind's stuff, left here for reference
+        # host = newConfig "name" disk" "swapSize" "useLuks" "useImpermanence"
+        # Swap size is in GiB
+        # genoa = newConfig "genoa" "/dev/nvme0n1" 16 true true;
+        # grief = newConfig "grief" "/dev/vda" 0 false false;
+        # guppy = newConfig "guppy" "/dev/vda" 0 false false;
+        # gusto = newConfig "gusto" "/dev/nvme0n1" 8 false false;
 
-      # Custom ISO
-      #
-      # `just iso` - from nix-config directory to generate the iso standalone
-      # 'just iso-install <drive>` - from nix-config directory to generate and copy directly to USB drive
-      # `nix build ./nixos-installer#nixosConfigurations.iso.config.system.build.isoImage` - from nix-config directory to generate the iso manually
-      #
-      # Generated images will be output to the ~/nix-config/results directory unless drive is specified
-      iso = nixpkgs.lib.nixosSystem {
-        specialArgs = minimalSpecialArgs;
-        modules = [
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
-          ./iso
-        ];
+
+        # ghost is EmergentMind's main desktop
+        # this seems to just differ in using a custom disk spec at ../hosts/common/disks/ghost.nix
+        #
+        # ghost = nixpkgs.lib.nixosSystem {
+        #   system = "x86_64-linux";
+        #   specialArgs = minimalSpecialArgs;
+        #   modules = [
+        #     inputs.disko.nixosModules.disko
+        #     ../hosts/common/disks/ghost.nix
+        #     ./minimal-configuration.nix
+        #     { networking.hostName = "ghost"; }
+        #     ../hosts/nixos/ghost/hardware-configuration.nix
+        #   ];
+        # };
       };
     };
-  };
 }

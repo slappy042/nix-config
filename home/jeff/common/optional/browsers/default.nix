@@ -1,6 +1,7 @@
-#
-#  TODO this is a placeholder list for now
-#
-
-brave
-  firefox
+{
+  imports = [
+    ./brave.nix
+    ./chromium.nix
+    ./firefox.nix
+  ];
+}

@@ -1,28 +1,55 @@
 # home level sops. see hosts/common/optional/sops.nix for hosts level
-# TODO should I split secrets.yaml into a home level and a hosts level or move to a single sops.nix entirely?
-
-{ inputs, config, ... }:
+{
+  inputs,
+  config,
+  lib,
+  ...
+}:
 let
-  secretsDirectory = builtins.toString inputs.nix-secrets;
-  secretsFile = "${secretsDirectory}/secrets.yaml";
+  sopsFolder = (builtins.toString inputs.nix-secrets) + "/sops";
   homeDirectory = config.home.homeDirectory;
+  # FIXME(yubikey): move this, u2f sops extraction, and other yubi stuff to be set as yubikey module options
+  # so it doesn't doesn't interfere with bootstrapping
+  yubikeys = [
+    "maya"
+    "mara"
+    "manu"
+    "mila"
+    "meek"
+  ];
+  nonYubikeys = [
+    "camelot"
+  ];
+  allSecrets =
+    # extract to default pam-u2f authfile location for passwordless sudo. see modules/common/yubikey
+    lib.optionalAttrs config.hostSpec.useYubikey {
+      "keys/u2f" = {
+        sopsFile = "${sopsFolder}/shared.yaml";
+        path = "${homeDirectory}/.config/Yubico/u2f_keys";
+      };
+    }
+    // lib.attrsets.mergeAttrsList (
+      lib.lists.map (name: {
+        "keys/ssh/${name}" = {
+          sopsFile = "${sopsFolder}/shared.yaml";
+          path = "${homeDirectory}/.ssh/id_${name}";
+        };
+      }) (yubikeys ++ nonYubikeys)
+    );
 in
 {
-  imports = [
-    inputs.sops-nix.homeManagerModules.sops
-  ];
-
+  imports = [ inputs.sops-nix.homeManagerModules.sops ];
   sops = {
-    # This is the location of the host specific age-key for jeff and will to have been extracted to this location via hosts/common/core/sops.nix on the host
+    # This is the location of the host specific age-key for ta and will to have been extracted to this location via hosts/common/core/sops.nix on the host
     age.keyFile = "${homeDirectory}/.config/sops/age/keys.txt";
 
-    defaultSopsFile = "${secretsFile}";
+    defaultSopsFile = "${sopsFolder}/${config.hostSpec.hostName}.yaml";
     validateSopsFiles = false;
 
     secrets = {
-      "ssh_keys/camelot" = {
-        path = "${homeDirectory}/.ssh/id_camelot";
-      };
-    };
+      #placeholder for tokens that I haven't gotten to yet
+      #"tokens/foo" = {
+      #};
+    } // allSecrets;
   };
 }

@@ -1,60 +1,113 @@
-{ pkgs, lib, config, configVars, ... }:
-let
-  homeDirectory = config.home.homeDirectory;
-in
+# git is core no matter what but additional settings may could be added made in optional/foo   eg: development.nix
 {
-  sops.secrets = {
-    "ssh_keys/github_benway" = {
-      path = "${homeDirectory}/.ssh/id_github_benway";
-      mode = "0400";
-    };
-    "ssh_keys/github_slappy" = {
-      path = "${homeDirectory}/.ssh/id_github_slappy";
-      mode = "0400";
-    };
-  };
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}:
+{
   programs.git = {
     enable = true;
     package = pkgs.gitAndTools.gitFull;
-    userName = configVars.handle;
-    userEmail = configVars.gitEmail;
-    aliases = { };
-    includes = [
-      {
-        path = "~/src/github/benway/.gitconfig.benway";
-        condition = "gitdir:~/src/github/benway/";
-      }
+
+    ignores = [
+      ".csvignore"
+      # nix
+      "*.drv"
+      "result"
+      # python
+      "*.py?"
+      "__pycache__/"
+      ".venv/"
+      # direnv
+      ".direnv"
     ];
 
-    extraConfig = {
-      init.defaultBranch = "main";
-      url = {
-        "ssh://git@github.com" = {
-          insteadOf = "https://github.com";
-        };
-        "ssh://git@gitlab.com" = {
-          insteadOf = "https://gitlab.com";
-        };
-      };
-      core = {
-        sshCommand = "ssh -i ~/.ssh/id_github_slappy";
-      };
+    # Anytime I use auth, I want to use my yubikey. But I don't want to always be having to touch it
+    # for things that don't need it. So I have to hardcode repos that require auth, and default to ssh for
+    # actions that require auth.
+    extraConfig =
+      let
+        privateRepos = inputs.nix-secrets.git.repos;
+        privateWorkRepos = inputs.nix-secrets.git.work.repos;
+        insteadOfList =
+          domain: urls:
+          lib.map (url: {
+            "ssh://git@${domain}/${url}" = {
+              insteadOf = "https://${domain}/${url}";
+            };
+          }) urls;
 
-      # user.signing.key = "41B7B2ECE0FAEF890343124CE8AA1A8F75B56D39";
-      #TODO sops - Re-enable once sops setup complete
-      commit.gpgSign = false;
-      gpg.program = "${config.programs.gpg.package}/bin/gpg2";
-    };
-    # enable git Large File Storage: https://git-lfs.com/
-    # lfs.enable = true;
-    ignores = [ ".direnv" "result" ];
+        # FIXME(git): At the moment this requires personal and work sets to maintain lists of git servers, even if
+        # unneeded, so could also check if domain list actually exists in the set first.
+        alwaysSshRepos = lib.foldl' lib.recursiveUpdate { } (
+          lib.concatLists (
+            lib.map
+              (
+                domain:
+                insteadOfList domain (
+                  privateRepos.${domain} ++ (lib.optionals config.hostSpec.isWork privateWorkRepos.${domain})
+                )
+              )
+              (
+                lib.attrNames privateRepos ++ lib.optionals config.hostSpec.isWork (lib.attrNames privateWorkRepos)
+              )
+          )
+        );
+      in
+      {
+        core.pager = "delta";
+        delta = {
+          enable = true;
+          features = [
+            "side-by-side"
+            "line-numbers"
+            "hyperlinks"
+            "line-numbers"
+            "commit-decoration"
+          ];
+        };
+
+        url =
+          alwaysSshRepos
+          // lib.optionalAttrs (!config.hostSpec.isMinimal) {
+            # Only force ssh if it's not minimal
+            "ssh://git@github.com" = {
+              pushInsteadOf = "https://github.com";
+            };
+            "ssh://git@gitlab.com" = {
+              pushInsteadOf = "https://gitlab.com";
+            };
+          };
+
+        # pre-emptively ignore mac crap
+        core.excludeFiles = builtins.toFile "global-gitignore" ''
+          .DS_Store
+          .DS_Store?
+          ._*
+          .Spotlight-V100
+          .Trashes
+          ehthumbs.db
+          Thumbs.db
+          node_modules
+        '';
+        core.attributesfile = builtins.toFile "global-gitattributes" ''
+          Cargo.lock -diff
+          flake.lock -diff
+          *.drawio -diff
+          *.svg -diff
+          *.json diff=json
+          *.bin diff=hex difftool=hex
+          *.dat diff=hex difftool=hex
+          *aarch64.bin diff=objdump-aarch64 difftool=objdump-aarch64
+          *arm.bin diff=objdump-arm difftool=objdump-arm
+          *x64.bin diff=objdump-x86_64 difftool=objdump-x64
+          *x86.bin diff=objdump-x86 difftool=objdump-x86
+        '';
+        # Makes single line json diffs easier to read
+        diff.json.textconv = "jq --sort-keys .";
+      };
   };
-  home.file."src/github/benway/.gitconfig.benway".text = ''
-    [user]
-    email = 75365523+benway7000@users.noreply.github.com
-    name = benway7000
 
-    [core]
-    sshCommand = "ssh -i ~/.ssh/id_github_benway"
-  '';
 }

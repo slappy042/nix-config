@@ -1,9 +1,10 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
-
   programs.hyprland = {
     enable = true;
-    portalPackage = pkgs.xdg-desktop-portal-hyprland; # default
   };
 
+  environment.systemPackages = [
+    inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+  ];
 }

@@ -1,34 +1,156 @@
-{ config, outputs, lib, ... }:
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
 let
-  identityFiles = [
-    "id_camelot" # Jeff's default key
+  # There are a subset of hosts where yubikey is used for authentication. An ssh config entry is constructed for each
+  # of these hosts that roughly follows the same pattern. Some of these hosts use a domain suffix, so build a list of
+  # all hosts with and without domains
+  yubikeyHostsWithDomain = [
+    "genoa"
+    "ghost"
+    "gooey"
+    "grief"
+    "guppy"
+  ] ++ inputs.nix-secrets.networking.ssh.yubikeyHostsWithDomain;
+
+  yubikeyHostsWithoutDomain = [
+    config.hostSpec.networking.subnets.grove.wildcard
+    config.hostSpec.networking.subnets.vm-lan.wildcard
+  ] ++ inputs.nix-secrets.networking.ssh.yubikeyHosts;
+
+  # Add domain to each host name
+  genDomains = lib.map (h: "${h}.${config.hostSpec.domain}");
+  yubikeyHostAll =
+    yubikeyHostsWithDomain ++ yubikeyHostsWithoutDomain ++ (genDomains yubikeyHostsWithDomain);
+  yubikeyHostsString = lib.concatStringsSep " " yubikeyHostAll;
+
+  # Only a subset of hosts are trusted enough to allow agent forwarding
+  forwardAgentHosts = lib.foldl' (acc: b: lib.filter (a: a != b) acc) yubikeyHostsWithDomain (
+    [ ] ++ inputs.nix-secrets.networking.ssh.forwardAgentUntrusted
+  );
+  forwardAgentHostsString = lib.concatStringsSep " " (
+    forwardAgentHosts ++ (genDomains forwardAgentHosts)
+  );
+
+  pathtokeys = lib.custom.relativeToRoot "hosts/common/users/primary/keys";
+  yubikeys =
+    lib.lists.forEach (builtins.attrNames (builtins.readDir pathtokeys))
+      # Remove the .pub suffix
+      (key: lib.substring 0 (lib.stringLength key - lib.stringLength ".pub") key);
+  yubikeyPublicKeyEntries = lib.attrsets.mergeAttrsList (
+    lib.lists.map (key: { ".ssh/${key}.pub".source = "${pathtokeys}/${key}.pub"; }) yubikeys
+  );
+
+  sshIdentityFiles = [
+    "id_yubikey" # This is an auto symlink to whatever yubikey is plugged in. See modules/common/yubikey
+    "id_camelot" # fallback if yubikeys are not present
   ];
+  
+  gitIdentityFiles = [
+    # "~/.ssh/id_github_benway"
+    "~/.ssh/id_github_slappy"
+  ];
+
+  # Lots of hosts have the same default config, so don't duplicate
+  vanillaHosts = [
+    "genoa"
+    "ghost"
+    "grief"
+    "guppy"
+    "gusto"
+  ];
+  vanillaHostsConfig = lib.attrsets.mergeAttrsList (
+    lib.lists.map (host: {
+      "${host}" = lib.hm.dag.entryAfter [ "yubikey-hosts" ] {
+        match = "host ${host},${host}.${config.hostSpec.domain}";
+        hostname = "${host}.${config.hostSpec.domain}";
+        port = config.hostSpec.networking.ports.tcp.ssh;
+      };
+    }) vanillaHosts
+  );
 in
 {
-  programs.ssh = {
-    enable = true;
+  programs.ssh =
+    let
+      workConfig = if config.hostSpec.isWork then ''Include config.d/work'' else "";
+    in
+    {
+      enable = true;
 
-    addKeysToAgent = "yes";
+      # FIXME(ssh): This should probably be for git systems only?
+      controlMaster = "auto";
+      controlPath = "${config.home.homeDirectory}/.ssh/sockets/S.%r@%h:%p";
+      controlPersist = "20m";
+      # Avoids infinite hang if control socket connection interrupted. ex: vpn goes down/up
+      serverAliveCountMax = 3;
+      serverAliveInterval = 5; # 3 * 5s
+      hashKnownHosts = true;
+      addKeysToAgent = "yes";
 
-    extraConfig = lib.strings.concatMapStrings(file: "IdentityFile ${config.home.homeDirectory}/.ssh/${file}\n") identityFiles;
+      sshIdentities = lib.strings.concatMapStrings(file: "IdentityFile ${config.home.homeDirectory}/.ssh/${file}\n") sshIdentityFiles
 
-    matchBlocks = {
-      "git" = {
-        host = "gitlab.com github.com";
-        user = "git";
-        forwardAgent = true;
-        identitiesOnly = true;
-        identityFile = [
-          # "~/.ssh/id_github_benway"
-          "~/.ssh/id_github_slappy"
-        ];
-      };
+      # Bring in decrypted config
+      extraConfig = ''
+        UpdateHostKeys ask
+        ${workConfig}
+        ${sshIdentities}
+      '';
+
+      matchBlocks =
+        let
+          workHosts = if config.hostSpec.isWork then inputs.nix-secrets.work.git.servers else "";
+        in
+        {
+          # Not all of this systems I have access to can use yubikey.
+          "yubikey-hosts" = lib.hm.dag.entryAfter [ "*" ] {
+            host = "${workHosts} ${yubikeyHostsString}";
+            identitiesOnly = true;
+            identityFile = lib.lists.forEach sshIdentityFiles (file: "${config.home.homeDirectory}/.ssh/${file}");
+          };
+
+          # Only forward agent to hosts that need it
+          "forward-agent-hosts" = lib.hm.dag.entryAfter [ "yubikey-hosts" ] {
+            host = forwardAgentHostsString;
+            forwardAgent = true;
+          };
+
+          "git" = {
+            host = "gitlab.com github.com";
+            user = "git";
+            forwardAgent = true;
+            identitiesOnly = true;
+            identityFile = lib.lists.forEach gitIdentityFiles (file: "${config.home.homeDirectory}/.ssh/${file}");
+          };
+          "gooey" = lib.hm.dag.entryAfter [ "yubikey-hosts" ] {
+            host = "gooey";
+            hostname = "gooey.${config.hostSpec.domain}";
+            user = config.hostSpec.networking.subnets.grove.hosts.gooey.user;
+            forwardAgent = true;
+            identitiesOnly = true;
+            identityFile = lib.lists.forEach sshIdentityFiles (file: "${config.home.homeDirectory}/.ssh/${file}");
+          };
+          "oops" = lib.hm.dag.entryAfter [ "yubikey-hosts" ] {
+            host = "oops";
+            hostname = "oops.${config.hostSpec.domain}";
+            user = "${config.hostSpec.username}";
+            port = config.hostSpec.networking.ports.tcp.oops;
+            forwardAgent = true;
+            identitiesOnly = true;
+            identityFile = [
+              "~/.ssh/id_yubikey"
+              "~/.ssh/id_borg"
+            ];
+          };
+        }
+        // (inputs.nix-secrets.networking.ssh.matchBlocks lib)
+        // vanillaHostsConfig;
+
     };
-    # FIXME: This should probably be for git systems only?
-    # Should create PR for this to be part of MatchBlocks
-    controlMaster = "auto";
-    controlPath = "~/.ssh/sockets/S.%r@%h:%p";
-    controlPersist = "10m";
-  };
-  home.file.".ssh/sockets/.keep".text = "# Managed by Home Manager";
+  home.file = {
+    ".ssh/config.d/.keep".text = "# Managed by Home Manager";
+    ".ssh/sockets/.keep".text = "# Managed by Home Manager";
+  } // yubikeyPublicKeyEntries;
 }

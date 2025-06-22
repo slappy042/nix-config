@@ -1,25 +1,41 @@
-#
-#  TODO stage 4 this is a placeholder list for now
-#
+{ pkgs, ... }:
+{
+  #imports = [ ./foo.nix ];
 
-#imports
-#   ./dev
+  home.packages = builtins.attrValues {
+    inherit (pkgs)
+      # Development
+      # tokei
 
+      # Device imaging
+      # rpi-imager
+      #etcher #was disabled in nixpkgs due to dependency on insecure version of Electron
 
-# edc
-flameshot ?? maybe somewhere else
+      # Productivity
+      # drawio
+      # grimblast
+      libreoffice
 
-# Productivity
-remmina
-libreoffice
-gimp
-draw.io
-inkscape
+      # Privacy
+      #veracrypt
+      #keepassxc
 
-# privacy:
-veracrypt
-keepassxc
+      # Web sites
+      # zola
 
-# imaging
-rpi-imager
-etcher
+      # Media production
+      # audacity
+      # blender-hip # -hip variant includes h/w accelrated rendering with AMD RNDA gpus
+      gimp
+      # inkscape
+      # obs-studio
+      # VM and RDP
+      # remmina
+      ;
+  };
+  #Disabled for now. grimblast
+  #  services.flameshot = {
+  #      enable = true;
+  #     package = flameshotGrim;
+  #  };
+}

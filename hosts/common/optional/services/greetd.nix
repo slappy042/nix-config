@@ -3,7 +3,12 @@
 # display manager -> greetd https://man.sr.ht/~kennylevinsen/greetd/
 #
 
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   cfg = config.autoLogin;
@@ -21,7 +26,7 @@ in
   };
 
   config = {
-    #    environment.systemPackages = with pkgs; [ greetd.tuigreet ];
+    #    environment.systemPackages = [ pkgs.greetd.tuigreet ];
     services.greetd = {
       enable = true;
 

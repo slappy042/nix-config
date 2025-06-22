@@ -1,10 +1,9 @@
 {
   lib,
-  configLib,
   ...
 }:
 {
-  imports = (configLib.scanPaths ./.);
+  imports = (lib.custom.scanPaths ./.);
 
   #   config = lib.mkIf config.nixvim-config.enable {  # don't want to gif on options one level out of here yet
   config = {
@@ -12,7 +11,7 @@
     # ========== ui ==========
     #
     nixvim-config.colorschemes.enable = lib.mkDefault true;
-    nixvim-config.plugins.nvim-colorizer.enable = lib.mkDefault true;
+    nixvim-config.plugins.colorizer.enable = lib.mkDefault true;
     nixvim-config.plugins.alpha.enable = lib.mkDefault true;
     nixvim-config.plugins.dressing.enable = lib.mkDefault false;
     #
