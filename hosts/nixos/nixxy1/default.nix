@@ -34,7 +34,7 @@
       #
       # ========== Required Configs ==========
       #
-    "hosts/common/core"
+      "hosts/common/core"
 
       #
       # ========== Optional Configs ==========
@@ -69,7 +69,7 @@
       "xhci_pci"
       "ahci"
       "usbhid"
-      "usb_storage"      
+      "usb_storage"
       "sd_mod"
     ];
   };

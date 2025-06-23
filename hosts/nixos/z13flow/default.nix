@@ -69,7 +69,7 @@
     #   "xhci_pci"
     #   "ahci"
     #   "usbhid"
-    #   "usb_storage"      
+    #   "usb_storage"
     #   "sd_mod"
     # ];
   };

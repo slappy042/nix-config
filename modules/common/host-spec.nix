@@ -20,6 +20,11 @@
       type = lib.types.attrsOf lib.types.str;
       description = "The email of the user";
     };
+    github = lib.mkOption {
+      default = { };
+      type = lib.types.attrsOf lib.types.anything;
+      description = "An attribute set of github-related information";
+    };
     work = lib.mkOption {
       default = { };
       type = lib.types.attrsOf lib.types.anything;

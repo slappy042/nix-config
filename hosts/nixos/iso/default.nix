@@ -36,14 +36,15 @@
         email = "75365523+benway7000@users.noreply.github.com";
       };
     };
+    networking.ports.tcp.ssh = 22;
 
     isProduction = lib.mkForce false;
 
     # Needed because we don't use hosts/common/core for iso
-    inherit (inputs.nix-secrets)
-      domain
-      networking
-      ;
+    # inherit (inputs.nix-secrets)
+    # domain
+    # networking
+    # ;
 
   };
 

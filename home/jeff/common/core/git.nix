@@ -29,8 +29,8 @@
     # actions that require auth.
     extraConfig =
       let
-        privateRepos = inputs.nix-secrets.git.repos;
-        privateWorkRepos = inputs.nix-secrets.git.work.repos;
+        privateRepos = inputs.nix-secrets.git.repos or { };
+        privateWorkRepos = inputs.nix-secrets.git.work.repos or { };
         insteadOfList =
           domain: urls:
           lib.map (url: {

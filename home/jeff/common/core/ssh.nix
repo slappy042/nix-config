@@ -75,6 +75,9 @@ in
   programs.ssh =
     let
       workConfig = if config.hostSpec.isWork then ''Include config.d/work'' else "";
+      sshIdentities = lib.strings.concatMapStrings (
+        file: "IdentityFile ${config.home.homeDirectory}/.ssh/${file}\n"
+      ) sshIdentityFiles;
     in
     {
       enable = true;
@@ -88,10 +91,6 @@ in
       serverAliveInterval = 5; # 3 * 5s
       hashKnownHosts = true;
       addKeysToAgent = "yes";
-
-      sshIdentities = lib.strings.concatMapStrings (
-        file: "IdentityFile ${config.home.homeDirectory}/.ssh/${file}\n"
-      ) sshIdentityFiles;
 
       # Bring in decrypted config
       extraConfig = ''

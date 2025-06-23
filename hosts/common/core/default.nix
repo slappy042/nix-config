@@ -46,12 +46,13 @@ in
         email = "75365523+benway7000@users.noreply.github.com";
       };
     };
-    inherit (inputs.nix-secrets)
-      domain
-      email
-      userFullName
-      networking
-      ;
+    networking.ports.tcp.ssh = 22;
+    # inherit (inputs.nix-secrets)
+    #   domain
+    #   email
+    #   userFullName
+    #   networking
+    #   ;
   };
 
   networking.hostName = config.hostSpec.hostName;

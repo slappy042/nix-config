@@ -72,7 +72,6 @@
         # guppy = newConfig "guppy" "/dev/vda" 0 false false;
         # gusto = newConfig "gusto" "/dev/nvme0n1" 8 false false;
 
-
         # ghost is EmergentMind's main desktop
         # this seems to just differ in using a custom disk spec at ../hosts/common/disks/ghost.nix
         #
