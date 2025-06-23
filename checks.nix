@@ -60,6 +60,9 @@
       nixfmt-rfc-style.enable = true;
       deadnix = {
         enable = true;
+        excludes = [
+          "hardware-configuration.nix"
+        ];
         settings = {
           noLambdaArg = true;
         };
