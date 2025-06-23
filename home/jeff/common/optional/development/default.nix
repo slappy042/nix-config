@@ -1,29 +1,23 @@
 # Development utilities I want across all systems
 {
-  inputs,
   config,
   lib,
   pkgs,
   ...
 }:
 let
-  publicGitEmail = config.hostSpec.email.gitHub;
-  sshFolder = "${config.home.homeDirectory}/.ssh";
-  publicKey =
-    if config.hostSpec.useYubikey then "${sshFolder}/id_yubikey.pub" else "${sshFolder}/id_manu.pub";
-  privateGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.private";
-  workEmail = inputs.nix-secrets.email.work;
-  workGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.work";
-  workGitUrlsTable = lib.optionalAttrs config.hostSpec.isWork (
-    builtins.listToAttrs (
-      map (url: {
-        name = "ssh://git@${url}";
-        value = {
-          insteadOf = "https://${url}";
-        };
-      }) (lib.splitString " " inputs.nix-secrets.work.git.servers)
-    )
-  );
+  # sshFolder = "${config.home.homeDirectory}/.ssh";
+  # publicKey =
+  #   if config.hostSpec.useYubikey then
+  #     "${sshFolder}/id_yubikey.pub"
+  #   else
+  #     "${sshFolder}/id_github_slappy.pub";
+  gamingGitEmail = config.hostSpec.gitHub.gaming.email;
+  gamingGitName = config.hostSpec.gitHub.gaming.name;
+  gamingGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.gaming";
+  stdGitEmail = config.hostSpec.gitHub.std.email;
+  stdGitName = config.hostSpec.gitHub.std.name;
+  stdGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.std";
 in
 {
   imports = lib.custom.scanPaths ./.;
@@ -69,8 +63,8 @@ in
 
   #NOTE: Already enabled earlier, this is just extra config
   programs.git = {
-    userName = config.hostSpec.handle;
-    userEmail = publicGitEmail;
+    userName = stdGitName;
+    userEmail = stdGitEmail;
 
     # Enforce SSH to leverage yubikey
     extraConfig = {
@@ -80,40 +74,30 @@ in
 
       log.showSignature = "true";
       init.defaultBranch = "main";
-      pull.rebase = "true";
 
       # Don't warn on empty git add calls. Because of "git re-commit" automation
       advice.addEmptyPathspec = false;
 
-      url = lib.optionalAttrs config.hostSpec.isWork (
-        lib.recursiveUpdate {
-          "ssh://git@${inputs.nix-secrets.work.git.serverMain}" = {
-            insteadOf = "https://${inputs.nix-secrets.work.git.serverMain}";
-          };
-        } workGitUrlsTable
-      );
+      includeIf."gitdir:${config.home.homeDirectory}/src/github/gaming/".path = gamingGitConfig;
+      includeIf."gitdir:${config.home.homeDirectory}/src/github/".path = stdGitConfig;
 
-      includeIf."gitdir:${config.home.homeDirectory}/dev/".path = privateGitConfig;
-      includeIf."gitdir:${config.home.homeDirectory}/src/".path = privateGitConfig;
-      includeIf."gitdir:${config.home.homeDirectory}/source/".path = privateGitConfig;
-      includeIf."gitdir:${config.home.homeDirectory}/work/".path = workGitConfig;
-      includeIf."gitdir:${config.home.homeDirectory}/persist/work/".path = workGitConfig;
+      url = {
+        "ssh://git@github.com" = {
+          insteadOf = "https://github.com";
+        };
+        "ssh://git@gitlab.com" = {
+          insteadOf = "https://gitlab.com";
+        };
+      };
+      core = {
+        sshCommand = "ssh -i ~/.ssh/id_github_slappy";
+      };
+
       diff.tool = "difftastic";
       difftool = {
         prompt = "false";
         difftastic.cmd = "difft \"$LOCAL\" \"$REMOTE\"";
       };
-
-      commit.gpgsign = true;
-      gpg.format = "ssh";
-      # Signing key for non-yubikey hosts
-      user.signingkey = "${publicKey}";
-      # Taken from https://github.com/clemak27/homecfg/blob/16b86b04bac539a7c9eaf83e9fef4c813c7dce63/modules/git/ssh_signing.nix#L14
-      gpg.ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
-    };
-    signing = {
-      signByDefault = true;
-      key = publicKey;
     };
     ignores = [
       ".direnv"
@@ -121,20 +105,16 @@ in
     ];
   };
 
-  home.file.".ssh/allowed_signers".text = ''
-    ${publicGitEmail} ${lib.fileContents (lib.custom.relativeToRoot "hosts/common/users/primary/keys/id_maya.pub")}
-    ${publicGitEmail} ${lib.fileContents (lib.custom.relativeToRoot "hosts/common/users/primary/keys/id_mara.pub")}
-    ${publicGitEmail} ${lib.fileContents (lib.custom.relativeToRoot "hosts/common/users/primary/keys/id_manu.pub")}
-  '';
-
-  home.file."${privateGitConfig}".text = ''
+  home.file."${gamingGitConfig}".text = ''
     [user]
-      name = "${config.hostSpec.handle}"
-      email = ${publicGitEmail}
+      name = "${gamingGitName}"
+      email = ${gamingGitEmail}
+    [core]
+      sshCommand = "ssh -i ~/.ssh/id_github_benway"
   '';
-  home.file."${workGitConfig}".text = ''
+  home.file."${stdGitConfig}".text = ''
     [user]
-      name = "${config.hostSpec.userFullName}"
-      email = "${workEmail}"
+      name = "${stdGitName}"
+      email = "${stdGitEmail}"
   '';
 }

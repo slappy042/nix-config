@@ -36,6 +36,16 @@ in
   hostSpec = {
     username = "jeff";
     handle = "slappy042";
+    github = {
+      std = {
+        name = "slappy042";
+        email = "75365007+slappy042@users.noreply.github.com";
+      };
+      gaming = {
+        name = "benway7000";
+        email = "75365523+benway7000@users.noreply.github.com";
+      };
+    };
     inherit (inputs.nix-secrets)
       domain
       email

@@ -2,12 +2,10 @@ TODO:
 
 
 
+nix-secrets:
+  change ssh_keys/camelot to
+  keys/ssh/camelet
 
-
-my git config stuff: goes in here: nix-config/home/jeff/common/optional/development/default.nix
-
-
-ssh config with keys, yubihosts, is weird
 
 
 
@@ -43,3 +41,10 @@ hosts/common/optional/smbclient.nix
         path = "${homeDirectory}/.ssh/id_camelot";
       };
     };
+
+
+* my git config stuff: goes in here: nix-config/home/jeff/common/optional/development/default.nix
+
+* sops file: make sure ssh keys are written
+
+* ssh config with keys, yubihosts, is weird
