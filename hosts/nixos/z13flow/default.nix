@@ -23,7 +23,7 @@
     # ========== Disk Layout ==========
     #
     inputs.disko.nixosModules.disko
-    (lib.custom.relativeToRoot "hosts/common/disks/btrfs-disk.nix")
+    (lib.custom.relativeToRoot "hosts/common/disks/btrfs-luks-impermanence-disk.nix")
     {
       _module.args = {
         disk = "/dev/nvme0n1";

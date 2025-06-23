@@ -23,7 +23,7 @@
     # ========== Disk Layout ==========
     #
     inputs.disko.nixosModules.disko
-    (lib.custom.relativeToRoot "hosts/common/disks/btrfs-disk.nix")
+    (lib.custom.relativeToRoot "hosts/common/disks/btrfs-impermanence-disk.nix")
     {
       _module.args = {
         disk = "/dev/vda";

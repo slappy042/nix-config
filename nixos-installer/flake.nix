@@ -56,13 +56,14 @@
     in
     {
       nixosConfigurations = {
-        # host = newConfig "name" disk" "withSwap" "swapSize"
+        # host = newConfig "name" disk" "swapSize" "useLuks" "useImpermanence"
         # Swap size is in GiB
         dworkin = newConfig "dworkin" "/dev/vda" 0 false false;
         brand = newConfig "brand" "/dev/vda" 0 false false;
         nixxy1 = newConfig "nixxy1" "/dev/sda" 8 false false;
         nixxy2 = newConfig "nixxy2" "/dev/sda" 8 false false;
         nixxy3 = newConfig "nixxy3" "/dev/sda" 8 false false;
+        z13flow = newConfig "z13flow" "/dev/nvme0n1" 8 true false;
 
         # EmergentMind's stuff, left here for reference
         # host = newConfig "name" disk" "swapSize" "useLuks" "useImpermanence"
