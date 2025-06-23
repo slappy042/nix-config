@@ -176,6 +176,8 @@ function nixos_anywhere() {
 		$ssh_root_cmd "nixos-generate-config --no-filesystems --root /mnt"
 		$scp_cmd root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix \
 			"${git_root}"/hosts/nixos/"$target_hostname"/hardware-configuration.nix
+		# Add the hardware config to git so the flake can include it
+		git add "${git_root}"/hosts/nixos/"$target_hostname"/hardware-configuration.nix
 		generated_hardware_config=1
 	fi
 
