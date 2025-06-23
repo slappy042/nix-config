@@ -26,8 +26,9 @@
     (lib.custom.relativeToRoot "hosts/common/disks/btrfs-disk.nix")
     {
       _module.args = {
-        disk = "/dev/vda";
-        withSwap = false;
+        disk = "/dev/nvme0n1";
+        withSwap = true;
+        swapSize = 8;
       };
     }
     (map lib.custom.relativeToRoot [
@@ -39,8 +40,25 @@
       #
       # ========== Optional Configs ==========
       #
-      "hosts/common/optional/services/openssh.nix"
-      "hosts/common/optional/smbclient.nix"
+      "hosts/common/optional/services/greetd.nix" # display manager
+      "hosts/common/optional/services/openssh.nix" # allow remote SSH access
+      "hosts/common/optional/services/printing.nix" # CUPS
+      "hosts/common/optional/audio.nix" # pipewire and cli controls
+      "hosts/common/optional/libvirt.nix" # vm tools
+      "hosts/common/optional/gaming.nix" # steam, gamescope, gamemode, and related hardware
+      "hosts/common/optional/hyprland.nix" # window manager
+      # "hosts/common/optional/msmtp.nix" # for sending email notifications
+      # "hosts/common/optional/nvtop.nix" # GPU monitor (not available in home-manager)
+      # "hosts/common/optional/obsidian.nix" # wiki
+      "hosts/common/optional/plymouth.nix" # fancy boot screen
+      # "hosts/common/optional/protonvpn.nix" # vpn
+      "hosts/common/optional/scanning.nix" # SANE and simple-scan
+      "hosts/common/optional/smbclient.nix" # for mounting samba shares
+      # "hosts/common/optional/thunar.nix" # file manager
+      "hosts/common/optional/vlc.nix" # media player
+      "hosts/common/optional/wayland.nix" # wayland components and pkgs not available in home-manager
+      # "hosts/common/optional/yubikey.nix" # yubikey related packages and configs
+      # "hosts/common/optional/zsa-keeb.nix" # Moonlander keeb flashing stuff
     ])
   ];
 

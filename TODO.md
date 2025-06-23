@@ -1,12 +1,9 @@
 TODO:
 
 
-
-nix-secrets:
-  change ssh_keys/camelot to
-  keys/ssh/camelet
-
-
+hostSpec
+  .domain
+  .networking
 
 
 DONE
@@ -48,3 +45,7 @@ hosts/common/optional/smbclient.nix
 * sops file: make sure ssh keys are written
 
 * ssh config with keys, yubihosts, is weird
+
+* nix-secrets:
+  change ssh_keys/camelot to
+  keys/ssh/camelet
