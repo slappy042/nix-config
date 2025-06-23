@@ -24,7 +24,19 @@
 
   hostSpec = {
     hostName = "iso";
-    username = "ta";
+    username = "jeff";
+    handle = "slappy042";
+    github = {
+      std = {
+        name = "slappy042";
+        email = "75365007+slappy042@users.noreply.github.com";
+      };
+      gaming = {
+        name = "benway7000";
+        email = "75365523+benway7000@users.noreply.github.com";
+      };
+    };
+
     isProduction = lib.mkForce false;
 
     # Needed because we don't use hosts/common/core for iso
@@ -33,9 +45,6 @@
       networking
       ;
 
-    #TODO(git): This is stuff for home/ta/common/core/git.nix. should create home/ta/common/optional/development.nix so core git.nix doesn't use it.
-    handle = "emergentmind";
-    email.gitHub = inputs.nix-secrets.email.gitHub;
   };
 
   # root's ssh key are mainly used for remote deployment
