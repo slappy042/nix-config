@@ -3,7 +3,7 @@
   pkgs,
   lib,
   config,
-  inputs,
+  # inputs,
   ...
 }:
 {
@@ -29,32 +29,33 @@
     # actions that require auth.
     extraConfig =
       let
-        privateRepos = inputs.nix-secrets.git.repos or { };
-        privateWorkRepos = inputs.nix-secrets.git.work.repos or { };
-        insteadOfList =
-          domain: urls:
-          lib.map (url: {
-            "ssh://git@${domain}/${url}" = {
-              insteadOf = "https://${domain}/${url}";
-            };
-          }) urls;
+        # privateRepos = inputs.nix-secrets.git.repos or { };
+        # privateWorkRepos = inputs.nix-secrets.git.work.repos or { };
+        # insteadOfList =
+        #   domain: urls:
+        #   lib.map (url: {
+        #     "ssh://git@${domain}/${url}" = {
+        #       insteadOf = "https://${domain}/${url}";
+        #     };
+        #   }) urls;
 
-        # FIXME(git): At the moment this requires personal and work sets to maintain lists of git servers, even if
-        # unneeded, so could also check if domain list actually exists in the set first.
-        alwaysSshRepos = lib.foldl' lib.recursiveUpdate { } (
-          lib.concatLists (
-            lib.map
-              (
-                domain:
-                insteadOfList domain (
-                  privateRepos.${domain} ++ (lib.optionals config.hostSpec.isWork privateWorkRepos.${domain})
-                )
-              )
-              (
-                lib.attrNames privateRepos ++ lib.optionals config.hostSpec.isWork (lib.attrNames privateWorkRepos)
-              )
-          )
-        );
+        # # FIXME(git): At the moment this requires personal and work sets to maintain lists of git servers, even if
+        # # unneeded, so could also check if domain list actually exists in the set first.
+        # alwaysSshRepos = lib.foldl' lib.recursiveUpdate { } (
+        #   lib.concatLists (
+        #     lib.map
+        #       (
+        #         domain:
+        #         insteadOfList domain (
+        #           privateRepos.${domain} ++ (lib.optionals config.hostSpec.isWork privateWorkRepos.${domain})
+        #         )
+        #       )
+        #       (
+        #         lib.attrNames privateRepos ++ lib.optionals config.hostSpec.isWork (lib.attrNames privateWorkRepos)
+        #       )
+        #   )
+        # );
+        alwaysSshRepos = { };
       in
       {
         core.pager = "delta";
