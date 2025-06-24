@@ -12,11 +12,11 @@ let
   #     "${sshFolder}/id_yubikey.pub"
   #   else
   #     "${sshFolder}/id_github_slappy.pub";
-  gamingGitEmail = config.hostSpec.gitHub.gaming.email;
-  gamingGitName = config.hostSpec.gitHub.gaming.name;
+  gamingGitEmail = config.hostSpec.github.gaming.email;
+  gamingGitName = config.hostSpec.github.gaming.name;
   gamingGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.gaming";
-  stdGitEmail = config.hostSpec.gitHub.std.email;
-  stdGitName = config.hostSpec.gitHub.std.name;
+  stdGitEmail = config.hostSpec.github.std.email;
+  stdGitName = config.hostSpec.github.std.name;
   stdGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.std";
 in
 {

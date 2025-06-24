@@ -1,7 +1,7 @@
 #############################################################
 #
-#  Nixxy1
-#  NixOS on Lenovo Tiny 910q
+#  Z13 Flow
+#  NixOS on Asus Z13 Flow (2025) Max+ AI 395
 #
 ###############################################################
 
@@ -44,7 +44,7 @@
       "hosts/common/optional/services/openssh.nix" # allow remote SSH access
       "hosts/common/optional/services/printing.nix" # CUPS
       "hosts/common/optional/audio.nix" # pipewire and cli controls
-      "hosts/common/optional/libvirt.nix" # vm tools
+      # "hosts/common/optional/libvirt.nix" # vm tools
       "hosts/common/optional/gaming.nix" # steam, gamescope, gamemode, and related hardware
       "hosts/common/optional/hyprland.nix" # window manager
       # "hosts/common/optional/msmtp.nix" # for sending email notifications
@@ -68,6 +68,7 @@
 
   hostSpec = {
     hostName = "z13flow";
+    persistFolder = "/persist"; # added for "completion" because of the disko spec that was used even though impermanence isn't actually enabled here yet.
   };
 
   networking = {
@@ -83,19 +84,21 @@
   boot.initrd = {
     systemd.enable = true;
     # This mostly mirrors what is generated on qemu from nixos-generate-config in hardware-configuration.nix
-    # kernelModules = [
-    #   "xhci_pci"
-    #   "ahci"
-    #   "usbhid"
-    #   "usb_storage"
-    #   "sd_mod"
-    # ];
+    kernelModules = [
+      # "xhci_pci"
+      # "ahci"
+      # "usbhid"
+      # "usb_storage"
+      # "sd_mod"
+      "nvme"
+      "xhci_pci"
+      "thunderbolt"
+      "usbhid"
+      "usb_storage"
+      "sd_mod"
+      "sdhci_pci"
+    ];
   };
-
-  # This is a fix to enable VSCode to successfully remote SSH on a client to a NixOS host
-  # https://wiki.nixos.org/wiki/Visual_Studio_Code # Remote_SSH
-  programs.nix-ld.enable = true;
-  programs.nix-ld.package = pkgs.nix-ld-rs;
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";

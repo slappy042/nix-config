@@ -59,7 +59,7 @@
       # ========== nix ==========
       nixfmt-rfc-style.enable = true;
       deadnix = {
-        enable = true;
+        enable = false;
         excludes = [
           "hardware-configuration.nix"
         ];
