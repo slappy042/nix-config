@@ -27,7 +27,7 @@
         ms-vscode.hexeditor
         # ms-vsliveshare.vsliveshare
         esbenp.prettier-vscode
-        ms-vscode.vscode-json
+        # ms-vscode.vscode-json
         redhat.vscode-yaml
         ms-vscode-remote.remote-ssh
         ms-vscode.remote-explorer
