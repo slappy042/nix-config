@@ -14,7 +14,6 @@
         # golang.go
         # rust-lang.rust-analyzer
         # bradlc.vscode-tailwindcss
-        ms-vscode.vscode-typescript-next
 
         # Nix support
         bbenoist.nix
