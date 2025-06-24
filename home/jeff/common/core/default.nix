@@ -28,7 +28,6 @@ in
     ./kitty.nix
     ./screen.nix
     ./ssh.nix
-    ./vscode_host.nix
     ./zoxide.nix
   ];
 
