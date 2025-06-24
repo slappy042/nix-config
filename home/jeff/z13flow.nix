@@ -10,8 +10,9 @@
     # ========== Host-specific Optional Configs ==========
     #
     common/optional/browsers
-    common/optional/desktops # default is hyprland
+    # common/optional/desktops # default is hyprland
     common/optional/development
+    common/optional/development/vscode.nix # vscode and extensions
     # common/optional/comms
     common/optional/helper-scripts
     common/optional/gaming
@@ -39,8 +40,31 @@
       width = 2560;
       height = 1600;
       refreshRate = 180;
+      y = -1600;
+      # primary = true;
+      #vrr = 1;
+    }
+    {
+      name = "DP-8";
+      width = 3840;
+      height = 2160;
+      refreshRate = 120;
       primary = true;
       #vrr = 1;
+    }
+    {
+      name = "DP-9";
+      width = 2560;
+      height = 1440;
+      refreshRate = 60;
+      enabled = false; # disabled by default
+    }
+    {
+      name = "DP-10";
+      width = 2560;
+      height = 1440;
+      refreshRate = 60;
+      enabled = false; # disabled by default
     }
   ];
 
