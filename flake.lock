@@ -429,10 +429,10 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1750742813,
-        "narHash": "sha256-FOoR3x1cbF/tN287Q5x3eiGUUMrfEebiwIqmb/7yfC8=",
+        "lastModified": 1750748196,
+        "narHash": "sha256-8iQodbBTjHxuq08/1F1cFMrBKLNm7pKk/1LR1J1SqfI=",
         "ref": "main",
-        "rev": "cb7ae3defc3fa2e8d3e384b44845fd111ac4d922",
+        "rev": "904e4242d8a87fc10aaacd183fb826cf81fa9fe2",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/slappy042/nix-secrets.git"

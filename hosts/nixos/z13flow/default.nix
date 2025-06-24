@@ -7,6 +7,7 @@
 
 {
   inputs,
+  pkgs,
   lib,
   ...
 }:
@@ -76,8 +77,6 @@
     enableIPv6 = false;
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
@@ -93,6 +92,7 @@
       # "usb_storage"
       # "sd_mod"
       "nvme"
+      "nvme_core" # Core NVMe support
       "xhci_pci"
       "thunderbolt"
       "usbhid"
@@ -101,6 +101,13 @@
       "sdhci_pci"
     ];
   };
+
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+  hardware.graphics.enable = true;
+  #hardware.graphics.package = lib.mkForce pkgs.unstable.mesa.drivers;
+  hardware.amdgpu.initrd.enable = true; # load amdgpu kernelModules in stage 1.
+  hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
+  hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";

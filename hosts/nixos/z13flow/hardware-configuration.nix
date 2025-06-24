@@ -16,6 +16,7 @@
 
   boot.initrd.availableKernelModules = [
     "nvme"
+    "nvme_core" # Core NVMe support
     "xhci_pci"
     "thunderbolt"
     "usbhid"

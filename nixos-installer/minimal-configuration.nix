@@ -20,6 +20,7 @@
     isMinimal = lib.mkForce true;
     hostName = "installer";
     username = "jeff";
+    persistFolder = "/persist"; # set in case we want to use impermanence later
   };
 
   fileSystems."/boot".options = [ "umask=0077" ]; # Removes permissions and security warnings.
