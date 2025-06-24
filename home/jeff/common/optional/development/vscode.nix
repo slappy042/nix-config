@@ -10,10 +10,10 @@
         # Language support
         ms-python.python
         ms-vscode.cpptools
-        ms-dotnettools.csharp
-        golang.go
-        rust-lang.rust-analyzer
-        bradlc.vscode-tailwindcss
+        # ms-dotnettools.csharp
+        # golang.go
+        # rust-lang.rust-analyzer
+        # bradlc.vscode-tailwindcss
         ms-vscode.vscode-typescript-next
 
         # Nix support
@@ -26,14 +26,21 @@
 
         # Productivity
         ms-vscode.hexeditor
-        ms-vsliveshare.vsliveshare
+        # ms-vsliveshare.vsliveshare
         esbenp.prettier-vscode
         ms-vscode.vscode-json
         redhat.vscode-yaml
+        ms-vscode-remote.remote-ssh
+        ms-vscode.remote-explorer
 
         # Themes
         pkief.material-icon-theme
         zhuangtongfa.material-theme
+
+        # Additional extensions
+        johnpapa.vscode-peacock
+        tomoki1207.pdf
+
       ]
       ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         # Additional extensions from marketplace
