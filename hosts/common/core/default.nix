@@ -72,9 +72,11 @@ in
   nixpkgs = {
     overlays = [
       outputs.overlays.default
+      inputs.nix-vscode-extensions.overlays.default
     ];
     config = {
       allowUnfree = true;
+      allowUnfreePredicate = (pkg: true);
     };
   };
 

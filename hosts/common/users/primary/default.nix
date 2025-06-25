@@ -50,8 +50,10 @@ in
         (
           { config, ... }:
           import (lib.custom.relativeToRoot "home/${hostSpec.username}/${hostSpec.hostName}.nix") {
+            pkgs = import inputs.nixpkgs {
+              config.allowUnfree = true; # Allow unfree packages in home-manager
+            };
             inherit
-              pkgs
               inputs
               config
               lib
