@@ -18,6 +18,7 @@
     #
     ./hardware-configuration.nix
     inputs.hardware.nixosModules.common-cpu-amd
+    inputs.hardware.nixosModules.common-gpu-amd
     inputs.hardware.nixosModules.common-pc-ssd
 
     #
@@ -41,7 +42,7 @@
       #
       # ========== Optional Configs ==========
       #
-      "hosts/common/optional/services/greetd.nix" # display manager
+      # "hosts/common/optional/services/greetd.nix" # display manager
       "hosts/common/optional/services/openssh.nix" # allow remote SSH access
       "hosts/common/optional/services/printing.nix" # CUPS
       "hosts/common/optional/audio.nix" # pipewire and cli controls
@@ -92,6 +93,7 @@
       # "usbhid"
       # "usb_storage"
       # "sd_mod"
+      "amdgpu" # AMD GPU driver
       "nvme"
       "nvme_core" # Core NVMe support
       "xhci_pci"
@@ -109,6 +111,31 @@
   hardware.amdgpu.initrd.enable = true; # load amdgpu kernelModules in stage 1.
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
   hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
+
+  # Disable AMD GPU runtime power management (fixes SDDM context creation issues)
+  boot.kernelParams = [
+    "amdgpu.runpm=0" # Disable runtime power management (can cause issues with SDDM)
+    "amdgpu.dc=1" # Enable Display Core
+    "amdgpu.dpm=1" # Enable Dynamic Power Management
+  ];
+
+  # Force X11 for SDDM to avoid Wayland/AMD GPU context issues
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = false; # Disable Wayland, use X11
+  };
+
+  # Force KDE/Plasma to use X11 instead of Wayland
+  services.desktopManager.plasma6.enable = true;
+  services.displayManager.defaultSession = "plasmax11";
+
+  # Disable Wayland for KDE to avoid AMD GPU issues
+  environment.sessionVariables = {
+    # Force Qt/KDE to use X11
+    QT_QPA_PLATFORM = "xcb";
+    # Disable Wayland session
+    NIXOS_OZONE_WL = "0";
+  };
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";

@@ -1,5 +1,5 @@
 {
-  description = "EmergentMind's Nix-Config";
+  description = "Slappy's EmergentMind's Nix-Config";
   outputs =
     {
       self,
@@ -43,7 +43,9 @@
               inherit inputs outputs lib;
               isDarwin = false;
             };
-            modules = [ ./hosts/nixos/${host} ];
+            modules = [
+              ./hosts/nixos/${host}
+            ];
           };
         }) (builtins.attrNames (builtins.readDir ./hosts/nixos))
       );
@@ -77,6 +79,7 @@
           pkgs = import nixpkgs {
             inherit system;
             overlays = [ self.overlays.default ];
+            config.allowUnfree = true;
           };
         in
         nixpkgs.lib.packagesFromDirectoryRecursive {
@@ -109,6 +112,7 @@
           checks = self.checks.${system};
         }
       );
+
     };
 
   inputs = {
@@ -169,6 +173,12 @@
     # Theming
     stylix.url = "github:danth/stylix/release-25.05";
     rose-pine-hyprcursor.url = "github:ndom91/rose-pine-hyprcursor";
+
+    # VSCode extensions
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     #
     # ========= Personal Repositories =========

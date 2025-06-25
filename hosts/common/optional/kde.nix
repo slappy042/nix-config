@@ -7,11 +7,14 @@
 {
 
   services = {
+    xserver.enable = true;
     desktopManager.plasma6.enable = true;
 
     displayManager.sddm.enable = true;
 
-    displayManager.sddm.wayland.enable = true;
+    # displayManager.sddm.wayland.enable = true;
+
+    # displayManager.sddm.settings.General.DisplayServer = "wayland";
   };
 
   environment.systemPackages = with pkgs; [
