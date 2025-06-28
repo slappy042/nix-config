@@ -19,6 +19,8 @@ let
   ];
   nonYubikeys = [
     "camelot"
+    "github_slappy"
+    "github_benway"
   ];
   allSecrets =
     # extract to default pam-u2f authfile location for passwordless sudo. see modules/common/yubikey
