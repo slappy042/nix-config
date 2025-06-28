@@ -119,23 +119,23 @@
     "amdgpu.dpm=1" # Enable Dynamic Power Management
   ];
 
-  # Force X11 for SDDM to avoid Wayland/AMD GPU context issues
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = false; # Disable Wayland, use X11
-  };
+  # # Force X11 for SDDM to avoid Wayland/AMD GPU context issues
+  # services.displayManager.sddm = {
+  #   enable = true;
+  #   wayland.enable = false; # Disable Wayland, use X11
+  # };
 
   # Force KDE/Plasma to use X11 instead of Wayland
-  services.desktopManager.plasma6.enable = true;
-  services.displayManager.defaultSession = "plasmax11";
+  # services.desktopManager.plasma6.enable = true;
+  # services.displayManager.defaultSession = "plasmax11";
 
   # Disable Wayland for KDE to avoid AMD GPU issues
-  environment.sessionVariables = {
-    # Force Qt/KDE to use X11
-    QT_QPA_PLATFORM = "xcb";
-    # Disable Wayland session
-    NIXOS_OZONE_WL = "0";
-  };
+  # environment.sessionVariables = {
+  # Force Qt/KDE to use X11
+  # QT_QPA_PLATFORM = "xcb";
+  # Disable Wayland session
+  # NIXOS_OZONE_WL = "0";
+  # };
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";
