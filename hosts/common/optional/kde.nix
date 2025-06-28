@@ -37,4 +37,8 @@
     wayland-utils # Wayland utilities
     wl-clipboard # Command-line copy/paste utilities for Wayland
   ];
+
+  environment.sessionVariables = {
+    "WLR_RENDERER_ALLOW_SOFTWARE" = "1";
+  };
 }
