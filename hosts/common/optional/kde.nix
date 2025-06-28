@@ -10,11 +10,11 @@
     xserver.enable = true;
     desktopManager.plasma6.enable = true;
 
-    displayManager.sddm.enable = true;
-
-    # displayManager.sddm.wayland.enable = true;
-
-    # displayManager.sddm.settings.General.DisplayServer = "wayland";
+    displayManager.sddm = {
+      enable = true;
+      # wayland.enable = true;
+      # settings.General.DisplayServer = "wayland";
+    };
   };
 
   environment.systemPackages = with pkgs; [
@@ -36,6 +36,8 @@
     haruna # Open source video player built with Qt/QML and libmpv
     wayland-utils # Wayland utilities
     wl-clipboard # Command-line copy/paste utilities for Wayland
+
+    keepassxc
   ];
 
   environment.sessionVariables = {
