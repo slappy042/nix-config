@@ -1,32 +1,34 @@
 TODO:
 
-
 hostSpec
-  .domain
-  .networking
+.domain
+.networking
 
-* vscode
-  * setup sync
+- vscode
 
-* brave
-  * set as default
-  * setup sync
+  - setup sync
 
-* plasma-manager
-  * generate existing config
+- brave
+
+  - set as default
+  - setup sync
+
+- plasma-manager
+
+  - generate existing config
+
+- pam ssh agent setup to not need to type in github passphrases
 
 DONE
 
-* user creation removed - switched to primary instead
+- user creation removed - switched to primary instead
 
 ```
     #################### Users to Create ####################
     "hosts/common/users/jeff"
 ```
 
-
-
-* these hardware lines
+- these hardware lines
 
 ```
     #################### Hardware Modules ####################
@@ -35,26 +37,25 @@ DONE
     inputs.hardware.nixosModules.common-pc-ssd
 ```
 
-* check stateVersions of hosts
+- check stateVersions of hosts
 
-* fix UID in this file:
-hosts/common/optional/smbclient.nix
-        use config.hostSpec somehow?
+- fix UID in this file:
+  hosts/common/optional/smbclient.nix
+  use config.hostSpec somehow?
 
-* Where does this go, from sops-jeff.nix?
-    secrets = {
-      "ssh_keys/camelot" = {
-        path = "${homeDirectory}/.ssh/id_camelot";
-      };
-    };
+- Where does this go, from sops-jeff.nix?
+  secrets = {
+  "ssh_keys/camelot" = {
+  path = "${homeDirectory}/.ssh/id_camelot";
+  };
+  };
 
+- my git config stuff: goes in here: nix-config/home/jeff/common/optional/development/default.nix
 
-* my git config stuff: goes in here: nix-config/home/jeff/common/optional/development/default.nix
+- sops file: make sure ssh keys are written
 
-* sops file: make sure ssh keys are written
+- ssh config with keys, yubihosts, is weird
 
-* ssh config with keys, yubihosts, is weird
-
-* nix-secrets:
+- nix-secrets:
   change ssh_keys/camelot to
   keys/ssh/camelet
