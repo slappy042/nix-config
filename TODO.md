@@ -5,6 +5,15 @@ hostSpec
   .domain
   .networking
 
+* vscode
+  * setup sync
+
+* brave
+  * set as default
+  * setup sync
+
+* plasma-manager
+  * generate existing config
 
 DONE
 
