@@ -7,12 +7,14 @@
 {
 
   services = {
-    xserver.enable = true;
+    xserver = {
+      enable = true;
+    };
     desktopManager.plasma6.enable = true;
 
     displayManager.sddm = {
       enable = true;
-      wayland.enable = false;
+      # wayland.enable = true;
       # settings.General.DisplayServer = "wayland";
     };
   };
@@ -41,6 +43,27 @@
   ];
 
   environment.sessionVariables = {
-    "WLR_RENDERER_ALLOW_SOFTWARE" = "1";
+    # "NIXOS_OZONE_WL" = "1"; # for ozone-based and electron apps to run on wayland
+    # "MOZ_ENABLE_WAYLAND" = "1"; # for firefox to run on wayland
+    # "MOZ_WEBRENDER" = "1"; # for firefox to run on wayland
+    # "XDG_SESSION_TYPE" = "wayland";
+    # "WLR_NO_HARDWARE_CURSORS" = "1";
+    # "WLR_RENDERER_ALLOW_SOFTWARE" = "1";
+    # "QT_QPA_PLATFORM" = "wayland";
+    # "HYPRCURSOR_THEME" = "rose-pine-hyprcursor"; # this will be better than default for now
   };
+
+  # Force X11
+  services.displayManager.sddm.wayland.enable = false;
+  services.xserver.displayManager.defaultSession = "plasmax11";
+
+  # Disable Wayland for KDE to avoid AMD GPU issues
+  environment.sessionVariables = {
+    # Force Qt/KDE to use X11
+    QT_QPA_PLATFORM = "xcb";
+    # Disable Wayland session
+    NIXOS_OZONE_WL = "0";
+    XDG_SESSION_TYPE = "x11"; # Force X11 session
+  };
+
 }
