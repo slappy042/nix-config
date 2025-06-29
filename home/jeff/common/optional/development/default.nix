@@ -6,12 +6,12 @@
   ...
 }:
 let
-  # sshFolder = "${config.home.homeDirectory}/.ssh";
-  # publicKey =
-  #   if config.hostSpec.useYubikey then
-  #     "${sshFolder}/id_yubikey.pub"
-  #   else
-  #     "${sshFolder}/id_github_slappy.pub";
+  sshFolder = "${config.home.homeDirectory}/.ssh";
+  publicKey =
+    if config.hostSpec.useYubikey then
+      "${sshFolder}/id_yubikey.pub"
+    else
+      "${sshFolder}/id_github_slappy.pub";
   gamingGitEmail = config.hostSpec.github.gaming.email;
   gamingGitName = config.hostSpec.github.gaming.name;
   gamingGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.gaming";
@@ -78,9 +78,6 @@ in
       # Don't warn on empty git add calls. Because of "git re-commit" automation
       advice.addEmptyPathspec = false;
 
-      includeIf."gitdir:${config.home.homeDirectory}/src/github/gaming/".path = gamingGitConfig;
-      includeIf."gitdir:${config.home.homeDirectory}/src/github/".path = stdGitConfig;
-
       url = {
         "ssh://git@github.com" = {
           insteadOf = "https://github.com";
@@ -89,32 +86,69 @@ in
           insteadOf = "https://gitlab.com";
         };
       };
-      core = {
-        sshCommand = "ssh -i ~/.ssh/id_github_slappy";
-      };
 
       diff.tool = "difftastic";
       difftool = {
         prompt = "false";
         difftastic.cmd = "difft \"$LOCAL\" \"$REMOTE\"";
       };
+
+      # Taken from https://github.com/clemak27/homecfg/blob/16b86b04bac539a7c9eaf83e9fef4c813c7dce63/modules/git/ssh_signing.nix#L14
+      gpg.ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
     };
     ignores = [
       ".direnv"
       "result"
     ];
+
+    # Path-based configurations using Nix includes
+    includes = [
+      # Gaming repositories configuration
+      {
+        condition = "gitdir:${config.home.homeDirectory}/src/gaming/";
+        contents = {
+          user = {
+            name = gamingGitName;
+            email = gamingGitEmail;
+            signingKey = "${sshFolder}/id_github_benway.pub";
+          };
+          core = {
+            sshCommand = "ssh -i ~/.ssh/id_github_benway";
+          };
+          commit = {
+            gpgsign = true;
+          };
+          gpg = {
+            format = "ssh";
+          };
+        };
+      }
+      # Standard repositories configuration
+      {
+        condition = "gitdir:${config.home.homeDirectory}/src/";
+        contents = {
+          user = {
+            name = stdGitName;
+            email = stdGitEmail;
+            signingKey = "${sshFolder}/id_github_slappy.pub";
+          };
+          core = {
+            sshCommand = "ssh -i ~/.ssh/id_github_slappy";
+          };
+          commit = {
+            gpgsign = true;
+          };
+          gpg = {
+            format = "ssh";
+          };
+        };
+      }
+    ];
   };
 
-  home.file."${gamingGitConfig}".text = ''
-    [user]
-      name = "${gamingGitName}"
-      email = ${gamingGitEmail}
-    [core]
-      sshCommand = "ssh -i ~/.ssh/id_github_benway"
+  home.file.".ssh/allowed_signers".text = ''
+    ${stdGitEmail} ${lib.fileContents (lib.custom.relativeToRoot "hosts/common/users/primary/keys/id_github_slappy.pub")}
+    ${gamingGitEmail} ${lib.fileContents (lib.custom.relativeToRoot "hosts/common/users/primary/keys/id_github_benway.pub")}
   '';
-  home.file."${stdGitConfig}".text = ''
-    [user]
-      name = "${stdGitName}"
-      email = "${stdGitEmail}"
-  '';
+
 }
