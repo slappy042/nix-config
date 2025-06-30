@@ -70,4 +70,15 @@
           };
         }
       );
+
+  # Install the sync code management scripts
+  home.file.".config/brave-sync-codes/get_25th_word.sh" = {
+    source = ./get_25th_word.sh;
+    executable = true;
+  };
+
+  home.file.".config/brave-sync-codes/show-sync-codes.sh" = {
+    source = ./show-sync-codes.sh;
+    executable = true;
+  };
 }

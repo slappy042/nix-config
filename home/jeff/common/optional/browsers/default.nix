@@ -1,6 +1,6 @@
 {
   imports = [
-    ./brave.nix
+    ./brave
     ./chromium.nix
     ./firefox.nix
   ];

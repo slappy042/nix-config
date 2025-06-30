@@ -46,7 +46,7 @@ let
     lib.lists.map (user: {
       "keys/brave/${user}/sync-code" = {
         sopsFile = "${sopsFolder}/shared.yaml";
-        path = "${homeDirectory}/.config/brave-sync-codes/${user}";
+        path = "${homeDirectory}/.config/brave-sync-codes/brave_${user}";
         mode = "0400";
       };
     }) braveUsers
