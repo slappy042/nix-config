@@ -34,14 +34,12 @@ let
   #   forwardAgentHosts ++ (genDomains forwardAgentHosts)
   # );
 
-  # pathtokeys = lib.custom.relativeToRoot "hosts/common/users/primary/keys";
-  # yubikeys =
-  #   lib.lists.forEach (builtins.attrNames (builtins.readDir pathtokeys))
-  #     # Remove the .pub suffix
-  #     (key: lib.substring 0 (lib.stringLength key - lib.stringLength ".pub") key);
-  # yubikeyPublicKeyEntries = lib.attrsets.mergeAttrsList (
-  #   lib.lists.map (key: { ".ssh/${key}.pub".source = "${pathtokeys}/${key}.pub"; }) yubikeys
-  # );
+  pathtokeys = ../../../../hosts/common/users/primary/keys;
+  publicKeyEntries = lib.attrsets.mergeAttrsList (
+    lib.lists.map (keyFile: { ".ssh/${keyFile}".source = "${pathtokeys}/${keyFile}"; }) (
+      builtins.attrNames (builtins.readDir pathtokeys)
+    )
+  );
 
   sshIdentityFiles = [
     # "id_yubikey" # This is an auto symlink to whatever yubikey is plugged in. See modules/common/yubikey
@@ -154,5 +152,5 @@ in
   home.file = {
     ".ssh/config.d/.keep".text = "# Managed by Home Manager";
     ".ssh/sockets/.keep".text = "# Managed by Home Manager";
-  }; # // yubikeyPublicKeyEntries;
+  } // publicKeyEntries;
 }
