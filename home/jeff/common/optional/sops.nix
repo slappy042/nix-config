@@ -52,6 +52,13 @@ in
       #placeholder for tokens that I haven't gotten to yet
       #"tokens/foo" = {
       #};
+
+      # Brave sync code
+      "keys/brave/jeff/sync-code" = {
+        sopsFile = "${sopsFolder}/shared.yaml";
+        path = "${homeDirectory}/.config/brave-sync-code";
+        mode = "0400";
+      };
     } // allSecrets;
   };
 }
