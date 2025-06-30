@@ -8,6 +8,8 @@ hostSpec
 
   - setup sync
 
+- git commit signing
+
 - brave
 
   - set as default
