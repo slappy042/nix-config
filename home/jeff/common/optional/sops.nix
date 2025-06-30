@@ -22,6 +22,10 @@ let
     "github_slappy"
     "github_benway"
   ];
+  braveUsers = [
+    "jhardy042"
+    "thehefes042"
+  ];
   allSecrets =
     # extract to default pam-u2f authfile location for passwordless sudo. see modules/common/yubikey
     lib.optionalAttrs config.hostSpec.useYubikey {
@@ -38,6 +42,15 @@ let
         };
       }) (yubikeys ++ nonYubikeys)
     );
+  braveSecrets = lib.attrsets.mergeAttrsList (
+    lib.lists.map (user: {
+      "keys/brave/${user}/sync-code" = {
+        sopsFile = "${sopsFolder}/shared.yaml";
+        path = "${homeDirectory}/.config/brave-sync-codes/${user}";
+        mode = "0400";
+      };
+    }) braveUsers
+  );
 in
 {
   imports = [ inputs.sops-nix.homeManagerModules.sops ];
@@ -48,17 +61,13 @@ in
     defaultSopsFile = "${sopsFolder}/${config.hostSpec.hostName}.yaml";
     validateSopsFiles = false;
 
-    secrets = {
-      #placeholder for tokens that I haven't gotten to yet
-      #"tokens/foo" = {
-      #};
-
-      # Brave sync code
-      "keys/brave/jeff/sync-code" = {
-        sopsFile = "${sopsFolder}/shared.yaml";
-        path = "${homeDirectory}/.config/brave-sync-code";
-        mode = "0400";
-      };
-    } // allSecrets;
+    secrets =
+      {
+        #placeholder for tokens that I haven't gotten to yet
+        #"tokens/foo" = {
+        #};
+      }
+      // allSecrets
+      // braveSecrets;
   };
 }
