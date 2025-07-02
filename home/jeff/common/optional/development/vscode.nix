@@ -9,8 +9,17 @@
 let
   # Get marketplace extensions from input (they should inherit allowUnfree through overlay)
   vscode-marketplace = pkgs.nix-vscode-extensions.vscode-marketplace;
+  configDirName =
+    {
+      "vscode" = "Code";
+      "vscode-insiders" = "Code - Insiders";
+      "vscodium" = "VSCodium";
+    }
+    .${programs.vscode.package.pname};
 in
 {
+  xdg.configFile."${configDirName}/User/settings.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dev/dotfiles/nix/config/settings.json";
   programs.vscode = {
     enable = true;
     profiles.default = {
