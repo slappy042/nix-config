@@ -47,7 +47,8 @@
       "hosts/common/optional/services/printing.nix" # CUPS
       "hosts/common/optional/audio.nix" # pipewire and cli controls
       # "hosts/common/optional/libvirt.nix" # vm tools
-      "hosts/common/optional/gaming.nix" # steam, gamescope, gamemode, and related hardware
+      "hosts/common/optional/gaming/minecraft.nix" # Minecraft launcher
+      "hosts/common/optional/gaming/steam.nix" # steam, gamescope, gamemode, and related hardware
       # "hosts/common/optional/hyprland.nix" # window manager
       "hosts/common/optional/kde.nix" # KDE
       # "hosts/common/optional/msmtp.nix" # for sending email notifications
