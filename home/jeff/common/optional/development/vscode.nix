@@ -8,8 +8,6 @@
   ...
 }:
 let
-  # Get marketplace extensions from input (they should inherit allowUnfree through overlay)
-  vscode-marketplace = pkgs.nix-vscode-extensions.vscode-marketplace;
   configDirName =
     {
       "vscode" = "Code";
@@ -62,7 +60,7 @@ in
   programs.vscode = {
     enable = true;
     profiles.default = {
-      extensions = with vscode-marketplace; [
+      extensions = with pkgs.vscode-extensions; [
         # Language support
         ms-python.python
         ms-vscode.cpptools
