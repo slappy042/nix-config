@@ -63,6 +63,7 @@ in
       extensions = with pkgs.vscode-extensions; [
         # Language support
         ms-python.python
+        ms-python.debugpy
         ms-vscode.cpptools
         # ms-dotnettools.csharp
         # golang.go
