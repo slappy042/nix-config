@@ -4,15 +4,6 @@ hostSpec
 .domain
 .networking
 
-- vscode
-
-  - setup sync
-
-- brave
-
-  - set as default
-  - setup sync
-
 - plasma-manager
 
   - generate existing config
@@ -60,5 +51,15 @@ DONE
 
 - nix-secrets:
   change ssh_keys/camelot to
-  keys/ssh/camelet
+  keys/ssh/camelot
+
 - git commit signing
+
+- vscode
+
+  - setup sync
+
+- brave
+
+  - set as default
+  - setup sync
