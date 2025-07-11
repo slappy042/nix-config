@@ -17,6 +17,7 @@
     common/optional/helper-scripts
     common/optional/gaming
     common/optional/media
+    common/optional/minecraft
     common/optional/tools
 
     common/optional/xdg.nix # file associations
