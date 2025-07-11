@@ -4,6 +4,7 @@
   inputs,
   pkgs,
   lib,
+  config,
   ...
 }:
 let
@@ -15,11 +16,49 @@ let
       "vscode-insiders" = "Code - Insiders";
       "vscodium" = "VSCodium";
     }
-    .${programs.vscode.package.pname};
+    .${config.programs.vscode.package.pname};
+
+  # Default settings to initialize the external settings file
+  defaultSettings = {
+    # Settings Sync configuration
+    "settingsSync.account" = "slappy042";
+    "settingsSync.enable" = true;
+    "settingsSync.ignoredSettings" = [
+      "git.path" # Environment-specific, managed by Nix
+    ];
+    "settingsSync.ignoredExtensions" = [ ];
+    "settingsSync.keybindingsPerPlatform" = false;
+
+    # Environment-specific settings (managed by Nix, not synced)
+    "git.path" = "${pkgs.git}/bin/git";
+    "git.useConfigOnly" = true;
+
+    # Basic editor settings
+    "editor.fontFamily" = "'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace";
+    "editor.fontSize" = 14;
+    "editor.tabSize" = 2;
+    "editor.insertSpaces" = true;
+    "files.insertFinalNewline" = true;
+    "workbench.startupEditor" = "none";
+  };
+
+  settingsFile = "${config.home.homeDirectory}/dev/dotfiles/nix/config/settings.json";
 in
 {
-  xdg.configFile."${configDirName}/User/settings.json".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dev/dotfiles/nix/config/settings.json";
+  # Ensure the dotfiles directory exists
+  home.file."dev/dotfiles/nix/config/.keep".text = "";
+
+  # Create the settings file if it doesn't exist
+  home.file."dev/dotfiles/nix/config/settings.json" = {
+    text = builtins.toJSON defaultSettings;
+    # Only create if file doesn't exist (won't overwrite existing file)
+    force = false;
+  };
+
+  # Symlink VSCode settings to the external file
+  xdg.configFile."${configDirName}/User/settings.json".source = lib.mkForce (
+    config.lib.file.mkOutOfStoreSymlink settingsFile
+  );
   programs.vscode = {
     enable = true;
     profiles.default = {
@@ -82,20 +121,6 @@ in
       #   };
       # };
 
-      userSettings = {
-        # Settings Sync configuration (these can't be synced themselves)
-        "settingsSync.account" = "slappy042";
-        "settingsSync.enable" = true;
-        "settingsSync.ignoredSettings" = [
-          "git.path" # Environment-specific, managed by Nix
-        ];
-        "settingsSync.ignoredExtensions" = [ ];
-        "settingsSync.keybindingsPerPlatform" = false;
-
-        # Environment-specific settings (managed by Nix, not synced)
-        "git.path" = "${pkgs.git}/bin/git";
-        "git.useConfigOnly" = true;
-      };
     };
   };
 }
