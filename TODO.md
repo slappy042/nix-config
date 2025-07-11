@@ -8,8 +8,6 @@ hostSpec
 
   - setup sync
 
-- git commit signing
-
 - brave
 
   - set as default
@@ -20,6 +18,8 @@ hostSpec
   - generate existing config
 
 - pam ssh agent setup to not need to type in github passphrases
+
+- minecraft
 
 DONE
 
@@ -61,3 +61,4 @@ DONE
 - nix-secrets:
   change ssh_keys/camelot to
   keys/ssh/camelet
+- git commit signing
