@@ -56,7 +56,7 @@
 
   # Force X11
   services.displayManager.sddm.wayland.enable = false;
-  services.xserver.displayManager.defaultSession = "plasmax11";
+  services.displayManager.defaultSession = "plasmax11";
 
   # Disable Wayland for KDE to avoid AMD GPU issues
   environment.sessionVariables = {
