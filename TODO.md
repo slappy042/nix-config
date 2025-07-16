@@ -1,16 +1,15 @@
 TODO:
 
-hostSpec
-.domain
-.networking
+- hostSpec
+
+  - .domain
+  - .networking
 
 - plasma-manager
 
   - generate existing config
 
 - pam ssh agent setup to not need to type in github passphrases
-
-- minecraft
 
 DONE
 
@@ -63,3 +62,5 @@ DONE
 
   - set as default
   - setup sync
+
+- minecraft
