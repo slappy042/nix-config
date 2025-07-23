@@ -81,9 +81,17 @@ in
   };
 
   # Symlink Brave preferences to the external file
-  xdg.configFile."BraveSoftware/Brave-Browser/Default/Preferences".source = lib.mkForce (
-    config.lib.file.mkOutOfStoreSymlink preferencesFile
-  );
+  # We need to handle this carefully because Brave writes to its Preferences file
+  xdg.configFile."BraveSoftware/Brave-Browser/Default/Preferences" = {
+    source = config.lib.file.mkOutOfStoreSymlink preferencesFile;
+    # Use recursive = true to handle the case where the target directory needs to be created
+    recursive = true;
+  };
+
+  # Clean up any existing backup files that might conflict
+  home.activation.cleanBraveBackups = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+    $DRY_RUN_CMD rm -f "$HOME/.config/BraveSoftware/Brave-Browser/Default/Preferences.bk"
+  '';
 
   # Install the sync code management scripts
   home.file.".config/brave-sync-codes/get_25th_word.sh" = {
