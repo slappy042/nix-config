@@ -3,6 +3,10 @@
     enable = true;
     shellIntegration.enableZshIntegration = true;
 
+    font = {
+      # family = "Noto Sans Mono";
+      size = 14;
+    };
     #    font = {
     #package = "";
     #     name = "notosansmono";
