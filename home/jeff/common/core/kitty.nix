@@ -4,7 +4,7 @@
     shellIntegration.enableZshIntegration = true;
 
     font = {
-      # family = "Noto Sans Mono";
+      family = "Noto Sans Mono";
       size = 14;
     };
     #    font = {
