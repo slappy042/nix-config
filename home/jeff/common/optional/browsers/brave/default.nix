@@ -55,6 +55,11 @@ in
   programs.brave = {
     enable = true;
     package = pkgs.unstable.brave;
+    extensions = [
+      "kbmfpngjjgdllneeigpgjifpgocmfgmb" # RES
+      "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
+    ];
+
     commandLineArgs = [
       "--no-default-browser-check"
       "--restore-last-session"
@@ -73,12 +78,24 @@ in
   # Ensure the dotfiles directory exists
   home.file."dev/dotfiles/nix/config/.keep".text = "";
 
-  # Create the preferences file if it doesn't exist
-  home.file."dev/dotfiles/nix/config/brave-preferences.json" = {
-    text = builtins.toJSON defaultPreferences;
-    # Only create if file doesn't exist (won't overwrite existing file)
-    force = false;
-  };
+  # Create the preferences file if it doesn't exist using a home activation script
+  home.activation.createBravePreferences = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        preferencesDir="${config.home.homeDirectory}/dev/dotfiles/nix/config"
+        preferencesFile="$preferencesDir/brave-preferences.json"
+
+        # Create directory if it doesn't exist
+        mkdir -p "$preferencesDir"
+
+        # Create preferences file if it doesn't exist
+        if [ ! -f "$preferencesFile" ]; then
+          echo "Creating initial Brave preferences.json"
+          cat > "$preferencesFile" << 'EOF'
+    ${builtins.toJSON defaultPreferences}
+    EOF
+          # Ensure the file is writable
+          chmod 644 "$preferencesFile"
+        fi
+  '';
 
   # Symlink Brave preferences to the external file
   # Use home.file with mkOutOfStoreSymlink to avoid home-manager's backup mechanism

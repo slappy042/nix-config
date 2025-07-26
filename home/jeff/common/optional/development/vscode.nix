@@ -46,12 +46,24 @@ in
   # Ensure the dotfiles directory exists
   home.file."dev/dotfiles/nix/config/.keep".text = "";
 
-  # Create the settings file if it doesn't exist
-  home.file."dev/dotfiles/nix/config/settings.json" = {
-    text = builtins.toJSON defaultSettings;
-    # Only create if file doesn't exist (won't overwrite existing file)
-    force = false;
-  };
+  # Create the settings file if it doesn't exist using a home activation script
+  home.activation.createVSCodeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        settingsDir="${config.home.homeDirectory}/dev/dotfiles/nix/config"
+        settingsFile="$settingsDir/settings.json"
+
+        # Create directory if it doesn't exist
+        mkdir -p "$settingsDir"
+
+        # Create settings file if it doesn't exist
+        if [ ! -f "$settingsFile" ]; then
+          echo "Creating initial VSCode settings.json"
+          cat > "$settingsFile" << 'EOF'
+    ${builtins.toJSON defaultSettings}
+    EOF
+          # Ensure the file is writable
+          chmod 644 "$settingsFile"
+        fi
+  '';
 
   # Symlink VSCode settings to the external file
   xdg.configFile."${configDirName}/User/settings.json".source = lib.mkForce (
