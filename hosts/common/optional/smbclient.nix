@@ -29,6 +29,8 @@ in
         # 'noauto'= do not mount via fstab. Will be automounted by systemd
         separate_options = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,uid=${
           builtins.toString config.users.users.${config.hostSpec.username}.uid
+        },gid=${
+          builtins.toString config.users.groups.${config.users.users.${config.hostSpec.username}.group}.gid
         }";
       in
       [ "${separate_options},credentials=/etc/nixos/smb-secrets" ];
