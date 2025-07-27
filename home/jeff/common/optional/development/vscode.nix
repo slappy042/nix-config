@@ -40,35 +40,36 @@ let
     "workbench.startupEditor" = "none";
   };
 
-  settingsFile = "${config.home.homeDirectory}/dev/dotfiles/nix/config/settings.json";
+  # VSCode will manage its own settings file after initial creation
+  # No need for external dotfiles or symlinks
 in
 {
-  # Ensure the dotfiles directory exists
-  home.file."dev/dotfiles/nix/config/.keep".text = "";
-
-  # Create the settings file if it doesn't exist using a home activation script
+  # Create initial VSCode settings file only if it doesn't exist
+  # This allows home-manager to set up initial config while letting VSCode write to it normally
   home.activation.createVSCodeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        settingsDir="${config.home.homeDirectory}/dev/dotfiles/nix/config"
-        settingsFile="$settingsDir/settings.json"
+    settingsFile="${config.home.homeDirectory}/.config/Code/User/settings.json"
 
-        # Create directory if it doesn't exist
-        mkdir -p "$settingsDir"
+    # Only create the file if it doesn't exist (first installation)
+    if [ ! -f "$settingsFile" ]; then
+      echo "Creating initial VSCode settings file..."
 
-        # Create settings file if it doesn't exist
-        if [ ! -f "$settingsFile" ]; then
-          echo "Creating initial VSCode settings.json"
-          cat > "$settingsFile" << 'EOF'
+      # Create the directory structure if it doesn't exist
+      mkdir -p "$(dirname "$settingsFile")"
+
+      # Create the initial settings file
+      cat > "$settingsFile" << 'EOF'
     ${builtins.toJSON defaultSettings}
     EOF
-          # Ensure the file is writable
-          chmod 644 "$settingsFile"
-        fi
+
+      # Ensure the file is writable by the user
+      chmod 644 "$settingsFile"
+      echo "VSCode settings initialized. VSCode can now modify this file normally."
+    else
+      echo "VSCode settings file already exists, leaving it unchanged."
+    fi
   '';
 
-  # Symlink VSCode settings to the external file
-  xdg.configFile."${configDirName}/User/settings.json".source = lib.mkForce (
-    config.lib.file.mkOutOfStoreSymlink settingsFile
-  );
+  # VSCode will manage its own settings file - no symlink needed
   programs.vscode = {
     enable = true;
     profiles.default = {

@@ -46,6 +46,11 @@ let
       ads = {
         enabled = false;
       };
+      # Disable rewards in new tab page
+      new_tab_page = {
+        show_rewards = false;
+        show_together = false;
+      };
     };
   };
 
@@ -75,35 +80,30 @@ in
     "x-scheme-handler/https" = [ "brave-browser.desktop" ];
   };
 
-  # Ensure the dotfiles directory exists
-  home.file."dev/dotfiles/nix/config/.keep".text = "";
-
-  # Create the preferences file if it doesn't exist using a home activation script
+  # Create initial Brave preferences file only if it doesn't exist
+  # This allows home-manager to set up initial config while letting Brave write to it normally
   home.activation.createBravePreferences = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        preferencesDir="${config.home.homeDirectory}/dev/dotfiles/nix/config"
-        preferencesFile="$preferencesDir/brave-preferences.json"
+        preferencesFile="${config.home.homeDirectory}/.config/BraveSoftware/Brave-Browser/Default/Preferences"
 
-        # Create directory if it doesn't exist
-        mkdir -p "$preferencesDir"
-
-        # Create preferences file if it doesn't exist
+        # Only create the file if it doesn't exist (first installation)
         if [ ! -f "$preferencesFile" ]; then
-          echo "Creating initial Brave preferences.json"
+          echo "Creating initial Brave preferences file with sync configuration..."
+
+          # Create the directory structure if it doesn't exist
+          mkdir -p "$(dirname "$preferencesFile")"
+
+          # Create the initial preferences file
           cat > "$preferencesFile" << 'EOF'
     ${builtins.toJSON defaultPreferences}
     EOF
-          # Ensure the file is writable
+
+          # Ensure the file is writable by the user
           chmod 644 "$preferencesFile"
+          echo "Brave preferences initialized. Brave can now modify this file normally."
+        else
+          echo "Brave preferences file already exists, leaving it unchanged."
         fi
   '';
-
-  # Symlink Brave preferences to the external file
-  # Use home.file with mkOutOfStoreSymlink to avoid home-manager's backup mechanism
-  home.file.".config/BraveSoftware/Brave-Browser/Default/Preferences" = {
-    source = config.lib.file.mkOutOfStoreSymlink preferencesFile;
-    # This bypasses xdg.configFile's backup mechanism entirely
-    force = true;
-  };
 
   # Install the sync code management scripts
   home.file.".config/brave-sync-codes/get_25th_word.sh" = {
