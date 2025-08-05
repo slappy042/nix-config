@@ -61,6 +61,7 @@
       # "hosts/common/optional/scanning.nix" # SANE and simple-scan
       "hosts/common/optional/smbclient.nix" # for mounting samba shares
       # "hosts/common/optional/thunar.nix" # file manager
+      "hosts/common/optional/touchpad.nix" # touchpad configuration
       "hosts/common/optional/vlc.nix" # media player
       # "hosts/common/optional/wayland.nix" # wayland components and pkgs not available in home-manager
       # "hosts/common/optional/yubikey.nix" # yubikey related packages and configs
@@ -118,6 +119,11 @@
     "btrtl" # Realtek Bluetooth driver
     "btintel" # Intel Bluetooth driver (in case of mixed hardware)
     "btbcm" # Broadcom Bluetooth driver
+    # Touchpad and input device modules
+    "i2c_hid" # I2C HID devices (common for modern touchpads)
+    "i2c_hid_acpi" # ACPI-based I2C HID devices
+    "hid_multitouch" # Multitouch HID devices
+    "psmouse" # PS/2 mouse/touchpad support
   ];
 
   hardware.graphics.enable = true;
@@ -131,6 +137,11 @@
     "amdgpu.runpm=0" # Disable runtime power management (can cause issues with SDDM)
     "amdgpu.dc=1" # Enable Display Core
     "amdgpu.dpm=1" # Enable Dynamic Power Management
+    # Touchpad and ACPI fixes
+    "psmouse.synaptics_intertouch=0" # Disable intertouch for problematic touchpads
+    "i8042.reset" # Reset i8042 controller
+    "i8042.nomux" # Disable MUX mode for i8042
+    "i8042.nopnp" # Disable PnP for i8042
   ];
 
   # # Force X11 for SDDM to avoid Wayland/AMD GPU context issues

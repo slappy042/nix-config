@@ -41,6 +41,10 @@
 
     libsecret
     keepass
+
+    # Input device management tools
+    libinput # Input device management
+    xorg.xinput # X input device configuration tool
   ];
 
   environment.sessionVariables = {
