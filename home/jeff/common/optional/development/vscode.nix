@@ -109,6 +109,7 @@ in
         johnpapa.vscode-peacock
         tomoki1207.pdf
         github.copilot
+        nefrob.vscode-just-syntax
 
       ];
       #   # ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [

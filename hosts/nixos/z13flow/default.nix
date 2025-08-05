@@ -109,6 +109,17 @@
   };
 
   boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+
+  # Enable Bluetooth kernel modules
+  boot.kernelModules = [
+    "kvm-amd"
+    "btusb" # USB Bluetooth adapters
+    "bluetooth" # Core Bluetooth stack
+    "btrtl" # Realtek Bluetooth driver
+    "btintel" # Intel Bluetooth driver (in case of mixed hardware)
+    "btbcm" # Broadcom Bluetooth driver
+  ];
+
   hardware.graphics.enable = true;
   #hardware.graphics.package = lib.mkForce pkgs.unstable.mesa.drivers;
   hardware.amdgpu.initrd.enable = true; # load amdgpu kernelModules in stage 1.
