@@ -65,12 +65,12 @@
       # "hosts/common/optional/wayland.nix" # wayland components and pkgs not available in home-manager
       # "hosts/common/optional/yubikey.nix" # yubikey related packages and configs
       # "hosts/common/optional/zsa-keeb.nix" # Moonlander keeb flashing stuff
-
-      #
-      # ========== Host Specific Configs ==========
-      #
-      "./touchpad.nix" # touchpad configuration
     ])
+
+    #
+    # ========== Host Specific Configs ==========
+    #
+    ./touchpad.nix # touchpad configuration
   ];
 
   #
