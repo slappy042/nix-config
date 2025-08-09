@@ -59,7 +59,7 @@
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # Electron/Chromium apps use Wayland
     MOZ_ENABLE_WAYLAND = "1"; # Firefox on Wayland
-    KWIN_DRM_DEVICES = "/dev/dri/card1"; # Ensure Plasma Wayland uses AMD GPU
+    KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu"; # Stable symlink to AMD GPU
   };
 
 }

@@ -147,15 +147,13 @@
     "i8042.nopnp" # Disable PnP for i8042
   ];
 
-  # Label NixOS generations in boot menu and `nixos-rebuild list-generations`
-  system.nixos.label =
-    let
-      lbl = builtins.getEnv "GENERATION_LABEL";
-    in
-    if lbl != "" then lbl else "z13flow";
+  # Create a stable DRM symlink without colons for KWin to consume
+  systemd.tmpfiles.rules = [
+    "L /dev/dri/kwin-amdgpu - - - - /dev/dri/by-path/pci-0000:c4:00.0-card"
+  ];
 
-  # Point KWin (used by SDDM Wayland greeter) at the AMD GPU to avoid binding simpledrm
-  systemd.services.display-manager.environment.KWIN_DRM_DEVICES = "/dev/dri/card1";
+  # Point KWin (used by SDDM Wayland greeter) at the AMD GPU via stable symlink
+  systemd.services.display-manager.environment.KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu";
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";
