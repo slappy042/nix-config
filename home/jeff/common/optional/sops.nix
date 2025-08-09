@@ -61,13 +61,12 @@ in
     defaultSopsFile = "${sopsFolder}/${config.hostSpec.hostName}.yaml";
     validateSopsFiles = false;
 
-    secrets =
-      {
-        #placeholder for tokens that I haven't gotten to yet
-        #"tokens/foo" = {
-        #};
-      }
-      // allSecrets
-      // braveSecrets;
+    secrets = {
+      #placeholder for tokens that I haven't gotten to yet
+      #"tokens/foo" = {
+      #};
+    }
+    // allSecrets
+    // braveSecrets;
   };
 }

@@ -61,11 +61,15 @@
       # "hosts/common/optional/scanning.nix" # SANE and simple-scan
       "hosts/common/optional/smbclient.nix" # for mounting samba shares
       # "hosts/common/optional/thunar.nix" # file manager
-      "hosts/common/optional/touchpad.nix" # touchpad configuration
       "hosts/common/optional/vlc.nix" # media player
       # "hosts/common/optional/wayland.nix" # wayland components and pkgs not available in home-manager
       # "hosts/common/optional/yubikey.nix" # yubikey related packages and configs
       # "hosts/common/optional/zsa-keeb.nix" # Moonlander keeb flashing stuff
+
+      #
+      # ========== Host Specific Configs ==========
+      #
+      "./touchpad.nix" # touchpad configuration
     ])
   ];
 
