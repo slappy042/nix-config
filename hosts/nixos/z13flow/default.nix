@@ -155,8 +155,7 @@
     if lbl != "" then lbl else "z13flow";
 
   # Point KWin (used by SDDM Wayland greeter) at the AMD GPU to avoid binding simpledrm
-  systemd.services.display-manager.environment.KWIN_DRM_DEVICES =
-    "/dev/dri/by-path/pci-0000:c4:00.0-card";
+  systemd.services.display-manager.environment.KWIN_DRM_DEVICES = "/dev/dri/card1";
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";
