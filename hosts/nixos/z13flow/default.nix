@@ -127,7 +127,6 @@
     "i2c_hid" # I2C HID devices (common for modern touchpads)
     "i2c_hid_acpi" # ACPI-based I2C HID devices
     "hid_multitouch" # Multitouch HID devices
-    "psmouse" # PS/2 mouse/touchpad support
   ];
 
   hardware.graphics.enable = true;
@@ -136,15 +135,10 @@
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
   hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
 
-  # Disable AMD GPU runtime power management (fixes SDDM context creation issues)
+  # Keep only AMD GPU-related kernel params; remove i8042/psmouse tweaks
   boot.kernelParams = [
     "amdgpu.dc=1" # Enable Display Core
     "amdgpu.dpm=1" # Enable Dynamic Power Management
-    # Touchpad and ACPI fixes
-    "psmouse.synaptics_intertouch=0" # Disable intertouch for problematic touchpads
-    "i8042.reset" # Reset i8042 controller
-    "i8042.nomux" # Disable MUX mode for i8042
-    "i8042.nopnp" # Disable PnP for i8042
   ];
 
   # Create a stable DRM symlink without colons for KWin to consume

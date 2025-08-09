@@ -62,4 +62,10 @@
     KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu"; # Stable symlink to AMD GPU
   };
 
+  # Ensure SDDM can access DRM/render nodes
+  users.users.sddm.extraGroups = [
+    "video"
+    "render"
+  ];
+
 }
