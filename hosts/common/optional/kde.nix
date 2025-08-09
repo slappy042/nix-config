@@ -19,6 +19,7 @@
         General = {
           DisplayServer = "wayland";
           LogLevel = "debug";
+          MinimumVT = 7; # Use tty7+ for SDDM
         };
       };
     };
@@ -62,10 +63,11 @@
     KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu"; # Stable symlink to AMD GPU
   };
 
-  # Ensure SDDM can access DRM/render nodes
+  # Ensure SDDM can access DRM/render/input nodes
   users.users.sddm.extraGroups = [
     "video"
     "render"
+    "input"
   ];
 
 }

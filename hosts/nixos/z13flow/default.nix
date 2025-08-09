@@ -150,11 +150,24 @@
   systemd.tmpfiles.rules = [ ];
 
   # Ensure display-manager waits for udev to settle so KWin sees outputs when docked
-  systemd.services.display-manager.after = [ "systemd-udev-settle.service" ];
-  systemd.services.display-manager.wants = [ "systemd-udev-settle.service" ];
+  systemd.services.display-manager.after = [
+    "systemd-udev-settle.service"
+    "dev-dri-kwin\\x2damdgpu.device"
+  ];
+  systemd.services.display-manager.wants = [
+    "systemd-udev-settle.service"
+    "dev-dri-kwin\\x2damdgpu.device"
+  ];
+  systemd.services.display-manager.unitConfig.ConditionPathExists = "/dev/dri/kwin-amdgpu";
 
   # Point KWin (used by SDDM Wayland greeter) at the AMD GPU via stable symlink
   systemd.services.display-manager.environment.KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu";
+
+  # Harden display-manager against greeter crashes
+  systemd.services.display-manager.serviceConfig = {
+    Restart = "on-failure";
+    RestartSec = 1;
+  };
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";
