@@ -90,6 +90,10 @@ fi
 if [ $? -eq 0 ]; then
 	green "====== POST-REBUILD ======"
 	green "Rebuilt successfully"
+	# Show the generation label if provided
+	if [ -n "${GENERATION_LABEL-}" ]; then
+		green "Generation label: ${GENERATION_LABEL}"
+	fi
 
 	# Check if there are any pending changes that would affect the build succeeding.
 	if git diff --exit-code >/dev/null && git diff --staged --exit-code >/dev/null; then

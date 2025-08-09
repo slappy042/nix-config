@@ -22,16 +22,40 @@ check ARGS="":
 # Rebuild the system
 rebuild LABEL="" HOST="": rebuild-pre && rebuild-post
   # NOTE: Add --option eval-cache false if you end up caching a failure you can't get around
-  GENERATION_LABEL={{ if LABEL == "" {`git log -1 --pretty=%s | head -n1`} else {LABEL} }} scripts/rebuild.sh {{HOST}}
+  if [ -z "{{LABEL}}" ]; then \
+    GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
+  else \
+    GEN_LABEL="{{LABEL}}"; \
+  fi; \
+  GEN_LABEL_SAFE="$(printf '%s' "$GEN_LABEL" | sed -E 's/[^A-Za-z0-9:_\.-]+/_/g' | sed -E 's/_+/_/g; s/^_|_$//g')"; \
+  SHORT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"; \
+  TS="$(date +%Y%m%d-%H%M%S)"; \
+  GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh {{HOST}}
 
 # Rebuild the system and run a flake check
 rebuild-full LABEL="" HOST="": rebuild-pre && rebuild-post
-  GENERATION_LABEL={{ if LABEL == "" {`git log -1 --pretty=%s | head -n1`} else {LABEL} }} scripts/rebuild.sh {{HOST}}
+  if [ -z "{{LABEL}}" ]; then \
+    GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
+  else \
+    GEN_LABEL="{{LABEL}}"; \
+  fi; \
+  GEN_LABEL_SAFE="$(printf '%s' "$GEN_LABEL" | sed -E 's/[^A-Za-z0-9:_\.-]+/_/g' | sed -E 's/_+/_/g; s/^_|_$//g')"; \
+  SHORT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"; \
+  TS="$(date +%Y%m%d-%H%M%S)"; \
+  GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh {{HOST}}
   just check
 
 # Rebuild the system and run a flake check
 rebuild-trace LABEL="" HOST="": rebuild-pre && rebuild-post
-  GENERATION_LABEL={{ if LABEL == "" {`git log -1 --pretty=%s | head -n1`} else {LABEL} }} scripts/rebuild.sh trace
+  if [ -z "{{LABEL}}" ]; then \
+    GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
+  else \
+    GEN_LABEL="{{LABEL}}"; \
+  fi; \
+  GEN_LABEL_SAFE="$(printf '%s' "$GEN_LABEL" | sed -E 's/[^A-Za-z0-9:_\.-]+/_/g' | sed -E 's/_+/_/g; s/^_|_$//g')"; \
+  SHORT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"; \
+  TS="$(date +%Y%m%d-%H%M%S)"; \
+  GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh trace
   just check
 
 # Update the flake
