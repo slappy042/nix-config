@@ -56,7 +56,7 @@
       # "hosts/common/optional/msmtp.nix" # for sending email notifications
       # "hosts/common/optional/nvtop.nix" # GPU monitor (not available in home-manager)
       # "hosts/common/optional/obsidian.nix" # wiki
-      "hosts/common/optional/plymouth.nix" # fancy boot screen
+      # "hosts/common/optional/plymouth.nix" # fancy boot screen
       # "hosts/common/optional/protonvpn.nix" # vpn
       # "hosts/common/optional/scanning.nix" # SANE and simple-scan
       "hosts/common/optional/smbclient.nix" # for mounting samba shares
@@ -138,7 +138,6 @@
 
   # Disable AMD GPU runtime power management (fixes SDDM context creation issues)
   boot.kernelParams = [
-    "amdgpu.runpm=0" # Disable runtime power management (can cause issues with SDDM)
     "amdgpu.dc=1" # Enable Display Core
     "amdgpu.dpm=1" # Enable Dynamic Power Management
     # Touchpad and ACPI fixes
@@ -148,23 +147,16 @@
     "i8042.nopnp" # Disable PnP for i8042
   ];
 
-  # # Force X11 for SDDM to avoid Wayland/AMD GPU context issues
-  # services.displayManager.sddm = {
-  #   enable = true;
-  #   wayland.enable = false; # Disable Wayland, use X11
-  # };
+  # Label NixOS generations in boot menu and `nixos-rebuild list-generations`
+  system.nixos.label =
+    let
+      lbl = builtins.getEnv "GENERATION_LABEL";
+    in
+    if lbl != "" then lbl else "z13flow";
 
-  # Force KDE/Plasma to use X11 instead of Wayland
-  # services.desktopManager.plasma6.enable = true;
-  # services.displayManager.defaultSession = "plasmax11";
-
-  # Disable Wayland for KDE to avoid AMD GPU issues
-  # environment.sessionVariables = {
-  # Force Qt/KDE to use X11
-  # QT_QPA_PLATFORM = "xcb";
-  # Disable Wayland session
-  # NIXOS_OZONE_WL = "0";
-  # };
+  # Point KWin (used by SDDM Wayland greeter) at the AMD GPU to avoid binding simpledrm
+  systemd.services.display-manager.environment.KWIN_DRM_DEVICES =
+    "/dev/dri/by-path/pci-0000:c4:00.0-card";
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";

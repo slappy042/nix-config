@@ -16,22 +16,22 @@ rebuild-post: check-sops
 
 # Run a flake check on the config and installer
 check ARGS="":
-	NIXPKGS_ALLOW_UNFREE=1 REPO_PATH=$(pwd) nix flake check --impure --keep-going --show-trace {{ARGS}}
-	cd nixos-installer && NIXPKGS_ALLOW_UNFREE=1 REPO_PATH=$(pwd) nix flake check --impure --keep-going --show-trace {{ARGS}}
+  NIXPKGS_ALLOW_UNFREE=1 REPO_PATH=$(pwd) nix flake check --impure --keep-going --show-trace {{ARGS}}
+  cd nixos-installer && NIXPKGS_ALLOW_UNFREE=1 REPO_PATH=$(pwd) nix flake check --impure --keep-going --show-trace {{ARGS}}
 
 # Rebuild the system
-rebuild: rebuild-pre && rebuild-post
+rebuild LABEL="" HOST="": rebuild-pre && rebuild-post
   # NOTE: Add --option eval-cache false if you end up caching a failure you can't get around
-  scripts/rebuild.sh
+  GENERATION_LABEL={{ if LABEL == "" {`git log -1 --pretty=%s | head -n1`} else {LABEL} }} scripts/rebuild.sh {{HOST}}
 
 # Rebuild the system and run a flake check
-rebuild-full: rebuild-pre && rebuild-post
-  scripts/rebuild.sh
+rebuild-full LABEL="" HOST="": rebuild-pre && rebuild-post
+  GENERATION_LABEL={{ if LABEL == "" {`git log -1 --pretty=%s | head -n1`} else {LABEL} }} scripts/rebuild.sh {{HOST}}
   just check
 
 # Rebuild the system and run a flake check
-rebuild-trace: rebuild-pre && rebuild-post
-  scripts/rebuild.sh trace
+rebuild-trace LABEL="" HOST="": rebuild-pre && rebuild-post
+  GENERATION_LABEL={{ if LABEL == "" {`git log -1 --pretty=%s | head -n1`} else {LABEL} }} scripts/rebuild.sh trace
   just check
 
 # Update the flake
