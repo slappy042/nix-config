@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   # Enable libinput and configure touchpad
-  services.xserver.libinput = {
+  services.libinput = {
     enable = true;
     touchpad = {
       disableWhileTyping = true;
