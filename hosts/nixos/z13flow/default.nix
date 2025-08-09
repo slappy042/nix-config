@@ -165,7 +165,6 @@
 
   # Harden display-manager against greeter crashes
   systemd.services.display-manager.serviceConfig = {
-    Restart = "on-failure";
     RestartSec = 1;
   };
 
