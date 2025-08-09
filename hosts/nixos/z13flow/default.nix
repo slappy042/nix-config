@@ -141,10 +141,17 @@
     "amdgpu.dpm=1" # Enable Dynamic Power Management
   ];
 
-  # Create a stable DRM symlink without colons for KWin to consume
-  systemd.tmpfiles.rules = [
-    "L /dev/dri/kwin-amdgpu - - - - /dev/dri/by-path/pci-0000:c4:00.0-card"
-  ];
+  # Create a stable DRM symlink via udev so it appears on hotplug too
+  services.udev.extraRules = ''
+    SUBSYSTEM=="drm", KERNEL=="card*", KERNELS=="0000:c4:00.0", SYMLINK+="dri/kwin-amdgpu"
+  '';
+
+  # Drop tmpfiles symlink in favor of udev-managed symlink
+  systemd.tmpfiles.rules = [ ];
+
+  # Ensure display-manager waits for udev to settle so KWin sees outputs when docked
+  systemd.services.display-manager.after = [ "systemd-udev-settle.service" ];
+  systemd.services.display-manager.wants = [ "systemd-udev-settle.service" ];
 
   # Point KWin (used by SDDM Wayland greeter) at the AMD GPU via stable symlink
   systemd.services.display-manager.environment.KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu";
