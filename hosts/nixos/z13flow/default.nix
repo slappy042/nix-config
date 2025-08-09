@@ -165,7 +165,7 @@
 
   # Harden display-manager against greeter crashes
   systemd.services.display-manager.serviceConfig = {
-    RestartSec = 1;
+    RestartSec = lib.mkForce "1s";
   };
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
