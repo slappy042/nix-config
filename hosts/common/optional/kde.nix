@@ -20,6 +20,7 @@
           DisplayServer = "wayland";
           LogLevel = "debug";
           MinimumVT = 7; # Use tty7+ for SDDM
+          GreeterEnvironment = "KWIN_DRM_DEVICES=/dev/dri/kwin-amdgpu,KWIN_FORCE_SW_CURSOR=1";
         };
       };
     };
@@ -61,6 +62,7 @@
     NIXOS_OZONE_WL = "1"; # Electron/Chromium apps use Wayland
     MOZ_ENABLE_WAYLAND = "1"; # Firefox on Wayland
     KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu"; # Stable symlink to AMD GPU
+    KWIN_FORCE_SW_CURSOR = "1";
   };
 
   # Ensure SDDM can access DRM/render/input nodes

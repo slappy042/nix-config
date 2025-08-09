@@ -161,7 +161,10 @@
   systemd.services.display-manager.unitConfig.ConditionPathExists = "/dev/dri/kwin-amdgpu";
 
   # Point KWin (used by SDDM Wayland greeter) at the AMD GPU via stable symlink
-  systemd.services.display-manager.environment.KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu";
+  systemd.services.display-manager.environment = {
+    KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu";
+    KWIN_FORCE_SW_CURSOR = "1";
+  };
 
   # Harden display-manager against greeter crashes
   systemd.services.display-manager.serviceConfig = {
