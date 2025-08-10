@@ -141,23 +141,15 @@
     "amdgpu.dpm=1" # Enable Dynamic Power Management
   ];
 
-  # Create a stable DRM symlink via udev so it appears on hotplug too
+  # Create stable DRM symlinks via udev (vendor-based, handles dock/undock)
   services.udev.extraRules = ''
-    SUBSYSTEM=="drm", KERNEL=="card*", KERNELS=="0000:c4:00.0", SYMLINK+="dri/kwin-amdgpu"
+    SUBSYSTEM=="drm", KERNEL=="card*",    ATTRS{vendor}=="0x1002", SYMLINK+="dri/kwin-amdgpu"
+    SUBSYSTEM=="drm", KERNEL=="renderD*", ATTRS{vendor}=="0x1002", SYMLINK+="dri/renderD-amdgpu"
   '';
 
-  # Drop tmpfiles symlink in favor of udev-managed symlink
-  systemd.tmpfiles.rules = [ ];
-
-  # Ensure display-manager waits for udev to settle so KWin sees outputs when docked
-  systemd.services.display-manager.after = [
-    "systemd-udev-settle.service"
-    "dev-dri-kwin\\x2damdgpu.device"
-  ];
-  systemd.services.display-manager.wants = [
-    "systemd-udev-settle.service"
-    "dev-dri-kwin\\x2damdgpu.device"
-  ];
+  # Ensure display-manager starts when DRM device exists; avoid global udev settle
+  systemd.services.display-manager.after = [ "dev-dri-kwin\\x2damdgpu.device" ];
+  systemd.services.display-manager.wants = [ "dev-dri-kwin\\x2damdgpu.device" ];
   systemd.services.display-manager.unitConfig.ConditionPathExists = "/dev/dri/kwin-amdgpu";
 
   # Point KWin (used by SDDM Wayland greeter) at the AMD GPU via stable symlink
