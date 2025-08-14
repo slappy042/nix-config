@@ -139,9 +139,6 @@
   # (Previously: boot.kernelParams, services.udev.extraRules creating kwin-amdgpu symlink,
   #  systemd.services.display-manager.* overrides & KWIN_* env vars)
 
-  # Force KWin (SDDM Wayland greeter + Plasma) to use the AMD GPU (appears as /dev/dri/card1)
-  systemd.services.display-manager.environment.KWIN_DRM_DEVICES = "/dev/dri/card1";
-
   # Generation label (shown by supported bootloaders)
   system.nixos.label =
     let

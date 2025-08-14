@@ -23,8 +23,8 @@
     };
   };
 
-  # Use Wayland session by default (Plasma 6)
-  services.displayManager.defaultSession = "plasma";
+  # Use custom wrapper Wayland session by default
+  services.displayManager.defaultSession = "plasma-fixed";
 
   environment.systemPackages = with pkgs; [
     # kdePackages.discover # Optional: Install if you use Flatpak or fwupd firmware update sevice
@@ -53,6 +53,12 @@
     libinput # Input device management
     xorg.xinput # X input device configuration tool
     kdePackages.kdebugsettings # runtime GUI to toggle Qt logging categories
+
+    # Wrapper script ensuring correct arg splitting for Plasma Wayland
+    (pkgs.writeShellScriptBin "plasma-wayland-wrapper" ''
+      exec ${pkgs.plasma-workspace}/libexec/plasma-dbus-run-session-if-needed \
+           ${pkgs.plasma-workspace}/bin/startplasma-wayland
+    '')
   ];
 
   # Keep only generic Wayland-friendly app vars; drop KWIN overrides
@@ -70,6 +76,19 @@
       # Comment out noisy categories if log too large.
     ];
   };
+
+  # Provide custom Wayland session desktop file
+  # workaround for the exec issue in https://github.com/NixOS/nixpkgs/issues/355533
+  environment.etc."wayland-sessions/plasma-fixed.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Plasma (Wayland Fixed)nixo
+    Comment=KDE Plasma (Wayland) via wrapper to avoid SDDM arg concatenation bug
+    Exec=plasma-wayland-wrapper
+    TryExec=${pkgs.plasma-workspace}/bin/startplasma-wayland
+    DesktopNames=KDE
+    X-GDM-SessionRegisters=true
+  '';
 
   # Ensure SDDM can access DRM/render/input nodes
   users.users.sddm.extraGroups = [

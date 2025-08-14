@@ -178,15 +178,36 @@ diag:
   ls -l /dev/dri > "${OUTDIR}/dev-dri.txt" 2>&1 || true; \
   nix-shell -p mesa-demos --run 'glxinfo -B' > "${OUTDIR}/glxinfo.txt" 2>&1 || true; \
   ls -1 /run/opengl-driver/lib/dri > "${OUTDIR}/dri-modules.txt" 2>/dev/null || true; \
-  (dbus-run-session startplasma-wayland > "${OUTDIR}/startplasma-wayland.out" 2>&1 || true); \
-  (dbus-run-session kwin_wayland --xwayland > "${OUTDIR}/kwin_wayland.out" 2>&1 || true); \
   nix-shell -p weston --run 'weston --version' > "${OUTDIR}/weston-version.txt" 2>&1 || true; \
+  DESKTOP=$(ls /nix/store/*-desktops/share/wayland-sessions/plasma.desktop 2>/dev/null | head -n1); \
+  if [ -n "$DESKTOP" ]; then grep -E '^(Exec|Name|TryExec)=' "$DESKTOP" > "${OUTDIR}/plasma.desktop.lines" 2>/dev/null || true; fi; \
+  SCRIPT=$(ls /nix/store/*-sddm-unwrapped-*/share/sddm/scripts/wayland-session 2>/dev/null | head -n1); \
+  if [ -n "$SCRIPT" ]; then sed -n '1,120p' "$SCRIPT" > "${OUTDIR}/sddm-wayland-session.head" 2>/dev/null || true; fi; \
+  WRAP=$(ls /nix/store/*-plasma-workspace-*/libexec/plasma-dbus-run-session-if-needed 2>/dev/null | head -n1); \
+  if [ -n "$WRAP" ]; then head -n 60 "$WRAP" > "${OUTDIR}/plasma-dbus-run-session-if-needed.head" 2>/dev/null || true; fi; \
   echo "${OUTDIR}" > .last-plasma-diag-dir; \
-  echo "Done. See ${OUTDIR}"
+  echo "Done. See ${OUTDIR}"; \
+  echo "(Manual Wayland start disabled in diag. Use: just start-plasma-wayland)"
 
-# Archive most recent diag output
-diag-archive: diag
-  OUTDIR=$(cat .last-plasma-diag-dir 2>/dev/null || echo none); \
-  if [ "${OUTDIR}" = none ] || [ ! -d "${OUTDIR}" ]; then echo "No diag dir found" >&2; exit 1; fi; \
-  tar -czf "${OUTDIR}.tar.gz" "${OUTDIR}"; \
-  echo "Archive: ${OUTDIR}.tar.gz"
+# Dump entire SDDM wayland-session script (for deeper inspection)
+dump-wayland-session-script:
+  SCRIPT=$(ls /nix/store/*-sddm-unwrapped-*/share/sddm/scripts/wayland-session 2>/dev/null | head -n1); \
+  if [ -z "$SCRIPT" ]; then echo "Not found" >&2; exit 1; fi; \
+  echo "Script: $SCRIPT"; \
+  sed -n '1,200p' "$SCRIPT" | nl
+
+# Manual start of full Plasma Wayland session (captures output). Optional OUTDIR param.
+start-plasma-wayland OUTDIR="":
+  if [ -z "{{OUTDIR}}" ]; then OUTDIR=$(cat .last-plasma-diag-dir 2>/dev/null || echo "plasma-manual-$(date +%Y%m%d-%H%M%S)"); else OUTDIR="{{OUTDIR}}"; fi; \
+  mkdir -p "${OUTDIR}"; \
+  echo "Launching startplasma-wayland (dbus-run-session) -> ${OUTDIR}/manual-startplasma-wayland.out"; \
+  dbus-run-session startplasma-wayland > "${OUTDIR}/manual-startplasma-wayland.out" 2>&1 & disown || true; \
+  echo "Started (check log)."
+
+# Manual minimal KWin Wayland compositor (with XWayland) for isolation.
+start-kwin-wayland OUTDIR="":
+  if [ -z "{{OUTDIR}}" ]; then OUTDIR=$(cat .last-plasma-diag-dir 2>/dev/null || echo "kwin-manual-$(date +%Y%m%d-%H%M%S)"); else OUTDIR="{{OUTDIR}}"; fi; \
+  mkdir -p "${OUTDIR}"; \
+  echo "Launching kwin_wayland --xwayland -> ${OUTDIR}/manual-kwin_wayland.out"; \
+  dbus-run-session kwin_wayland --xwayland > "${OUTDIR}/manual-kwin_wayland.out" 2>&1 & disown || true; \
+  echo "Started (check log)."
