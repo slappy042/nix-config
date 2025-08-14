@@ -152,3 +152,41 @@ sops-add-shared-creation-rules USER HOST:
 sops-add-creation-rules USER HOST:
     just sops-add-host-creation-rules {{USER}} {{HOST}} && \
     just sops-add-shared-creation-rules {{USER}} {{HOST}}
+
+# =============================
+# Plasma Wayland diagnostics
+# =============================
+# Collect logs & debug info after a failed Plasma (Wayland) start.
+# Usage:
+#   just diag          # creates plasma-wayland-debug-<timestamp> directory
+#   just diag-archive  # also tars it
+# Provide the directory or tarball for analysis.
+
+diag:
+  OUTDIR="plasma-wayland-debug-$(date +%Y%m%d-%H%M%S)"; \
+  echo "Collecting to ${OUTDIR}"; \
+  mkdir -p "${OUTDIR}"; \
+  if [ "${SUDO:-0}" = 1 ]; then JCTL="sudo journalctl"; CCTL="sudo coredumpctl"; else JCTL="journalctl"; CCTL="coredumpctl"; fi; \
+  ${JCTL} -b -u display-manager > "${OUTDIR}/display-manager.full.log" 2>&1 || true; \
+  ${JCTL} -b -u display-manager | grep -iE 'kwin|wayland|plasma' > "${OUTDIR}/display-manager.filtered.log" 2>/dev/null || true; \
+  ${JCTL} -b | grep -iE 'kwin|wayland|plasma' > "${OUTDIR}/journal.filtered.log" 2>/dev/null || true; \
+  if [ -d "$HOME/.local/share/sddm" ]; then ls -1 "$HOME/.local/share/sddm" > "${OUTDIR}/sddm_dir_listing.txt" 2>/dev/null || true; fi; \
+  sed -n '1,400p' "$HOME/.local/share/sddm/wayland-session.log" > "${OUTDIR}/wayland-session.log" 2>/dev/null || true; \
+  ${CCTL} -b --user > "${OUTDIR}/coredump.list.txt" 2>/dev/null || true; \
+  ${CCTL} -b --user | grep -i kwin > "${OUTDIR}/coredump.kwin.txt" 2>/dev/null || true; \
+  lspci -k | grep -A3 -i vga > "${OUTDIR}/lspci-gpu.txt" 2>&1 || true; \
+  ls -l /dev/dri > "${OUTDIR}/dev-dri.txt" 2>&1 || true; \
+  nix-shell -p mesa-demos --run 'glxinfo -B' > "${OUTDIR}/glxinfo.txt" 2>&1 || true; \
+  ls -1 /run/opengl-driver/lib/dri > "${OUTDIR}/dri-modules.txt" 2>/dev/null || true; \
+  (dbus-run-session startplasma-wayland > "${OUTDIR}/startplasma-wayland.out" 2>&1 || true); \
+  (dbus-run-session kwin_wayland --xwayland > "${OUTDIR}/kwin_wayland.out" 2>&1 || true); \
+  nix-shell -p weston --run 'weston --version' > "${OUTDIR}/weston-version.txt" 2>&1 || true; \
+  echo "${OUTDIR}" > .last-plasma-diag-dir; \
+  echo "Done. See ${OUTDIR}"
+
+# Archive most recent diag output
+diag-archive: diag
+  OUTDIR=$(cat .last-plasma-diag-dir 2>/dev/null || echo none); \
+  if [ "${OUTDIR}" = none ] || [ ! -d "${OUTDIR}" ]; then echo "No diag dir found" >&2; exit 1; fi; \
+  tar -czf "${OUTDIR}.tar.gz" "${OUTDIR}"; \
+  echo "Archive: ${OUTDIR}.tar.gz"
