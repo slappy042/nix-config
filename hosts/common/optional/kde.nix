@@ -56,8 +56,8 @@
 
     # Wrapper script ensuring correct arg splitting for Plasma Wayland
     (pkgs.writeShellScriptBin "plasma-wayland-wrapper" ''
-      exec ${pkgs.plasma-workspace}/libexec/plasma-dbus-run-session-if-needed \
-           ${pkgs.plasma-workspace}/bin/startplasma-wayland
+      exec ${pkgs.kdePackages.plasma-workspace}/libexec/plasma-dbus-run-session-if-needed \
+           ${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland
     '')
   ];
 
@@ -82,10 +82,10 @@
   environment.etc."wayland-sessions/plasma-fixed.desktop".text = ''
     [Desktop Entry]
     Type=Application
-    Name=Plasma (Wayland Fixed)nixo
+    Name=Plasma (Wayland Fixed)
     Comment=KDE Plasma (Wayland) via wrapper to avoid SDDM arg concatenation bug
     Exec=plasma-wayland-wrapper
-    TryExec=${pkgs.plasma-workspace}/bin/startplasma-wayland
+    TryExec=${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland
     DesktopNames=KDE
     X-GDM-SessionRegisters=true
   '';
