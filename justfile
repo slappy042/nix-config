@@ -163,7 +163,7 @@ sops-add-creation-rules USER HOST:
 # Provide the directory or tarball for analysis.
 
 diag:
-  OUTDIR="plasma-wayland-debug-$(date +%Y%m%d-%H%M%S)"; \
+  OUTDIR="debug/plasma-wayland-debug-$(date +%Y%m%d-%H%M%S)"; \
   echo "Collecting to ${OUTDIR}"; \
   mkdir -p "${OUTDIR}"; \
   if [ "${SUDO:-0}" = 1 ]; then JCTL="sudo journalctl"; CCTL="sudo coredumpctl"; else JCTL="journalctl"; CCTL="coredumpctl"; fi; \
