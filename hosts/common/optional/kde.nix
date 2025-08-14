@@ -17,10 +17,7 @@
       wayland.enable = true;
       settings = {
         General = {
-          DisplayServer = "wayland";
           LogLevel = "debug";
-          MinimumVT = 7; # Use tty7+ for SDDM
-          GreeterEnvironment = "KWIN_DRM_DEVICES=/dev/dri/kwin-amdgpu,KWIN_FORCE_SW_CURSOR=1";
         };
       };
     };
@@ -55,14 +52,23 @@
     # Input device management tools
     libinput # Input device management
     xorg.xinput # X input device configuration tool
+    kdePackages.kdebugsettings # runtime GUI to toggle Qt logging categories
   ];
 
-  # Wayland-friendly defaults for apps (keep minimal) + force KWin to AMD GPU for user session
+  # Keep only generic Wayland-friendly app vars; drop KWIN overrides
   environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1"; # Electron/Chromium apps use Wayland
-    MOZ_ENABLE_WAYLAND = "1"; # Firefox on Wayland
-    KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu"; # Stable symlink to AMD GPU
-    KWIN_FORCE_SW_CURSOR = "1";
+    NIXOS_OZONE_WL = "1";
+    MOZ_ENABLE_WAYLAND = "1";
+    # KWin / Plasma debug categories. Adjust as needed (see kdebugsettings).
+    QT_LOGGING_RULES = lib.concatStringsSep ";" [
+      "kwin.*=true"
+      "kwin_wayland.*=true"
+      "kwin_platform_wayland.*=true"
+      "kwin_scene.*=true"
+      "kwin_libinput.*=true"
+      "kwin_core.*=true"
+      # Comment out noisy categories if log too large.
+    ];
   };
 
   # Ensure SDDM can access DRM/render/input nodes

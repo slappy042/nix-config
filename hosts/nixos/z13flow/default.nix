@@ -135,33 +135,16 @@
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
   hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
 
-  # Keep only AMD GPU-related kernel params; remove i8042/psmouse tweaks
-  boot.kernelParams = [
-    "amdgpu.dc=1" # Enable Display Core
-    "amdgpu.dpm=1" # Enable Dynamic Power Management
-  ];
+  # Removed custom amdgpu kernel params & udev/systemd overrides for vanilla Wayland/Plasma
+  # (Previously: boot.kernelParams, services.udev.extraRules creating kwin-amdgpu symlink,
+  #  systemd.services.display-manager.* overrides & KWIN_* env vars)
 
-  # Create stable DRM symlinks via udev (vendor-based, handles dock/undock)
-  services.udev.extraRules = ''
-    SUBSYSTEM=="drm", KERNEL=="card*",    ATTRS{vendor}=="0x1002", SYMLINK+="dri/kwin-amdgpu"
-    SUBSYSTEM=="drm", KERNEL=="renderD*", ATTRS{vendor}=="0x1002", SYMLINK+="dri/renderD-amdgpu"
-  '';
-
-  # Ensure display-manager starts when DRM device exists; avoid global udev settle
-  systemd.services.display-manager.after = [ "dev-dri-kwin\\x2damdgpu.device" ];
-  systemd.services.display-manager.wants = [ "dev-dri-kwin\\x2damdgpu.device" ];
-  systemd.services.display-manager.unitConfig.ConditionPathExists = "/dev/dri/kwin-amdgpu";
-
-  # Point KWin (used by SDDM Wayland greeter) at the AMD GPU via stable symlink
-  systemd.services.display-manager.environment = {
-    KWIN_DRM_DEVICES = "/dev/dri/kwin-amdgpu";
-    KWIN_FORCE_SW_CURSOR = "1";
-  };
-
-  # Harden display-manager against greeter crashes
-  systemd.services.display-manager.serviceConfig = {
-    RestartSec = lib.mkForce "1s";
-  };
+  # Generation label (shown by supported bootloaders)
+  system.nixos.label =
+    let
+      lbl = builtins.getEnv "GENERATION_LABEL";
+    in
+    if lbl != "" then lbl else "z13flow";
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";
