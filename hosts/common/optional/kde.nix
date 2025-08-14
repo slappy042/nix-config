@@ -23,9 +23,6 @@
     };
   };
 
-  # Use custom wrapper Wayland session by default
-  services.displayManager.defaultSession = "plasma-fixed";
-
   environment.systemPackages = with pkgs; [
     # kdePackages.discover # Optional: Install if you use Flatpak or fwupd firmware update sevice
     kdePackages.ark # Archive manager
@@ -77,18 +74,31 @@
     ];
   };
 
-  # Provide custom Wayland session desktop file
+  # Provide custom Wayland session desktop file via sessionPackages
   # workaround for the exec issue in https://github.com/NixOS/nixpkgs/issues/355533
-  environment.etc."wayland-sessions/plasma-fixed.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=Plasma (Wayland Fixed)
-    Comment=KDE Plasma (Wayland) via wrapper to avoid SDDM arg concatenation bug
-    Exec=plasma-wayland-wrapper
-    TryExec=${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland
-    DesktopNames=KDE
-    X-GDM-SessionRegisters=true
-  '';
+  services.displayManager.sessionPackages =
+    let
+      plasmaFixedSession =
+        (pkgs.writeTextDir "share/wayland-sessions/plasma-fixed.desktop" ''
+          [Desktop Entry]
+          Type=Application
+          Name=Plasma (Wayland Fixed)
+          Comment=KDE Plasma (Wayland) via wrapper to avoid SDDM arg concatenation bug
+          Exec=plasma-wayland-wrapper
+          TryExec=${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland
+          DesktopNames=KDE
+          X-GDM-SessionRegisters=true
+        '').overrideAttrs
+          (oldAttrs: {
+            passthru = (oldAttrs.passthru or { }) // {
+              providedSessions = [ "plasma-fixed" ];
+            };
+          });
+    in
+    [ plasmaFixedSession ];
+
+  # Use custom wrapper Wayland session by default
+  services.displayManager.defaultSession = "plasma-fixed";
 
   # Ensure SDDM can access DRM/render/input nodes
   users.users.sddm.extraGroups = [
