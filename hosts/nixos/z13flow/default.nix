@@ -115,6 +115,13 @@
 
   boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
 
+  # Fix MST DSC timeout issues with this AMD chipset during multi-monitor boot
+  boot.kernelParams = [
+    "amdgpu.modeset=1" # Enable kernel mode setting
+    "drm.mst_mgr_timeout=10000" # Increase MST timeout from 3s to 10s
+    "amdgpu.dc=1" # Ensure Display Core is enabled
+  ];
+
   # Enable Bluetooth kernel modules
   boot.kernelModules = [
     "kvm-amd"
@@ -134,6 +141,13 @@
   hardware.amdgpu.initrd.enable = true; # load amdgpu kernelModules in stage 1.
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
   hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
+
+  # Fix display manager startup timing for MST DSC issues
+  systemd.services.display-manager = {
+    after = [ "systemd-udev-settle.service" ];
+    wants = [ "systemd-udev-settle.service" ];
+    serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep 3";
+  };
 
   # Removed custom amdgpu kernel params & udev/systemd overrides for vanilla Wayland/Plasma
   # (Previously: boot.kernelParams, services.udev.extraRules creating kwin-amdgpu symlink,
