@@ -118,8 +118,11 @@
   # Fix MST DSC timeout issues with this AMD chipset during multi-monitor boot
   boot.kernelParams = [
     "amdgpu.modeset=1" # Enable kernel mode setting
-    "drm.mst_mgr_timeout=10000" # Increase MST timeout from 3s to 10s
+    "drm.mst_mgr_timeout=20000" # Increase MST timeout from 3s to 20s (more aggressive)
     "amdgpu.dc=1" # Ensure Display Core is enabled
+    "amdgpu.dsc=0" # Temporarily disable DSC during boot to avoid timeout
+    "amdgpu.audio=1" # Enable DP audio (sometimes helps with MST timing)
+    "drm.debug=0x10" # Enable MST debugging
   ];
 
   # Enable Bluetooth kernel modules
@@ -144,9 +147,19 @@
 
   # Fix display manager startup timing for MST DSC issues
   systemd.services.display-manager = {
-    after = [ "systemd-udev-settle.service" ];
+    after = [
+      "systemd-udev-settle.service"
+      "multi-user.target"
+    ];
     wants = [ "systemd-udev-settle.service" ];
-    serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep 3";
+    serviceConfig = {
+      ExecStartPre = [
+        # Wait for GPU device to be ready
+        "${pkgs.bash}/bin/bash -c 'while [ ! -e /dev/dri/card0 ]; do sleep 0.1; done'"
+        # Additional delay for MST negotiation
+        "${pkgs.coreutils}/bin/sleep 5"
+      ];
+    };
   };
 
   # Removed custom amdgpu kernel params & udev/systemd overrides for vanilla Wayland/Plasma
