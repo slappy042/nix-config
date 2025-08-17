@@ -64,6 +64,7 @@
         nixxy2 = newConfig "nixxy2" "/dev/sda" 8 false false;
         nixxy3 = newConfig "nixxy3" "/dev/sda" 8 false false;
         z13flow = newConfig "z13flow" "/dev/nvme0n1" 8 true true;
+        gameserver = newConfig "gameserver" "/dev/vda" 0 false false;
 
         # EmergentMind's stuff, left here for reference
         # host = newConfig "name" disk" "swapSize" "useLuks" "useImpermanence"
