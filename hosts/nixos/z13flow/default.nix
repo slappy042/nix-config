@@ -96,11 +96,6 @@
     systemd.enable = true;
     # This mostly mirrors what is generated on qemu from nixos-generate-config in hardware-configuration.nix
     kernelModules = [
-      # "xhci_pci"
-      # "ahci"
-      # "usbhid"
-      # "usb_storage"
-      # "sd_mod"
       "amdgpu" # AMD GPU driver
       "nvme"
       "nvme_core" # Core NVMe support
@@ -113,16 +108,14 @@
     ];
   };
 
+  # Using standard kernel until 6.17 stable is available with MST/DSC fixes
+  # Will use 2 monitors for now to avoid MST/DSC boot hang issues
   boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
 
-  # Fix MST DSC timeout issues with this AMD chipset during multi-monitor boot
+  # Standard AMD GPU kernel parameters
   boot.kernelParams = [
-    "amdgpu.modeset=1" # Enable kernel mode setting
-    "drm.mst_mgr_timeout=20000" # Increase MST timeout from 3s to 20s (more aggressive)
-    "amdgpu.dc=1" # Ensure Display Core is enabled
-    "amdgpu.dsc=0" # Temporarily disable DSC during boot to avoid timeout
-    "amdgpu.audio=1" # Enable DP audio (sometimes helps with MST timing)
-    "drm.debug=0x10" # Enable MST debugging
+    "amdgpu.modeset=1"
+    "amdgpu.dc=1"
   ];
 
   # Enable Bluetooth kernel modules
@@ -140,31 +133,9 @@
   ];
 
   hardware.graphics.enable = true;
-  #hardware.graphics.package = lib.mkForce pkgs.unstable.mesa.drivers;
-  hardware.amdgpu.initrd.enable = true; # load amdgpu kernelModules in stage 1.
+  hardware.amdgpu.initrd.enable = true;
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
   hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
-
-  # Fix display manager startup timing for MST DSC issues
-  systemd.services.display-manager = {
-    after = [
-      "systemd-udev-settle.service"
-      "multi-user.target"
-    ];
-    wants = [ "systemd-udev-settle.service" ];
-    serviceConfig = {
-      ExecStartPre = [
-        # Wait for GPU device to be ready
-        "${pkgs.bash}/bin/bash -c 'while [ ! -e /dev/dri/card0 ]; do sleep 0.1; done'"
-        # Additional delay for MST negotiation
-        "${pkgs.coreutils}/bin/sleep 5"
-      ];
-    };
-  };
-
-  # Removed custom amdgpu kernel params & udev/systemd overrides for vanilla Wayland/Plasma
-  # (Previously: boot.kernelParams, services.udev.extraRules creating kwin-amdgpu symlink,
-  #  systemd.services.display-manager.* overrides & KWIN_* env vars)
 
   # Generation label (shown by supported bootloaders)
   system.nixos.label =

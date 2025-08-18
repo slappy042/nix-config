@@ -319,16 +319,104 @@ amd-dsc-status:
 
 # Enable DSC for all available display connectors (requires sudo)
 amd-dsc-enable:
-  @echo "=== Enabling DSC for AMD GPU Display Connectors ==="; \
-  DSC_FILES=$$(sudo find /sys/kernel/debug/dri -name "*dsc*" -type f 2>/dev/null); \
-  if [ -z "$$DSC_FILES" ]; then \
-    echo "No DSC debugfs controls found. DSC may not be available or already enabled."; \
-  else \
-    echo "Found DSC controls:"; \
-    echo "$$DSC_FILES" | while read file; do \
-      echo "  $$file"; \
-      echo 1 | sudo tee "$$file" >/dev/null 2>&1 && echo "    ✓ Enabled" || echo "    ✗ Failed"; \
-    done; \
-  fi; \
-  echo -e "\nPost-enable status:"; \
+  #!/usr/bin/env bash
+  echo "=== Enabling DSC for AMD GPU Display Connectors ==="
+  DSC_FILES=$(sudo find /sys/kernel/debug/dri -name "*dsc*" -type f 2>/dev/null)
+  if [ -z "$DSC_FILES" ]; then
+    echo "No DSC debugfs controls found. DSC may not be available or already enabled."
+  else
+    echo "Found DSC controls:"
+    for file in $DSC_FILES; do
+      echo "  $file"
+      if [[ "$file" == *"dsc_disable_passthrough" ]]; then
+        echo 0 | sudo tee "$file" >/dev/null 2>&1 && echo "    ✓ DSC passthrough disabled (DSC enabled)" || echo "    ✗ Failed"
+      else
+        echo 1 | sudo tee "$file" >/dev/null 2>&1 && echo "    ✓ Enabled" || echo "    ✗ Failed"
+      fi
+    done
+  fi
+  echo -e "\nPost-enable status:"
   just amd-dsc-status
+
+# Comprehensive boot hang diagnosis - capture detailed timing
+boot-hang-diag:
+  OUTDIR="debug/boot-hang-debug-$(date +%Y%m%d-%H%M%S)"; \
+  echo "Collecting comprehensive boot hang diagnostics to ${OUTDIR}"; \
+  mkdir -p "${OUTDIR}"; \
+  if [ "${SUDO:-0}" = 1 ]; then JCTL="sudo journalctl"; else JCTL="journalctl"; fi; \
+  echo "=== Kernel Command Line ===" > "${OUTDIR}/kernel-params.txt"; \
+  cat /proc/cmdline >> "${OUTDIR}/kernel-params.txt" 2>&1 || true; \
+  echo -e "\n=== AMD GPU Module Parameters ===" >> "${OUTDIR}/kernel-params.txt"; \
+  find /sys/module/amdgpu/parameters -type f -exec echo "  {}: $(cat {})" \; >> "${OUTDIR}/kernel-params.txt" 2>/dev/null || true; \
+  echo -e "\n=== DRM Module Parameters ===" >> "${OUTDIR}/kernel-params.txt"; \
+  find /sys/module/drm/parameters -type f -exec echo "  {}: $(cat {})" \; >> "${OUTDIR}/kernel-params.txt" 2>/dev/null || true; \
+  echo "=== Boot Timeline Analysis ===" > "${OUTDIR}/boot-analysis.txt"; \
+  systemd-analyze >> "${OUTDIR}/boot-analysis.txt" 2>&1 || true; \
+  echo -e "\n=== Detailed Service Timing ===" >> "${OUTDIR}/boot-analysis.txt"; \
+  systemd-analyze blame | head -30 >> "${OUTDIR}/boot-analysis.txt" 2>&1 || true; \
+  echo -e "\n=== Critical Chain ===" >> "${OUTDIR}/boot-analysis.txt"; \
+  systemd-analyze critical-chain display-manager.service >> "${OUTDIR}/boot-analysis.txt" 2>&1 || true; \
+  echo "=== MST/DSC Boot Messages ===" > "${OUTDIR}/mst-dsc-boot.log"; \
+  ${JCTL} -b | grep -iE "(mst|dsc|stream|compression|dp.*link|timeout|hang|amdgpu.*dc)" >> "${OUTDIR}/mst-dsc-boot.log" 2>&1 || echo "No MST/DSC messages found" >> "${OUTDIR}/mst-dsc-boot.log"; \
+  echo "=== Display Port Boot Messages ===" > "${OUTDIR}/displayport-boot.log"; \
+  ${JCTL} -b | grep -iE "(displayport|dp.*[0-9]|edid.*dp|link.*train)" >> "${OUTDIR}/displayport-boot.log" 2>&1 || echo "No DisplayPort messages found" >> "${OUTDIR}/displayport-boot.log"; \
+  echo "=== AMD GPU Initialization ===" > "${OUTDIR}/amdgpu-init.log"; \
+  ${JCTL} -b | grep -iE "(amdgpu.*init|dc.*init|dm.*init|kms.*init)" >> "${OUTDIR}/amdgpu-init.log" 2>&1 || echo "No AMD GPU init messages found" >> "${OUTDIR}/amdgpu-init.log"; \
+  echo "=== Current MST Topology (if available) ===" > "${OUTDIR}/mst-topology.txt"; \
+  sudo find /sys/kernel/debug/dri -name "*mst*" -type d 2>/dev/null | while read mst_dir; do \
+    echo "=== $mst_dir ===" >> "${OUTDIR}/mst-topology.txt"; \
+    sudo find "$mst_dir" -type f 2>/dev/null | head -10 | while read file; do \
+      echo "  $file: $(sudo cat "$file" 2>/dev/null | head -5)" >> "${OUTDIR}/mst-topology.txt" 2>/dev/null || true; \
+    done; \
+  done; \
+  echo "=== Current Display Connectors ===" > "${OUTDIR}/display-connectors.txt"; \
+  sudo find /sys/class/drm -name "card0-DP-*" -type l 2>/dev/null | sort | while read connector; do \
+    echo "=== $connector ===" >> "${OUTDIR}/display-connectors.txt"; \
+    echo "  Status: $(sudo cat "$connector/status" 2>/dev/null || echo 'unknown')" >> "${OUTDIR}/display-connectors.txt"; \
+    echo "  Enabled: $(sudo cat "$connector/enabled" 2>/dev/null || echo 'unknown')" >> "${OUTDIR}/display-connectors.txt"; \
+    echo "  DPMS: $(sudo cat "$connector/dpms" 2>/dev/null || echo 'unknown')" >> "${OUTDIR}/display-connectors.txt"; \
+  done; \
+  echo "${OUTDIR}" > .last-boot-hang-diag-dir; \
+  echo "Done. Boot hang diagnostics saved to ${OUTDIR}"; \
+  echo "Key files: mst-dsc-boot.log, boot-analysis.txt, kernel-params.txt"
+
+# Test alternative kernel parameters for MST/multi-monitor issues
+suggest-alt-kernelparams:
+  echo "=== Current Kernel Parameters ==="; \
+  grep -E "(amdgpu|drm)" /proc/cmdline | tr ' ' '\n' | grep -E "(amdgpu|drm)"; \
+  echo -e "\n=== Suggested Alternative Parameters to Test ==="; \
+  echo "Option 1 - Disable early KMS and force single-threaded init:"; \
+  echo "  amdgpu.modeset=1 amdgpu.dc=1 amdgpu.dce_use_kgd_interface=0"; \
+  echo "  drm.atomic=0 amdgpu.runpm=0 amdgpu.audio=0"; \
+  echo -e "\nOption 2 - Force specific display timing:"; \
+  echo "  amdgpu.modeset=1 amdgpu.dc=1 amdgpu.dsc=0"; \
+  echo "  drm.edid_firmware=edid/1920x1080.bin video=DP-1:1920x1080@60"; \
+  echo -e "\nOption 3 - Minimal AMD GPU features:"; \
+  echo "  amdgpu.modeset=1 amdgpu.dc=0 amdgpu.dpm=0"; \
+  echo "  amdgpu.powerplay=0 amdgpu.gpu_recovery=0"; \
+  echo -e "\nOption 4 - Force synchronous initialization (LATEST BUILD):"; \
+  echo "  amdgpu.modeset=1 amdgpu.dc=1 amdgpu.async_gfx_ring=0"; \
+  echo "  drm.atomic=0 drm.vblankoffdelay=1 amdgpu.runpm=0 amdgpu.audio=0"; \
+  echo -e "\nOption 5 - Original MST/DSC timeout approach:"; \
+  echo "  amdgpu.modeset=1 drm.mst_mgr_timeout=20000 amdgpu.dc=1"; \
+  echo "  amdgpu.dsc=0 amdgpu.audio=1 drm.debug=0x10"; \
+  echo -e "\nCURRENT STATUS: Running Option 5 (MST timeout) - need to reboot to test Option 4"; \
+  echo "NEXT: Reboot with 3 monitors to test latest 'try-synchronous-init-approach' generation"
+
+# Quick check if the latest boot resolved the multi-monitor hang
+check-boot-hang:
+  echo "=== Latest Boot Analysis ==="; \
+  echo "Boot time: $(systemd-analyze | head -1)"; \
+  echo "Display manager status: $(systemctl is-active display-manager)"; \
+  echo -e "\nChecking for MST/DSC timeout messages..."; \
+  journalctl -b | grep -iE "(timeout|hang.*display|mst.*timeout)" | wc -l | \
+    while read count; do \
+      if [ "$count" -gt 0 ]; then \
+        echo "❌ Found $count timeout/hang messages - issue may persist"; \
+        journalctl -b | grep -iE "(timeout|hang.*display|mst.*timeout)" | head -5; \
+      else \
+        echo "✅ No timeout/hang messages found - hang likely resolved"; \
+      fi; \
+    done; \
+  echo -e "\nCurrent kernel parameters:"; \
+  cat /proc/cmdline | tr ' ' '\n' | grep -E "(amdgpu|drm)" | sort
