@@ -21,14 +21,11 @@ let
     # Settings Sync configuration
     "settingsSync.account" = "slappy042";
     "settingsSync.enable" = true;
-    "settingsSync.ignoredSettings" = [
-      "git.path" # Environment-specific, managed by Nix
-    ];
+    "settingsSync.ignoredSettings" = [ ];
     "settingsSync.ignoredExtensions" = [ ];
     "settingsSync.keybindingsPerPlatform" = false;
 
     # Environment-specific settings (managed by Nix, not synced)
-    "git.path" = "${pkgs.git}/bin/git";
     "git.useConfigOnly" = true;
 
     # Basic editor settings
