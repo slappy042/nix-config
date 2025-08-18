@@ -137,13 +137,6 @@
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
   hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
 
-  # Generation label (shown by supported bootloaders)
-  system.nixos.label =
-    let
-      lbl = builtins.getEnv "GENERATION_LABEL";
-    in
-    if lbl != "" then lbl else "z13flow";
-
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";
 }

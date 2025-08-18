@@ -40,6 +40,16 @@
   };
 
   #
+  # ========== Generation Label ==========
+  #
+  # Generation label (shown by supported bootloaders)
+  system.nixos.label =
+    let
+      lbl = builtins.getEnv "GENERATION_LABEL";
+    in
+    if lbl != "" then lbl else config.hostSpec.hostName;
+
+  #
   # ========== Localization ==========
   #
   i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
