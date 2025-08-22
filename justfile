@@ -20,7 +20,7 @@ check ARGS="":
   cd nixos-installer && NIXPKGS_ALLOW_UNFREE=1 REPO_PATH=$(pwd) nix flake check --impure --keep-going --show-trace {{ARGS}}
 
 # Rebuild the system
-rebuild LABEL="" HOST="": rebuild-pre && rebuild-post
+rebuild LABEL="": rebuild-pre && rebuild-post
   # NOTE: Add --option eval-cache false if you end up caching a failure you can't get around
   if [ -z "{{LABEL}}" ]; then \
     GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
@@ -30,10 +30,10 @@ rebuild LABEL="" HOST="": rebuild-pre && rebuild-post
   GEN_LABEL_SAFE="$(printf '%s' "$GEN_LABEL" | sed -E 's/[^A-Za-z0-9:_\.-]+/_/g' | sed -E 's/_+/_/g; s/^_|_$//g')"; \
   SHORT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"; \
   TS="$(date +%Y%m%d-%H%M%S)"; \
-  GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh {{HOST}}
+  GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh
 
 # Rebuild the system and run a flake check
-rebuild-full LABEL="" HOST="": rebuild-pre && rebuild-post
+rebuild-full LABEL="": rebuild-pre && rebuild-post
   if [ -z "{{LABEL}}" ]; then \
     GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
   else \
@@ -42,11 +42,11 @@ rebuild-full LABEL="" HOST="": rebuild-pre && rebuild-post
   GEN_LABEL_SAFE="$(printf '%s' "$GEN_LABEL" | sed -E 's/[^A-Za-z0-9:_\.-]+/_/g' | sed -E 's/_+/_/g; s/^_|_$//g')"; \
   SHORT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"; \
   TS="$(date +%Y%m%d-%H%M%S)"; \
-  GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh {{HOST}}
+  GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh
   just check
 
 # Rebuild the system and run a flake check
-rebuild-trace LABEL="" HOST="": rebuild-pre && rebuild-post
+rebuild-trace LABEL="": rebuild-pre && rebuild-post
   if [ -z "{{LABEL}}" ]; then \
     GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
   else \
@@ -109,6 +109,17 @@ sync USER HOST PATH:
 # Run nixos-rebuild on the remote host
 build-host HOST:
 	NIX_SSHOPTS="-p22" nixos-rebuild --target-host {{HOST}} --use-remote-sudo --show-trace --impure --flake .#"{{HOST}}" switch
+
+# Rebuild a remote host (skips local pre/post steps that can affect local system)
+rebuild-remote HOST LABEL="": update-nix-secrets
+  @echo "Building {{HOST}} remotely..."
+  if [ -z "{{LABEL}}" ]; then \
+    GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
+  else \
+    GEN_LABEL="{{LABEL}}"; \
+  fi; \
+  echo "Generation: $GEN_LABEL"; \
+  NIX_SSHOPTS="-p22" nixos-rebuild --target-host {{HOST}} --use-remote-sudo --show-trace --impure --flake .#"{{HOST}}" switch
 
 # Called by the rekey recipe
 sops-rekey:
