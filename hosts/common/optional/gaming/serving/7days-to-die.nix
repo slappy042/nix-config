@@ -11,73 +11,17 @@
   ...
 }:
 let
+  # Import gaming library directly to avoid infinite recursion
+  gamingLib = import ./lib.nix { inherit lib; };
+
   # Set to {id}-{branch}-{password} for betas.
   steam-app = "294420_alpha20.7";
-in
-{
-  users.users.sevendtd = {
-    isSystemUser = true;
-    # 7DTD puts save data in the home directory under .local/share/7DaysToDie/
-    home = "/home/sevendtd";
-    createHome = true;
-    homeMode = "750";
-    group = "sevendtd";
-  };
 
-  users.groups.sevendtd = { };
+  # Game installation path (using steamcmd +force_install_dir)
+  game-dir = "/opt/steam-app-${steam-app}";
 
-  systemd.services.sevendtd = {
-    wantedBy = [ "multi-user.target" ];
-
-    # Install the game before launching.
-    wants = [ "steam@${steam-app}.service" ];
-    after = [ "steam@${steam-app}.service" ];
-
-    serviceConfig = {
-      ExecStart = utils.escapeSystemdExecArgs [
-        "/opt/steam-app-${steam-app}/7DaysToDieServer.x86_64"
-        "-quit"
-        "-batchmode"
-        "-nographics"
-        "-dedicated"
-        "-configfile=/home/sevendtd/serverconfig.xml"
-        "-logfile=/home/sevendtd/logs/output_log.txt"
-      ];
-      Nice = "-5";
-      PrivateTmp = true;
-      Restart = "always";
-      User = "sevendtd";
-      WorkingDirectory = "~";
-      # Create logs directory
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /home/sevendtd/logs";
-    };
-    environment = {
-      # Set LD_LIBRARY_PATH for 7DTD server requirements
-      LD_LIBRARY_PATH = "/opt/steam-app-${steam-app}:${pkgs.glibc}/lib";
-    };
-  };
-
-  # Create default server configuration and instructions
-  systemd.tmpfiles.rules = [
-    "d /home/sevendtd 0750 sevendtd sevendtd - -"
-    "d /home/sevendtd/logs 0750 sevendtd sevendtd - -"
-    "f /home/sevendtd/serverconfig.xml 0640 sevendtd sevendtd - -"
-  ];
-
-  # Basic firewall configuration for 7DTD
-  networking.firewall = {
-    allowedTCPPorts = [ 26900 ]; # Game port
-    allowedUDPPorts = [
-      26900
-      26901
-      26902
-      26903
-    ]; # Game ports + LiteNetLib
-    # Note: Port 8081 (telnet) and 8080 (webadmin) are not opened for security
-  };
-
-  # Write service control instructions
-  environment.etc."sevendtd-instructions".text = ''
+  # Create instruction files directly
+  serverControlInstructions = pkgs.writeText "server-control.md" ''
     # 7 Days to Die Server Control Instructions
 
     ## Service Management Commands
@@ -102,84 +46,91 @@ in
     sudo systemctl enable sevendtd
     ```
 
-    ### Disable auto-start on boot:
-    ```bash
-    sudo systemctl disable sevendtd
-    ```
-
-    ## Viewing Logs
-
-    ### Recent systemd logs:
-    ```bash
-    sudo journalctl -u sevendtd
-    ```
-
-    ### Follow logs in real-time:
+    ### View server logs in real-time:
     ```bash
     sudo journalctl -u sevendtd -f
     ```
 
-    ### Last 50 lines:
+    ### View recent server logs:
     ```bash
-    sudo journalctl -u sevendtd -n 50
+    sudo journalctl -u sevendtd -n 100
     ```
 
-    ### Game-specific logs:
-    ```bash
-    tail -f /home/sevendtd/logs/output_log.txt
-    ```
+    ## Configuration Files
 
-    ## Important Notes
-
-    - **Steam download happens first**: When you start the service, it will automatically download/update the 7DTD server files first
-    - **Initial startup may be slow**: First run downloads ~1-2GB, be patient
-    - **Configuration**: Edit `/home/sevendtd/serverconfig.xml` to configure server settings
-    - **Auto-restart**: Service automatically restarts if it crashes
-    - **App ID**: Using 294420-alpha20.7 (7 Days to Die alpha20.7 beta)
+    - **Server config**: `/home/sevendtd/serverconfig.xml`
+    - **Server logs**: `/home/sevendtd/logs/output_log.txt`
+    - **Game saves**: `/home/sevendtd/.local/share/7DaysToDie/Saves/`
 
     ## File Locations
 
-    - Server executable: `/opt/steam-app-294420-alpha20.7/7DaysToDieServer.x86_64`
-    - Configuration: `/home/sevendtd/serverconfig.xml`
-    - Logs: `/home/sevendtd/logs/output_log.txt`
-    - Save data: `/home/sevendtd/.local/share/7DaysToDie/Saves/`
+    - **Game installation**: `${game-dir}/`
+    - **Server executable**: `${game-dir}/7DaysToDieServer.x86_64`
+    - **Mods directory**: `${game-dir}/Mods/`
 
-    ## Network Ports
+    ## Server Management
 
-    The following ports are opened in the firewall:
-    - TCP 26900 (main game port)
-    - UDP 26900, 26901, 26902, 26903 (game ports + LiteNetLib)
+    **Important**: This service is disabled by default to prevent rebuild failures.
+    Use the gameserver justfile for management:
 
-    Note: Telnet (8081) and webadmin (8080) ports are NOT opened for security reasons.
-  '';
+    ### Basic Commands:
+    ```bash
+    # Show all game services status
+    just status
 
-  # Write mod installation instructions
-  environment.etc."sevendtd-mod-instructions".text = ''
-    # 7 Days to Die Server - Mod Installation Guide
+    # Start 7DTD server (auto-handles steam dependencies)
+    just start 7dtd
 
-    ## Overview
+    # Stop server
+    just stop 7dtd
+
+    # Update game files and restart
+    just update 7dtd
+
+    # Show recent logs
+    just logs 7dtd
+
+    # Enable/disable auto-start on boot
+    just enable 7dtd
+    just disable 7dtd
+    ```
+
+    ### Manual systemd commands (if needed):
+    ```bash
+    # Update the game (requires restart):
+    sudo systemctl stop sevendtd
+    sudo systemctl start steam@294420_alpha20.7
+    sudo systemctl start sevendtd
+
+    # Check if server is responding:
+    ss -tuln | grep 26900
+    ```
+
+    ## Mod Installation Guide
+
+    ### Overview
     This server uses manual mod installation. Mods are installed directly into the server's Mods directory.
     The server must be stopped before installing or updating mods.
 
-    ## Mod Installation Directory
-    All mods should be installed to: `/opt/steam-app-294420-alpha20.7/Mods/`
+    ### Mod Installation Directory
+    All mods should be installed to: `${game-dir}/Mods/`
 
-    ## Pre-Installation Steps
+    ### Pre-Installation Steps
 
-    ### 1. Stop the server
+    #### 1. Stop the server
     ```bash
     sudo systemctl stop sevendtd
     ```
 
-    ### 2. Create the Mods directory (if it doesn't exist)
+    #### 2. Create the Mods directory (if it doesn't exist)
     ```bash
-    sudo mkdir -p /opt/steam-app-294420-alpha20.7/Mods
-    sudo chown steam:steam /opt/steam-app-294420-alpha20.7/Mods
+    sudo mkdir -p ${game-dir}/Mods
+    sudo chown steam:game ${game-dir}/Mods
     ```
 
-    ## Installing Specific Mods
+    ### Installing Specific Mods
 
-    ### Undead Legacy Mod
+    #### Undead Legacy Mod
 
     **Source**: https://ul.subquake.com/download
 
@@ -188,11 +139,11 @@ in
     2. Extract the downloaded archive
     3. Copy the mod folder to the Mods directory:
     ```bash
-    sudo cp -r /path/to/extracted/UndeadLegacy /opt/steam-app-294420-alpha20.7/Mods/
-    sudo chown -R steam:steam /opt/steam-app-294420-alpha20.7/Mods/UndeadLegacy
+    sudo cp -r /path/to/extracted/UndeadLegacy ${game-dir}/Mods/
+    sudo chown -R steam:game ${game-dir}/Mods/UndeadLegacy
     ```
 
-    ### Compo Pack 48.5 for UL
+    #### Compo Pack 48.5 for UL
 
     **Source**: Manual Google Drive download
 
@@ -201,13 +152,13 @@ in
     2. Extract the downloaded archive
     3. Copy the mod folder to the Mods directory:
     ```bash
-    sudo cp -r /path/to/extracted/CompoPack48.5 /opt/steam-app-294420-alpha20.7/Mods/
-    sudo chown -R steam:steam /opt/steam-app-294420-alpha20.7/Mods/CompoPack48.5
+    sudo cp -r /path/to/extracted/CompoPack48.5 ${game-dir}/Mods/
+    sudo chown -R steam:game ${game-dir}/Mods/CompoPack48.5
     ```
 
     **Note**: Compo Pack must be installed AFTER Undead Legacy as it's an addon for UL.
 
-    ## General Mod Installation Process
+    ### General Mod Installation Process
 
     For any other mods:
 
@@ -216,22 +167,22 @@ in
     3. **Extract** if it's an archive
     4. **Copy to Mods directory**:
     ```bash
-    sudo cp -r /path/to/mod-folder /opt/steam-app-294420-alpha20.7/Mods/
+    sudo cp -r /path/to/mod-folder ${game-dir}/Mods/
     ```
     5. **Fix permissions**:
     ```bash
-    sudo chown -R steam:steam /opt/steam-app-294420-alpha20.7/Mods/mod-folder-name
+    sudo chown -R steam:game ${game-dir}/Mods/mod-folder-name
     ```
     6. **Start the server**: `sudo systemctl start sevendtd`
 
-    ## Verification
+    ### Verification
 
-    ### Check installed mods:
+    #### Check installed mods:
     ```bash
-    ls -la /opt/steam-app-294420-alpha20.7/Mods/
+    ls -la ${game-dir}/Mods/
     ```
 
-    ### Verify mod loading in logs:
+    #### Verify mod loading in logs:
     ```bash
     sudo journalctl -u sevendtd -f
     # or
@@ -240,22 +191,22 @@ in
 
     Look for mod loading messages in the server startup logs.
 
-    ## Troubleshooting
+    ### Troubleshooting
 
-    ### Common Issues:
-    - **Permission errors**: Make sure all mod files are owned by `steam:steam`
+    #### Common Issues:
+    - **Permission errors**: Make sure all mod files are owned by `steam:game`
     - **Mod conflicts**: Some mods may not be compatible with each other
     - **Server won't start**: Check logs for mod-related errors
     - **Missing dependencies**: Ensure required mods are installed first (e.g., UL before Compo Pack)
 
-    ### File Permissions Fix:
+    #### File Permissions Fix:
     If you have permission issues:
     ```bash
-    sudo chown -R steam:steam /opt/steam-app-294420-alpha20.7/Mods/
-    sudo chmod -R 755 /opt/steam-app-294420-alpha20.7/Mods/
+    sudo chown -R steam:game ${game-dir}/Mods/
+    sudo chmod -R 755 ${game-dir}/Mods/
     ```
 
-    ## Important Notes
+    ### Important Notes
 
     - **Backup first**: Consider backing up your save data before installing mods
     - **Mod compatibility**: Ensure mods are compatible with alpha20.7
@@ -263,24 +214,95 @@ in
     - **Server restarts**: Mod changes typically require a server restart
     - **Client compatibility**: Players may need the same mods installed on their clients
 
-    ## Save Data Location
+    ### Save Data Location
     Your world saves are stored in: `/home/sevendtd/.local/share/7DaysToDie/Saves/`
     Consider backing this up before major mod changes.
   '';
+in
+lib.mkMerge [
+  # Create the 7DTD user
+  (gamingLib.createGameUser {
+    username = "sevendtd";
+    description = "7 Days to Die dedicated server user";
+    homeDir = "/home/sevendtd";
+  })
 
-  systemd.services.sevendtd-setup = {
-    description = "Copy 7DTD instructions to user home";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "local-fs.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = pkgs.writeShellScript "sevendtd-setup" ''
-        ${pkgs.coreutils}/bin/cp /etc/sevendtd-instructions /home/sevendtd/7dtd.md
-        ${pkgs.coreutils}/bin/cp /etc/sevendtd-mod-instructions /home/sevendtd/mods.md
-        ${pkgs.coreutils}/bin/chown sevendtd:sevendtd /home/sevendtd/7dtd.md
-        ${pkgs.coreutils}/bin/chown sevendtd:sevendtd /home/sevendtd/mods.md
-      '';
-      RemainAfterExit = true;
+  # Create game directories
+  (gamingLib.createGameDirectories {
+    user = "sevendtd";
+    homeDir = "/home/sevendtd";
+    logDir = "/home/sevendtd/logs";
+  })
+
+  # Register this game service for management tools
+  (gamingLib.registerGameService {
+    id = "7dtd";
+    name = "7 Days to Die";
+    description = "7 Days to Die Dedicated Server (Alpha 20.7)";
+    serviceName = "sevendtd";
+    steamApp = "294420_alpha20.7";
+    gameDir = game-dir;
+    ports = [
+      26900
+      26901
+      26902
+    ];
+    configFile = "/home/sevendtd/serverconfig.xml";
+    logDir = "/home/sevendtd/logs";
+    user = "sevendtd";
+  })
+
+  # Main service and firewall configuration
+  {
+
+    systemd.services.sevendtd = {
+      # Disabled by default - use justfile recipes to manage
+      # wantedBy = [ "multi-user.target" ];
+
+      # No service dependencies to prevent restart loops
+
+      serviceConfig = {
+        ExecStart = utils.escapeSystemdExecArgs [
+          "${game-dir}/7DaysToDieServer.x86_64"
+          "-quit"
+          "-batchmode"
+          "-nographics"
+          "-dedicated"
+          "-configfile=/home/sevendtd/serverconfig.xml"
+          "-logfile=/home/sevendtd/logs/output_log.txt"
+        ];
+        Nice = "-5";
+        PrivateTmp = true;
+        Restart = "always";
+        UMask = "0002"; # Make files group-writable
+        User = "sevendtd";
+        WorkingDirectory = "~";
+        # Create logs directory and ensure game files exist
+        ExecStartPre = [
+          "${pkgs.coreutils}/bin/mkdir -p /home/sevendtd/logs"
+          # Wait for steamcmd completion marker (ensures steam download finished)
+          "${pkgs.bash}/bin/bash -c 'while [[ ! -f ${game-dir}/.steamcmd-completed ]]; do echo \"Waiting for steamcmd to complete...\"; sleep 5; done'"
+          # Verify the main executable exists and is executable
+          "${pkgs.coreutils}/bin/test -f ${game-dir}/7DaysToDieServer.x86_64"
+          "${pkgs.coreutils}/bin/test -x ${game-dir}/7DaysToDieServer.x86_64"
+        ];
+      };
+      environment = {
+        # Set LD_LIBRARY_PATH for 7DTD server requirements
+        LD_LIBRARY_PATH = "${game-dir}:${pkgs.glibc}/lib";
+      };
     };
-  };
-}
+
+    # Basic firewall configuration for 7DTD
+    networking.firewall = {
+      allowedTCPPorts = [ 26900 ]; # Game port
+      allowedUDPPorts = [
+        26900
+        26901
+        26902
+        26903
+      ]; # Game ports + LiteNetLib
+      # Note: Port 8081 (telnet) and 8080 (webadmin) are not opened for security
+    };
+  }
+]

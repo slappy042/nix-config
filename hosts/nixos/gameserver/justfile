@@ -1,0 +1,380 @@
+# Gameserver Management Commands
+# Usage: just <command>
+
+# List all game services and their status
+status:
+    #!/usr/bin/env bash
+    echo "=== Game Server Services ==="
+    echo ""
+
+    echo "Steam Download Services:"
+    sudo systemctl list-units 'steam@*' --no-legend --no-pager | awk '{print "  " $1 " - " $3}' || echo "  (no steam services found)"
+    echo ""
+
+    echo "Game Services:"
+    if [[ -d /etc/gameserver/services ]]; then
+        for json_file in /etc/gameserver/services/*.json; do
+            if [[ -f "$json_file" ]]; then
+                game_id=$(jq -r '.id' "$json_file")
+                game_name=$(jq -r '.name' "$json_file")
+                service_name=$(jq -r '.service_name' "$json_file")
+                ports=$(jq -r '.ports | join(",")' "$json_file")
+
+                status=$(sudo systemctl is-active "$service_name" 2>/dev/null || echo "not-found")
+                enabled=$(sudo systemctl is-enabled "$service_name" 2>/dev/null || echo "disabled")
+
+                echo "  $game_id ($game_name) - $status ($enabled)"
+                if [[ "$ports" != "null" && "$ports" != "" ]]; then
+                    echo "    Ports: $ports"
+                fi
+            fi
+        done
+    else
+        echo "  (no games configured)"
+    fi
+
+    echo ""
+    echo "Available commands:"
+    echo "  just status              - Show this status"
+    echo "  just list                - List available games"
+    echo "  just start <game>        - Start a game service"
+    echo "  just stop <game>         - Stop a game service"
+    echo "  just restart <game>      - Restart a game service"
+    echo "  just enable <game>       - Enable auto-start on boot"
+    echo "  just disable <game>      - Disable auto-start on boot"
+    echo "  just logs <game>         - Show recent logs"
+    echo "  just update <game>       - Update game files and restart"
+    echo "  just info <game>         - Show game information"
+    echo ""
+    available_games=$(find /etc/gameserver/services -name "*.json" 2>/dev/null | xargs -I {} jq -r '.id' {} | tr '\n' ' ' || echo "none")
+    echo "Available games: $available_games"
+
+# List available games with details
+list:
+    #!/usr/bin/env bash
+    echo "=== Available Games ==="
+    echo ""
+    if [[ -d /etc/gameserver/services ]]; then
+        for json_file in /etc/gameserver/services/*.json; do
+            if [[ -f "$json_file" ]]; then
+                echo "$(jq -r '.id' "$json_file"): $(jq -r '.name' "$json_file")"
+                echo "  Service: $(jq -r '.service_name' "$json_file")"
+                echo "  Steam App: $(jq -r '.steam_app // "N/A"' "$json_file")"
+                echo "  Ports: $(jq -r '.ports | join(",") // "N/A"' "$json_file")"
+                echo "  User: $(jq -r '.user // "N/A"' "$json_file")"
+                echo "  Description: $(jq -r '.description // "N/A"' "$json_file")"
+                echo ""
+            fi
+        done
+    else
+        echo "No games configured."
+    fi
+
+# Show detailed information about a specific game
+info game:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    json_file="/etc/gameserver/services/{{game}}.json"
+    if [[ ! -f "$json_file" ]]; then
+        echo "Game '{{game}}' not found."
+        echo "Available games:"
+        find /etc/gameserver/services -name "*.json" 2>/dev/null | xargs -I {} jq -r '.id' {} || echo "  none"
+        exit 1
+    fi
+
+    echo "=== $(jq -r '.name' "$json_file") Information ==="
+    echo ""
+    echo "Game ID: {{game}}"
+    echo "Service Name: $(jq -r '.service_name' "$json_file")"
+    echo "Steam App: $(jq -r '.steam_app // "N/A"' "$json_file")"
+    echo "Game Directory: $(jq -r '.game_dir // "N/A"' "$json_file")"
+    echo "Ports: $(jq -r '.ports | join(",") // "N/A"' "$json_file")"
+    echo "Config File: $(jq -r '.config_file // "N/A"' "$json_file")"
+    echo "Log Directory: $(jq -r '.log_dir // "N/A"' "$json_file")"
+    echo "Run User: $(jq -r '.user // "N/A"' "$json_file")"
+    echo "Group: $(jq -r '.group // "N/A"' "$json_file")"
+    echo "Description: $(jq -r '.description // "N/A"' "$json_file")"
+    echo ""
+
+    # Show current status
+    service_name=$(jq -r '.service_name' "$json_file")
+    status=$(sudo systemctl is-active "$service_name" 2>/dev/null || echo "not-found")
+    enabled=$(sudo systemctl is-enabled "$service_name" 2>/dev/null || echo "disabled")
+    echo "Current Status: $status ($enabled)"
+
+    # Show port status if ports are defined
+    ports=$(jq -r '.ports[]? // empty' "$json_file")
+    if [[ -n "$ports" ]]; then
+        echo ""
+        echo "Port Status:"
+        while IFS= read -r port; do
+            if ss -tuln | grep -q ":$port "; then
+                echo "  $port: LISTENING"
+            else
+                echo "  $port: closed"
+            fi
+        done <<< "$ports"
+    fi
+
+# Start a game service (with dependencies)
+start game:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    json_file="/etc/gameserver/services/{{game}}.json"
+    if [[ ! -f "$json_file" ]]; then
+        echo "Game '{{game}}' not found."
+        echo "Available games:"
+        find /etc/gameserver/services -name "*.json" 2>/dev/null | xargs -I {} jq -r '.id' {} || echo "  none"
+        exit 1
+    fi
+
+    game_name=$(jq -r '.name' "$json_file")
+    service_name=$(jq -r '.service_name' "$json_file")
+    steam_app=$(jq -r '.steam_app // empty' "$json_file")
+
+    echo "Starting $game_name..."
+
+    # Handle steam dependency if specified
+    if [[ -n "$steam_app" && "$steam_app" != "null" ]]; then
+        marker_file="/opt/steam-app-${steam_app}/.steamcmd-completed"
+        if [[ ! -f "$marker_file" ]]; then
+            echo "Steam files not ready, downloading first..."
+            sudo systemctl start "steam@${steam_app}.service"
+            echo "Waiting for steam download to complete..."
+            while ! sudo systemctl is-active --quiet "steam@${steam_app}.service" && ! sudo systemctl is-failed --quiet "steam@${steam_app}.service"; do
+                sleep 2
+            done
+            if sudo systemctl is-failed --quiet "steam@${steam_app}.service"; then
+                echo "Steam download failed!"
+                sudo journalctl -u "steam@${steam_app}.service" --no-pager -n 20
+                exit 1
+            fi
+        fi
+    fi
+
+    sudo systemctl start "$service_name"
+    echo "$game_name starting..."
+
+# Stop a game service
+stop game:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    json_file="/etc/gameserver/services/{{game}}.json"
+    if [[ ! -f "$json_file" ]]; then
+        echo "Game '{{game}}' not found."
+        exit 1
+    fi
+
+    game_name=$(jq -r '.name' "$json_file")
+    service_name=$(jq -r '.service_name' "$json_file")
+
+    echo "Stopping $game_name..."
+    sudo systemctl stop "$service_name"
+
+# Restart a game service
+restart game:
+    just stop {{game}}
+    sleep 2
+    just start {{game}}
+
+# Enable auto-start on boot
+enable game:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    json_file="/etc/gameserver/services/{{game}}.json"
+    if [[ ! -f "$json_file" ]]; then
+        echo "Game '{{game}}' not found."
+        exit 1
+    fi
+
+    game_name=$(jq -r '.name' "$json_file")
+    service_name=$(jq -r '.service_name' "$json_file")
+
+    echo "Enabling $game_name auto-start on boot..."
+    sudo systemctl enable "$service_name"
+
+# Disable auto-start on boot
+disable game:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    json_file="/etc/gameserver/services/{{game}}.json"
+    if [[ ! -f "$json_file" ]]; then
+        echo "Game '{{game}}' not found."
+        exit 1
+    fi
+
+    game_name=$(jq -r '.name' "$json_file")
+    service_name=$(jq -r '.service_name' "$json_file")
+
+    echo "Disabling $game_name auto-start on boot..."
+    sudo systemctl disable "$service_name"
+
+# Show recent logs for a game
+logs game *args="--no-pager -n 50":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ "{{game}}" == "steam" ]]; then
+        echo "=== Steam Download Logs ==="
+        sudo journalctl -u 'steam@*' {{args}}
+    else
+        json_file="/etc/gameserver/services/{{game}}.json"
+        if [[ ! -f "$json_file" ]]; then
+            echo "Game '{{game}}' not found."
+            echo "Use 'just logs steam' for Steam download logs."
+            exit 1
+        fi
+
+        game_name=$(jq -r '.name' "$json_file")
+        service_name=$(jq -r '.service_name' "$json_file")
+
+        echo "=== $game_name Logs ==="
+        sudo journalctl -u "$service_name" {{args}}
+    fi
+
+# Update game files and restart
+update game:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    json_file="/etc/gameserver/services/{{game}}.json"
+    if [[ ! -f "$json_file" ]]; then
+        echo "Game '{{game}}' not found."
+        exit 1
+    fi
+
+    game_name=$(jq -r '.name' "$json_file")
+    service_name=$(jq -r '.service_name' "$json_file")
+    steam_app=$(jq -r '.steam_app // empty' "$json_file")
+
+    echo "Updating $game_name..."
+
+    # Stop the game service
+    sudo systemctl stop "$service_name" || true
+
+    # Update steam files if needed
+    if [[ -n "$steam_app" && "$steam_app" != "null" ]]; then
+        echo "Downloading latest game files..."
+        sudo systemctl start "steam@${steam_app}.service"
+        echo "Waiting for download to complete..."
+        while ! sudo systemctl is-active --quiet "steam@${steam_app}.service" && ! sudo systemctl is-failed --quiet "steam@${steam_app}.service"; do
+            sleep 2
+        done
+        if sudo systemctl is-failed --quiet "steam@${steam_app}.service"; then
+            echo "Steam download failed!"
+            sudo journalctl -u "steam@${steam_app}.service" --no-pager -n 20
+            exit 1
+        fi
+    fi
+
+    echo "Starting updated server..."
+    sudo systemctl start "$service_name"
+
+# Show game server ports and network status
+network:
+    #!/usr/bin/env bash
+    echo "=== Network Status ==="
+    echo ""
+
+    # Show status for each configured game
+    if [[ -d /etc/gameserver/services ]]; then
+        for json_file in /etc/gameserver/services/*.json; do
+            if [[ -f "$json_file" ]]; then
+                game_id=$(jq -r '.id' "$json_file")
+                game_name=$(jq -r '.name' "$json_file")
+                service_name=$(jq -r '.service_name' "$json_file")
+                status=$(sudo systemctl is-active "$service_name" 2>/dev/null || echo "inactive")
+
+                echo "$game_name ($game_id) - $status:"
+                ports=$(jq -r '.ports[]? // empty' "$json_file")
+                if [[ -n "$ports" ]]; then
+                    while IFS= read -r port; do
+                        if ss -tuln | grep -q ":$port "; then
+                            echo "  Port $port: LISTENING"
+                        else
+                            echo "  Port $port: closed"
+                        fi
+                    done <<< "$ports"
+                else
+                    echo "  No ports configured"
+                fi
+                echo ""
+            fi
+        done
+    fi
+
+    echo "All listening ports in game range (26000-28000):"
+    ss -tuln | grep -E ":(26[0-9][0-9][0-9]|27[0-9][0-9][0-9])" | sed 's/^/  /' || echo "  No game ports active"
+
+# Show disk usage for game files
+disk:
+    #!/usr/bin/env bash
+    echo "=== Game Files Disk Usage ==="
+    echo ""
+
+    total_size=0
+    if [[ -d /etc/gameserver/services ]]; then
+        for json_file in /etc/gameserver/services/*.json; do
+            if [[ -f "$json_file" ]]; then
+                game_id=$(jq -r '.id' "$json_file")
+                game_name=$(jq -r '.name' "$json_file")
+                game_dir=$(jq -r '.game_dir // empty' "$json_file")
+
+                if [[ -n "$game_dir" && "$game_dir" != "null" && -d "$game_dir" ]]; then
+                    echo "$game_name ($game_id):"
+                    size_mb=$(du -sm "$game_dir" | cut -f1)
+                    echo "  Directory: $game_dir"
+                    echo "  Size: $(du -sh "$game_dir" | cut -f1)"
+                    echo ""
+                    echo "  Largest files:"
+                    find "$game_dir" -type f -size +50M -exec du -h {} \; 2>/dev/null | sort -hr | head -3 | sed 's/^/    /' || echo "    (no large files found)"
+                    echo ""
+                    total_size=$((total_size + size_mb))
+                else
+                    echo "$game_name ($game_id): Directory not found ($game_dir)"
+                    echo ""
+                fi
+            fi
+        done
+
+        if [[ $total_size -gt 0 ]]; then
+            echo "Total game files: ${total_size}M"
+        fi
+    else
+        echo "No games configured."
+    fi
+
+    echo ""
+    echo "Steam cache usage:"
+    if [[ -d /opt/steam ]]; then
+        du -sh /opt/steam
+    else
+        echo "Steam directory not found"
+    fi
+
+# Interactive service management
+manage:
+    #!/usr/bin/env bash
+    while true; do
+        clear
+        echo "=== Game Server Management ==="
+        just status
+        echo ""
+        read -p "Enter command (or 'quit' to exit): " cmd
+        case "$cmd" in
+            quit|q|exit) break ;;
+            "") continue ;;
+            *)
+                if command -v just >/dev/null && just --list | grep -q "^  ${cmd%% *}"; then
+                    just $cmd || read -p "Press Enter to continue..."
+                else
+                    echo "Unknown command: $cmd"
+                    read -p "Press Enter to continue..."
+                fi
+                ;;
+        esac
+    done

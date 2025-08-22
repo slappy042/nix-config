@@ -21,10 +21,10 @@ in
     home = "/home/valheim";
     createHome = true;
     homeMode = "750";
-    group = "valheim";
+    group = "game";
   };
 
-  users.groups.valheim = { };
+  # No need for a separate valheim group - we use the shared game group
 
   systemd.services.valheim = {
     wantedBy = [ "multi-user.target" ];
@@ -57,6 +57,7 @@ in
       Nice = "-5";
       PrivateTmp = true;
       Restart = "always";
+      UMask = "0002"; # Make files group-writable
       User = "valheim";
       WorkingDirectory = "~";
     };
