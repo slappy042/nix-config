@@ -42,6 +42,7 @@ status:
     echo "  just restart <game>      - Restart a game service"
     echo "  just enable <game>       - Enable auto-start on boot"
     echo "  just disable <game>      - Disable auto-start on boot"
+    echo "  just clean <game>        - Clean/uninstall a game (stop, disable, remove files)"
     echo "  just logs <game>         - Show recent logs"
     echo "  just update <game>       - Update game files and restart"
     echo "  just info <game>         - Show game information"
@@ -309,6 +310,154 @@ network:
 
     echo "All listening ports in game range (26000-28000):"
     ss -tuln | grep -E ":(26[0-9][0-9][0-9]|27[0-9][0-9][0-9])" | sed 's/^/  /' || echo "  No game ports active"
+
+# Clean/uninstall a game (stop, disable, remove files)
+clean game *options="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    json_file="/etc/gameserver/services/{{game}}.json"
+    if [[ ! -f "$json_file" ]]; then
+        echo "Game '{{game}}' not found."
+        exit 1
+    fi
+
+    game_name=$(jq -r '.name' "$json_file")
+    service_name=$(jq -r '.service_name' "$json_file")
+    steam_app=$(jq -r '.steam_app // empty' "$json_file")
+    game_dir=$(jq -r '.game_dir // empty' "$json_file")
+    log_dir=$(jq -r '.log_dir // empty' "$json_file")
+    user=$(jq -r '.user // empty' "$json_file")
+
+    echo "=== Cleaning $game_name ==="
+    echo ""
+
+    # Parse options
+    clean_user_data=false
+    clean_steam_cache=false
+    for option in {{options}}; do
+        case "$option" in
+            --user-data|--all) clean_user_data=true ;;
+            --steam-cache) clean_steam_cache=true ;;
+            --help|-h)
+                echo "Usage: just clean <game> [options]"
+                echo ""
+                echo "Options:"
+                echo "  --user-data    Also remove user data (saves, logs, configs)"
+                echo "  --steam-cache  Also remove steam download cache"
+                echo "  --all          Clean everything (combines all options)"
+                echo ""
+                echo "Default: Only stops service, disables auto-start, and removes game installation directory"
+                exit 0
+                ;;
+        esac
+    done
+
+    # 1. Stop the service if running
+    echo "1. Stopping service..."
+    if sudo systemctl is-active --quiet "$service_name" 2>/dev/null; then
+        sudo systemctl stop "$service_name"
+        echo "   ✓ Service stopped"
+    else
+        echo "   ✓ Service was not running"
+    fi
+
+    # 2. Disable auto-start
+    echo "2. Disabling auto-start..."
+    if sudo systemctl is-enabled --quiet "$service_name" 2>/dev/null; then
+        sudo systemctl disable "$service_name"
+        echo "   ✓ Auto-start disabled"
+    else
+        echo "   ✓ Auto-start was already disabled"
+    fi
+
+    # 3. Remove game installation directory
+    if [[ -n "$game_dir" && "$game_dir" != "null" && -d "$game_dir" ]]; then
+        echo "3. Removing game files..."
+        echo "   Directory: $game_dir"
+        size=$(du -sh "$game_dir" 2>/dev/null | cut -f1 || echo "unknown")
+        echo "   Size: $size"
+        read -p "   Remove game installation directory? [y/N] " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            sudo rm -rf "$game_dir"
+            echo "   ✓ Game files removed"
+        else
+            echo "   ✓ Game files kept"
+        fi
+    else
+        echo "3. Game directory not found or not specified"
+    fi
+
+    # 4. Clean user data if requested
+    if [[ "$clean_user_data" == "true" && -n "$user" && "$user" != "null" ]]; then
+        user_home=$(getent passwd "$user" | cut -d: -f6)
+        if [[ -n "$user_home" && -d "$user_home" ]]; then
+            echo "4. Cleaning user data..."
+            echo "   User home: $user_home"
+
+            # Show what would be removed
+            echo "   Files that would be removed:"
+            if [[ -n "$log_dir" && "$log_dir" != "null" && -d "$log_dir" ]]; then
+                echo "     - Logs: $log_dir"
+            fi
+            find "$user_home" -maxdepth 2 -type d -name "*7DaysToDie*" -o -name "*save*" -o -name "*config*" | sed 's/^/     - /'
+
+            read -p "   Remove user data (saves, logs, configs)? [y/N] " -n 1 -r
+            echo ""
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                # Remove logs
+                if [[ -n "$log_dir" && "$log_dir" != "null" && -d "$log_dir" ]]; then
+                    rm -rf "$log_dir"
+                    echo "     ✓ Logs removed"
+                fi
+                # Remove game-specific directories in user home
+                find "$user_home" -maxdepth 2 -type d -name "*7DaysToDie*" -exec rm -rf {} \; 2>/dev/null || true
+                echo "     ✓ User data cleaned"
+            else
+                echo "     ✓ User data kept"
+            fi
+        fi
+    elif [[ "$clean_user_data" == "true" ]]; then
+        echo "4. No user specified for user data cleanup"
+    fi
+
+    # 5. Clean steam cache if requested
+    if [[ "$clean_steam_cache" == "true" && -n "$steam_app" && "$steam_app" != "null" ]]; then
+        echo "5. Cleaning steam cache..."
+        steam_cache_dir="/opt/steam/steamapps/downloading/${steam_app}"
+        if [[ -d "$steam_cache_dir" ]]; then
+            echo "   Cache directory: $steam_cache_dir"
+            size=$(du -sh "$steam_cache_dir" 2>/dev/null | cut -f1 || echo "unknown")
+            echo "   Size: $size"
+            read -p "   Remove steam download cache? [y/N] " -n 1 -r
+            echo ""
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                rm -rf "$steam_cache_dir"
+                echo "   ✓ Steam cache removed"
+            else
+                echo "   ✓ Steam cache kept"
+            fi
+        else
+            echo "   ✓ No steam cache found"
+        fi
+
+        # Also stop the steam download service
+        if sudo systemctl is-active --quiet "steam@${steam_app}.service" 2>/dev/null; then
+            sudo systemctl stop "steam@${steam_app}.service"
+            echo "   ✓ Steam download service stopped"
+        fi
+    elif [[ "$clean_steam_cache" == "true" ]]; then
+        echo "5. No steam app specified for cache cleanup"
+    fi
+
+    echo ""
+    echo "=== Cleanup Complete ==="
+    echo "Game service '$game_name' has been cleaned."
+    echo ""
+    echo "To completely reinstall:"
+    echo "  just update {{game}}  # Download fresh game files"
+    echo "  just start {{game}}   # Start the service"
 
 # Show disk usage for game files
 disk:
