@@ -47,8 +47,8 @@ let
   ];
 
   gitIdentityFiles = [
-    # "~/.ssh/id_github_benway"
-    "~/.ssh/id_github_slappy"
+    # "id_github_benway"
+    "id_github_slappy"
   ];
 
   # Lots of hosts have the same default config, so don't duplicate
