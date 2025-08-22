@@ -239,9 +239,21 @@ lib.mkMerge [
     id = "7dtd";
     name = "7 Days to Die";
     description = "7 Days to Die Dedicated Server (Alpha 20.7)";
-    serviceName = "sevendtd";
+    unitName = "7dtd-server"; # systemd-run unit name
     steamApp = "294420_alpha20.7";
     gameDir = game-dir;
+    executable = "${game-dir}/7DaysToDieServer.x86_64";
+    args = [
+      "-quit"
+      "-batchmode"
+      "-nographics"
+      "-dedicated"
+      "-configfile=/home/sevendtd/serverconfig.xml"
+      "-logfile=/home/sevendtd/logs/output_log.txt"
+    ];
+    environment = {
+      LD_LIBRARY_PATH = "${game-dir}:${pkgs.glibc}/lib";
+    };
     ports = [
       26900
       26901
@@ -250,48 +262,13 @@ lib.mkMerge [
     configFile = "/home/sevendtd/serverconfig.xml";
     logDir = "/home/sevendtd/logs";
     user = "sevendtd";
+    group = "game";
+    workingDirectory = "/home/sevendtd";
   })
 
-  # Main service and firewall configuration
+  # Firewall configuration only - no systemd service needed
+  # Games are managed imperatively via justfile + systemd-run
   {
-
-    systemd.services.sevendtd = {
-      # Disabled by default - use justfile recipes to manage
-      # wantedBy = [ "multi-user.target" ];
-
-      # No service dependencies to prevent restart loops
-
-      serviceConfig = {
-        ExecStart = utils.escapeSystemdExecArgs [
-          "${game-dir}/7DaysToDieServer.x86_64"
-          "-quit"
-          "-batchmode"
-          "-nographics"
-          "-dedicated"
-          "-configfile=/home/sevendtd/serverconfig.xml"
-          "-logfile=/home/sevendtd/logs/output_log.txt"
-        ];
-        Nice = "-5";
-        PrivateTmp = true;
-        Restart = "always";
-        UMask = "0002"; # Make files group-writable
-        User = "sevendtd";
-        WorkingDirectory = "~";
-        # Create logs directory and ensure game files exist
-        ExecStartPre = [
-          "${pkgs.coreutils}/bin/mkdir -p /home/sevendtd/logs"
-          # Wait for steamcmd completion marker (ensures steam download finished)
-          "${pkgs.bash}/bin/bash -c 'while [[ ! -f ${game-dir}/.steamcmd-completed ]]; do echo \"Waiting for steamcmd to complete...\"; sleep 5; done'"
-          # Verify the main executable exists and is executable
-          "${pkgs.coreutils}/bin/test -f ${game-dir}/7DaysToDieServer.x86_64"
-          "${pkgs.coreutils}/bin/test -x ${game-dir}/7DaysToDieServer.x86_64"
-        ];
-      };
-      environment = {
-        # Set LD_LIBRARY_PATH for 7DTD server requirements
-        LD_LIBRARY_PATH = "${game-dir}:${pkgs.glibc}/lib";
-      };
-    };
 
     # Basic firewall configuration for 7DTD
     networking.firewall = {

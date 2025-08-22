@@ -8,26 +8,38 @@
       id,
       name,
       description,
-      serviceName,
+      unitName ? "${id}-server", # systemd-run unit name
       steamApp ? null,
       gameDir ? null,
+      executable ? null,
+      args ? [ ],
+      environment ? { },
       ports ? [ ],
       configFile ? null,
       logDir ? null,
       user ? null,
       group ? "game",
+      workingDirectory ? null,
     }:
     {
       environment.etc."gameserver/services/${id}.json" = {
         text = builtins.toJSON {
-          inherit id name description;
-          service_name = serviceName;
+          inherit
+            id
+            name
+            description
+            executable
+            args
+            environment
+            ports
+            ;
+          unit_name = unitName;
           steam_app = steamApp;
           game_dir = gameDir;
-          inherit ports;
           config_file = configFile;
           log_dir = logDir;
           inherit user group;
+          working_directory = workingDirectory;
         };
         mode = "0644";
       };
