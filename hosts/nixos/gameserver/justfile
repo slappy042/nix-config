@@ -152,14 +152,28 @@ start game:
             echo "Steam files not ready, downloading first..."
             sudo systemctl start "steam@${steam_app}.service"
             echo "Waiting for steam download to complete..."
-            while ! sudo systemctl is-active --quiet "steam@${steam_app}.service" && ! sudo systemctl is-failed --quiet "steam@${steam_app}.service"; do
+
+            # Wait for either completion marker or service failure
+            while [[ ! -f "$marker_file" ]] && ! sudo systemctl is-failed --quiet "steam@${steam_app}.service"; do
                 sleep 2
             done
+
+            # Check if download failed
             if sudo systemctl is-failed --quiet "steam@${steam_app}.service"; then
                 echo "Steam download failed!"
                 sudo journalctl -u "steam@${steam_app}.service" --no-pager -n 20
                 exit 1
             fi
+
+            # Verify completion marker was created
+            if [[ ! -f "$marker_file" ]]; then
+                echo "Steam download appears incomplete (no completion marker found)!"
+                exit 1
+            fi
+
+            echo "Steam download completed successfully!"
+        else
+            echo "Steam files already downloaded (found completion marker)"
         fi
     fi
 
