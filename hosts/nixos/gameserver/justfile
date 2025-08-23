@@ -130,10 +130,20 @@ start game:
     fi
 
     game_name=$(jq -r '.name' "$json_file")
-    service_name=$(jq -r '.service_name' "$json_file")
+    unit_name=$(jq -r '.unit_name' "$json_file")
     steam_app=$(jq -r '.steam_app // empty' "$json_file")
+    executable=$(jq -r '.executable' "$json_file")
+    user=$(jq -r '.user' "$json_file")
+    group=$(jq -r '.group // "game"' "$json_file")
+    working_dir=$(jq -r '.working_directory // empty' "$json_file")
 
     echo "Starting $game_name..."
+
+    # Check if already running
+    if sudo systemctl is-active --quiet "$unit_name" 2>/dev/null; then
+        echo "$game_name is already running!"
+        exit 1
+    fi
 
     # Handle steam dependency if specified
     if [[ -n "$steam_app" && "$steam_app" != "null" ]]; then
@@ -153,8 +163,46 @@ start game:
         fi
     fi
 
-    sudo systemctl start "$service_name"
-    echo "$game_name starting..."
+    # Build systemd-run command
+    cmd=(
+        sudo systemd-run
+        --unit="$unit_name"
+        --uid="$user"
+        --gid="$group"
+        --property=Restart=always
+        --property=RestartSec=5
+        --property=Nice=-5
+        --property=UMask=0002
+        --property=PrivateTmp=yes
+    )
+
+    # Add working directory if specified
+    if [[ -n "$working_dir" && "$working_dir" != "null" ]]; then
+        cmd+=(--working-directory="$working_dir")
+    fi
+
+    # Add environment variables
+    env_vars=$(jq -r '.environment // {} | to_entries[] | "--setenv=\(.key)=\(.value)"' "$json_file")
+    if [[ -n "$env_vars" ]]; then
+        while IFS= read -r env_var; do
+            cmd+=("$env_var")
+        done <<< "$env_vars"
+    fi
+
+    # Add executable and arguments
+    cmd+=("$executable")
+
+    # Add arguments
+    args=$(jq -r '.args[]? // empty' "$json_file")
+    if [[ -n "$args" ]]; then
+        while IFS= read -r arg; do
+            cmd+=("$arg")
+        done <<< "$args"
+    fi
+
+    # Execute the command
+    "${cmd[@]}"
+    echo "$game_name started as systemd unit: $unit_name"
 
 # Stop a game service
 stop game:
@@ -168,10 +216,10 @@ stop game:
     fi
 
     game_name=$(jq -r '.name' "$json_file")
-    service_name=$(jq -r '.service_name' "$json_file")
+    unit_name=$(jq -r '.unit_name' "$json_file")
 
     echo "Stopping $game_name..."
-    sudo systemctl stop "$service_name"
+    sudo systemctl stop "$unit_name"
 
 # Restart a game service
 restart game:
