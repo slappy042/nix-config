@@ -20,8 +20,6 @@ let
   stdGitConfig = "${config.home.homeDirectory}/.config/git/gitconfig.std";
 in
 {
-  imports = lib.custom.scanPaths ./.;
-
   home.packages = lib.flatten [
     (builtins.attrValues {
       inherit (pkgs)
