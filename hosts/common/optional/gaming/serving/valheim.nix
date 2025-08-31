@@ -21,10 +21,10 @@ in
     home = "/home/valheim";
     createHome = true;
     homeMode = "750";
-    group = "game";
+    group = "valheim";
   };
 
-  # No need for a separate valheim group - we use the shared game group
+  # No need for a separate valheim group - we use the user's default group
 
   systemd.services.valheim = {
     wantedBy = [ "multi-user.target" ];

@@ -97,11 +97,18 @@ in
       edu = "cd $HOME/src/edu";
       wiki = "cd $HOME/sync/obsidian-vault-01/wiki";
       uc = "cd $HOME/src/unmoved-centre";
-      l = "eza -lah";
-      la = "eza -lah";
-      ll = "eza -lh";
-      ls = "eza";
-      lsa = "eza -lah";
+
+      #------------Eza (better ls)------------
+      # https://gist.github.com/AppleBoiy/04a249b6f64fd0fe1744aff759a0563b
+      ls = "eza --color=always --group-directories-first --icons";
+      ll = "eza -la --icons --octal-permissions --group-directories-first";
+      l = "eza -bGF --header --git --color=always --group-directories-first --icons";
+      llm = "eza -lbGd --header --git --sort=modified --color=always --group-directories-first --icons";
+      la = "eza --long --all --group --group-directories-first";
+      lx = "eza -lbhHigUmuSa@ --time-style=long-iso --git --color-scale --color=always --group-directories-first --icons";
+      lS = "eza -1 --color=always --group-directories-first --icons";
+      lt = "eza --tree --level=2 --color=always --group-directories-first --icons";
+      "l." = "eza -a | grep -E '^\\.'";
 
       #------------Nix src navigation------------
       cnc = "cd ${devNix}/nix-config";

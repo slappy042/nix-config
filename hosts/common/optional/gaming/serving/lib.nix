@@ -1,8 +1,8 @@
-{ lib, ... }:
+{ lib, config, ... }:
 
 {
   # Helper function to register a game service in the JSON registry
-  # This creates the /etc/gameserver/services/<id>.json file that the justfile parses
+  # This creates the ~/services/<id>.json file that the justfile parses
   registerGameService =
     {
       id,
@@ -18,30 +18,35 @@
       configFile ? null,
       logDir ? null,
       user ? null,
-      group ? "game",
+      group ? user,
       workingDirectory ? null,
+      cleanFilters ? [ ], # List of specific paths to clean for this game
     }:
+    let
+      serviceJson = builtins.toJSON {
+        inherit
+          id
+          name
+          description
+          executable
+          args
+          environment
+          ports
+          cleanFilters
+          ;
+        unitName = unitName;
+        steamApp = steamApp;
+        gameDir = gameDir;
+        configFile = configFile;
+        logDir = logDir;
+        inherit user group;
+        workingDirectory = workingDirectory;
+      };
+    in
     {
-      environment.etc."gameserver/services/${id}.json" = {
-        text = builtins.toJSON {
-          inherit
-            id
-            name
-            description
-            executable
-            args
-            environment
-            ports
-            ;
-          unit_name = unitName;
-          steam_app = steamApp;
-          game_dir = gameDir;
-          config_file = configFile;
-          log_dir = logDir;
-          inherit user group;
-          working_directory = workingDirectory;
-        };
-        mode = "0644";
+      # Use home-manager to create the service registry file
+      home-manager.users.${config.hostSpec.username}.home.file."services/${id}.json" = {
+        text = serviceJson;
       };
     };
 
@@ -50,7 +55,7 @@
     {
       username,
       description ? "${username} game server user",
-      group ? "game",
+      group ? username,
       extraGroups ? [ ],
       homeDir ? "/home/${username}",
     }:
@@ -64,20 +69,30 @@
       };
     };
 
-  # Helper function to create systemd tmpfiles rules for game directories
+  # Helper function to create systemd tmpfiles rules for game directories and symlinks
   createGameDirectories =
     {
       user,
-      group ? "game",
+      group ? user,
       homeDir ? "/home/${user}",
       logDir ? "${homeDir}/logs",
       extraDirs ? [ ],
+      gameDir ? null,
+      gameSymlink ? null,
     }:
-    {
-      systemd.tmpfiles.rules = [
+    let
+      dirRules = [
         "d ${homeDir} 0750 ${user} ${group} - -"
         "d ${logDir} 0750 ${user} ${group} - -"
       ]
       ++ (map (dir: "d ${dir} 0750 ${user} ${group} - -") extraDirs);
+      symlinkRule =
+        if gameSymlink != null && gameDir != null then
+          [ "L ${gameSymlink} - ${user} ${group} - ${gameDir}" ]
+        else
+          [ ];
+    in
+    {
+      systemd.tmpfiles.rules = dirRules ++ symlinkRule;
     };
 }

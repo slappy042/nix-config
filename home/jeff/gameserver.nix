@@ -17,7 +17,7 @@
 
   # Deploy gameserver management justfile
   home.file."justfile" = {
-    source = ../../hosts/nixos/gameserver/justfile;
+    source = ../../hosts/common/optional/gaming/serving/justfile;
     # Make it executable for convenience (though just works with non-executable files too)
     executable = false;
   };

@@ -16,18 +16,19 @@
 
   # System packages needed for game service management
   environment.systemPackages = with pkgs; [
-    jq # For parsing JSON game service registry
+    jq # For parsing JSON game service registry and marker files
+    patchelf # For fixing NixOS executable interpreter paths
   ];
 
-  # Create the /etc/gameserver directory structure
-  systemd.tmpfiles.rules = [
-    "d /etc/gameserver 0755 root root - -"
-    "d /etc/gameserver/services 0755 root root - -"
-  ];
-
-  # Create the shared game group for all gaming services
-  users.groups.game = { };
-
-  # Add the primary user to the game group so they can manage all gaming service files
-  users.users.${config.hostSpec.username}.extraGroups = [ "game" ];
+  # Configure primary user's home directory with home-manager
+  home-manager.users.${config.hostSpec.username} = {
+    home.file = {
+      # Main game control documentation
+      "game-control.md" = {
+        source = ./docs/game-control.md;
+      };
+      # Services directory for game registry
+      "services/.keep".text = "";
+    };
+  };
 }
