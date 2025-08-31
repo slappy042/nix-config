@@ -64,9 +64,26 @@ git merge upstream/dev
 ```
 
 
-# How to add a new host
+# How to add a new host, from dworkin
 - hosts/<host>/
 - home/jeff/<host>.nix
 - home/jeff/common/core/zsh alias
 - nixos-installer/flake.nix
 - flake.nix
+
+## if proxmox VM
+BIOS: OVMF(UEFI)
+Hard Disk: virtio not SCSI (so we will use /dev/vda)
+EFI:
+do not pre-enroll EFI keys
+
+
+## steps
+```bash
+# copy installer ISO to new proxmox VM
+`scp latest.iso root@192.168.1.120:/var/lib/vz/template/iso/nixos-minimal-25.05.20250620.b2485d5-x86_64-linux.iso`
+
+nix develop
+./scripts/bootstrap-nixos.sh -n gameserver -d 192.168.1.223 -k /home/jeff/.ssh/id_camelot
+
+```

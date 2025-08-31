@@ -304,7 +304,7 @@ fi
 if [[ $generated_hardware_config == 1 ]]; then
 	if yes_or_no "Do you want to commit and push the generated hardware-configuration.nix for $target_hostname to nix-config?"; then
 		(pre-commit run --all-files 2>/dev/null || true) &&
-			git add "$git_root/hosts/$target_hostname/hardware-configuration.nix" &&
+			git add "$git_root/hosts/nixos/$target_hostname/hardware-configuration.nix" &&
 			(git commit -m "feat: hardware-configuration.nix for $target_hostname" || true) &&
 			git push
 	fi

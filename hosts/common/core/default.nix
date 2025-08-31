@@ -120,7 +120,7 @@ in
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    promptInit = "source ''${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+    # promptInit = "source ''${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
   };
 
   # This is a fix to enable VSCode to successfully remote SSH on a client to a NixOS host

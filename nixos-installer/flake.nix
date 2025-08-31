@@ -58,12 +58,18 @@
       nixosConfigurations = {
         # host = newConfig "name" disk" "swapSize" "useLuks" "useImpermanence"
         # Swap size is in GiB
-        dworkin = newConfig "dworkin" "/dev/vda" 0 false false;
-        brand = newConfig "brand" "/dev/vda" 0 false false;
-        nixxy1 = newConfig "nixxy1" "/dev/sda" 8 false false;
-        nixxy2 = newConfig "nixxy2" "/dev/sda" 8 false false;
-        nixxy3 = newConfig "nixxy3" "/dev/sda" 8 false false;
+
+        # WARNING THE useLuks and useImpermanence settings affect which disk spec is used;
+        # make sure they match the disk spec you want to use in the host's default.nix
+        # see above logic in newConfig
+
+        dworkin = newConfig "dworkin" "/dev/vda" 0 false true;
+        brand = newConfig "brand" "/dev/vda" 0 false true;
+        nixxy1 = newConfig "nixxy1" "/dev/sda" 8 false true;
+        nixxy2 = newConfig "nixxy2" "/dev/sda" 8 false true;
+        nixxy3 = newConfig "nixxy3" "/dev/sda" 8 false true;
         z13flow = newConfig "z13flow" "/dev/nvme0n1" 8 true true;
+        gameserver = newConfig "gameserver" "/dev/vda" 0 false true;
 
         # EmergentMind's stuff, left here for reference
         # host = newConfig "name" disk" "swapSize" "useLuks" "useImpermanence"
