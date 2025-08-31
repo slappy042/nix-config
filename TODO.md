@@ -9,7 +9,7 @@ TODO:
 
   - generate existing config
 
-- pam ssh agent setup to not need to type in github passphrases
+- ✅ pam ssh agent setup to not need to type in github passphrases
 
 DONE
 
