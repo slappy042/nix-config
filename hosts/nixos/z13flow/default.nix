@@ -110,7 +110,7 @@
 
   # Using standard kernel until 6.17 stable is available with MST/DSC fixes
   # Will use 2 monitors for now to avoid MST/DSC boot hang issues
-  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # Standard AMD GPU kernel parameters
   boot.kernelParams = [

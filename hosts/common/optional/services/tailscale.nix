@@ -1,5 +1,5 @@
 # Enable tailscale
-{ ... }:
+{ pkgs, ... }:
 {
   #   services.tailscale.enable = true;
   services.tailscale = {
@@ -7,6 +7,10 @@
     extraSetFlags = [
       "--accept-dns=false"
     ];
+
+    # use unstable because of https://github.com/NixOS/nixpkgs/issues/438765
+    package = pkgs.unstable.tailscale;
+
   };
   #   services.tailscale.authKey = "...";
   #   services.tailscale.hostname = "...";
