@@ -29,6 +29,7 @@
         withSwap = false;
       };
     }
+
     (map lib.custom.relativeToRoot [
       #
       # ========== Required Configs ==========
@@ -41,6 +42,7 @@
       "hosts/common/optional/services/openssh.nix"
       "hosts/common/optional/smbclient.nix"
       "hosts/common/optional/gaming/serving/default.nix"
+      "hosts/common/optional/gaming/serving/gameserver-manager.nix"
     ])
   ];
 

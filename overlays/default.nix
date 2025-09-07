@@ -46,6 +46,14 @@ let
     };
   };
 
+  # Gameserver Manager overlay
+  gameserver-manager-overlay =
+    final: _prev:
+    if inputs ? gameserver-manager && inputs.gameserver-manager ? overlays then
+      inputs.gameserver-manager.overlays.default final _prev
+    else
+      { };
+
 in
 {
   default =
@@ -55,5 +63,6 @@ in
     // (modifications final prev)
     // (linuxModifications final prev)
     // (stable-packages final prev)
-    // (unstable-packages final prev);
+    // (unstable-packages final prev)
+    // (gameserver-manager-overlay final prev);
 }

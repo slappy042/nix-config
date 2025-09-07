@@ -189,5 +189,11 @@
       url = "git+ssh://git@github.com/slappy042/nix-secrets.git?ref=main&shallow=1";
       inputs = { };
     };
+
+    # gameserver-manager - Game server management tool for steam games
+    gameserver-manager = {
+      url = "github:slappy042/gameserver-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }
