@@ -8,9 +8,9 @@
 {
   imports = [
     ./steamcmd.nix
-    # ./valheim.nix
-    # ./satisfactory.nix
-    ./7days-to-die.nix
+    # ./games/valheim.nix
+    # ./games/satisfactory.nix
+    ./games/7days-to-die.nix
     # ... other games
   ];
 
