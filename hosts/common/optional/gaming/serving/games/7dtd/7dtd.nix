@@ -12,10 +12,16 @@
 }:
 let
   # Import gaming library directly to avoid infinite recursion
-  gamingLib = import ./lib.nix { inherit lib config; };
+  gamingLib = import ../../lib.nix { inherit lib config; };
 
-  # Set to {id}-{branch}-{password} for betas.
-  steamApp = "294420_alpha20.7";
+  # Game source configuration for Steam
+  gameSource = {
+    type = "steam";
+    source_id = "294420";
+    metadata = {
+      branch = "alpha20.7";
+    };
+  };
 
   gameShortName = "7dtd";
 
@@ -26,7 +32,7 @@ let
   gameSymlink = "${config.users.users.${config.hostSpec.username}.home}/${gameShortName}";
 
   # Create 7DTD-specific server control instructions file
-  dtdServerControlInstructions = ./docs/7dtd-mods.md;
+  dtdServerControlInstructions = ./7dtd-mods.md;
 in
 lib.mkMerge [
   # Create game directories and symlink
@@ -46,7 +52,7 @@ lib.mkMerge [
     name = "7 Days to Die";
     description = "7 Days to Die Dedicated Server (Alpha 20.7)";
     unitName = "7dtd-server"; # systemd-run unit name
-    steamApp = steamApp;
+    game_source = gameSource;
     gameDir = gameDir;
     executable = "${gameDir}/7DaysToDieServer.x86_64";
     args = [
@@ -97,7 +103,7 @@ lib.mkMerge [
 
     # Create 7DTD documentation in primary user's home directory
     home-manager.users.${config.hostSpec.username}.home.file."7dtd-mods.md" = {
-      source = ./docs/7dtd-mods.md;
+      source = ./7dtd-mods.md;
     };
   }
 ]

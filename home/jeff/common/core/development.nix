@@ -33,6 +33,7 @@ in
 
         # nix
         nixpkgs-review
+        nixfmt-rfc-style
 
         # networking
         nmap

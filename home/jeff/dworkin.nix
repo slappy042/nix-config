@@ -11,7 +11,6 @@
     #
     common/optional/sops.nix
     common/optional/helper-scripts
-    common/optional/development
 
     #common/optional/desktops
   ];

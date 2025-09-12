@@ -10,7 +10,7 @@
     ./steamcmd.nix
     # ./games/valheim.nix
     # ./games/satisfactory.nix
-    ./games/7days-to-die.nix
+    ./games/7dtd/7dtd.nix
     # ... other games
   ];
 
@@ -27,8 +27,8 @@
       "game-control.md" = {
         source = ./docs/game-control.md;
       };
-      # Services directory for game registry
-      "services/.keep".text = "";
+      # Games services directory for game registry
+      "games/services/.keep".text = "";
     };
   };
 }

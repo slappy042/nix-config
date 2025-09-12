@@ -11,7 +11,6 @@
     #
     common/optional/browsers
     # common/optional/desktops # default is hyprland
-    common/optional/development
     common/optional/development/vscode.nix # vscode and extensions
     # common/optional/comms
     common/optional/helper-scripts

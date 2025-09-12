@@ -2,14 +2,14 @@
 
 {
   # Helper function to register a game service in the JSON registry
-  # This creates the ~/services/<id>.json file that the justfile parses
+  # This creates the ~/games/services/<id>.json file that gameserver-manager parses
   registerGameService =
     {
       id,
       name,
       description,
       unitName ? "${id}-server", # systemd-run unit name
-      steamApp ? null,
+      game_source ? null, # { type = "steam"; source_id = "123456"; metadata = { branch = "beta"; }; }
       gameDir ? null,
       executable ? null,
       args ? [ ],
@@ -28,24 +28,25 @@
           id
           name
           description
+          unitName
+          gameDir
           executable
+          user
+          group
+          workingDirectory
           args
           environment
           ports
+          configFile
+          logDir
           cleanFilters
           ;
-        unitName = unitName;
-        steamApp = steamApp;
-        gameDir = gameDir;
-        configFile = configFile;
-        logDir = logDir;
-        inherit user group;
-        workingDirectory = workingDirectory;
+        game_source = game_source;
       };
     in
     {
       # Use home-manager to create the service registry file
-      home-manager.users.${config.hostSpec.username}.home.file."services/${id}.json" = {
+      home-manager.users.${config.hostSpec.username}.home.file."games/services/${id}.json" = {
         text = serviceJson;
       };
     };
