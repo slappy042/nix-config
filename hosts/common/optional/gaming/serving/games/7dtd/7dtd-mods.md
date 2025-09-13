@@ -31,12 +31,6 @@ All mods should be installed to: ~/steam-app-294420_alpha20.7/Mods/
 just stop 7dtd
 ```
 
-#### 2. Create the Mods directory (if it doesn't exist)
-```bash
-sudo mkdir -p ~/steam-app-294420_alpha20.7/Mods
-sudo chown jeff:users ~/steam-app-294420_alpha20.7/Mods
-```
-
 ### Installing Specific Mods
 
 #### Undead Legacy Mod
@@ -45,25 +39,14 @@ sudo chown jeff:users ~/steam-app-294420_alpha20.7/Mods
 **Installation steps**:
 1. Download the Undead Legacy mod from the website
 2. Extract the downloaded archive
-3. Copy the mod folder to the Mods directory:
+3. Copy the UndeadLegacyStable-main folder to the 7dtd directory:
 ```bash
-sudo cp -r /path/to/extracted/UndeadLegacy ~/steam-app-294420_alpha20.7/Mods/
-sudo chown -R jeff:users ~/steam-app-294420_alpha20.7/Mods/UndeadLegacy
+unzip UndeadLegacyStable-main.zip
+mv UndeadLegacyStable-main/* ~/games/steam/7dtd
+chmod +x ~/games/steam/7dtd/run_bepinex_server.sh
+
+# append "<dllmap dll="dl" target="libdl.so.2"/>" into ~/games/steam/7dtd/7DaysToDieServer_Data/MonoBleedingEdge/etc/mono/config
 ```
-
-#### Compo Pack 48.5 for UL
-**Source**: Manual Google Drive download
-
-**Installation steps**:
-1. Download Compo Pack 48.5 for UL from Google Drive
-2. Extract the downloaded archive
-3. Copy the mod folder to the Mods directory:
-```bash
-sudo cp -r /path/to/extracted/CompoPack48.5 ~/steam-app-294420_alpha20.7/Mods/
-sudo chown -R jeff:users ~/steam-app-294420_alpha20.7/Mods/CompoPack48.5
-```
-
-**Note**: Compo Pack must be installed AFTER Undead Legacy as it's an addon for UL.
 
 ### General Mod Installation Process
 

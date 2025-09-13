@@ -180,6 +180,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # envfs to fix /bin
+    envfs = {
+      url = "github:Mic92/envfs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     #
     # ========= Personal Repositories =========
     #

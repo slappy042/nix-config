@@ -54,14 +54,15 @@ lib.mkMerge [
     unitName = "7dtd-server"; # systemd-run unit name
     game_source = gameSource;
     gameDir = gameDir;
-    executable = "${gameDir}/7DaysToDieServer.x86_64";
+    executable = "${pkgs.writeShellScript "7dtd-wrapper" ''
+      #!/bin/bash
+      export PATH="${pkgs.coreutils}/bin:${pkgs.file}/bin:${pkgs.findutils}/bin:$PATH"
+      cd ${gameDir}
+      # Run the BepInEx script without arguments - it handles everything internally
+      exec ${pkgs.bash}/bin/bash ./run_bepinex_server.sh
+    ''}";
     args = [
-      "-quit"
-      "-batchmode"
-      "-nographics"
-      "-dedicated"
-      "-configfile=${gameDir}/serverconfig.xml"
-      "-logfile=${gameDir}/output_log.txt"
+      # No args - let the BepInEx script handle server configuration
     ];
     environment = {
       LD_LIBRARY_PATH = "${gameDir}:${pkgs.glibc}/lib";
@@ -75,7 +76,7 @@ lib.mkMerge [
     logDir = "${gameDir}";
     user = config.hostSpec.username;
     group = "users";
-    workingDirectory = config.users.users.${config.hostSpec.username}.home;
+    workingDirectory = gameDir;
     cleanFilters = [
       # Add specific paths to clean for 7 Days to Die user data
       # Examples:

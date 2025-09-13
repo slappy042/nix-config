@@ -143,8 +143,10 @@ in
         eza # ls replacement
         dust # disk usage
         fd # tree style ls
+        file # file command
         findutils # find
         fzf # fuzzy search
+        glow # markdown viewer
         jq # json pretty printer and manipulator
         micro # a small editor
         nix-tree # nix package tree viewer
