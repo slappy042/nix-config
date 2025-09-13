@@ -159,6 +159,7 @@ in
         ripgrep # better grep
         steam-run # for running non-NixOS-packaged binaries on Nix
         usbutils
+        inetutils # for ifconfig, ftp, telnet, etc
         tree # cli dir tree viewer
         unzip # zip extraction
         unrar # rar extraction
