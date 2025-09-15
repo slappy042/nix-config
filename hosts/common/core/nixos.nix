@@ -28,7 +28,7 @@
 
   # this is to fix /bin/bash
   # it makes /bin appear empty, although it works fine
-  services.envfs.enable = true;
+  # services.envfs.enable = true;
 
   services.keyd = {
     enable = true;
