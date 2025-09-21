@@ -263,11 +263,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1757744239,
-        "narHash": "sha256-hdBY/tHa/dH2i9Nw+MEMHZ9usZMK+nmeOZZEmcaQ32w=",
+        "lastModified": 1758347610,
+        "narHash": "sha256-pKLK20OhII1zyCg4che/iRVkXdRXrH8UNCCr3+SFFqw=",
         "owner": "slappy042",
         "repo": "gameserver-manager",
-        "rev": "f2efd84f516654641a9fed47b5bfb406e9d44b2f",
+        "rev": "322b4fb51ef720b3569198a5b8ed6f55790843aa",
         "type": "github"
       },
       "original": {
