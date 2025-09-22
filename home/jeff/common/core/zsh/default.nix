@@ -62,12 +62,6 @@ in
         fi
       '')
       (lib.mkAfter (lib.readFile ./zshrc))
-      (lib.mkAfter ''
-        # Auto-start Zellij, but not in VSCode terminals
-        if [ "$TERM_PROGRAM" != "vscode" ]; then
-          eval "$(zellij setup --generate-auto-start zsh)"
-        fi
-      '')
     ];
 
     oh-my-zsh = {
