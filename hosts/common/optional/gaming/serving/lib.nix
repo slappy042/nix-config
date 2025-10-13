@@ -21,6 +21,7 @@
       group ? user,
       workingDirectory ? null,
       cleanFilters ? [ ], # List of specific paths to clean for this game
+      shutdownCommand ? null, # Custom shutdown command (if not using systemctl stop)
     }:
     let
       serviceJson = builtins.toJSON {
@@ -40,6 +41,7 @@
           configFile
           logDir
           cleanFilters
+          shutdownCommand
           ;
         game_source = game_source;
       };

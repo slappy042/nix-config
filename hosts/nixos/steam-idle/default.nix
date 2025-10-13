@@ -39,6 +39,8 @@
       # ========== Optional Configs ==========
       #
       "hosts/common/optional/gaming/steam.nix" # steam, gamescope, gamemode, and related hardware
+      # "hosts/common/optional/guacamole-server.nix" # guacamole server for rdp
+      "hosts/common/optional/rdp-server.nix" # RDP server for Remmina access
       "hosts/common/optional/kde.nix" # KDE
       "hosts/common/optional/services/openssh.nix"
       "hosts/common/optional/smbclient.nix"

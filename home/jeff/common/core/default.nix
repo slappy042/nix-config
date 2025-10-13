@@ -147,7 +147,9 @@ in
         findutils # find
         fzf # fuzzy search
         glow # markdown viewer
+        htop # top viewer
         jq # json pretty printer and manipulator
+        killall # kill processes by name
         micro # a small editor
         nix-tree # nix package tree viewer
         neofetch # fancier system info than pfetch
