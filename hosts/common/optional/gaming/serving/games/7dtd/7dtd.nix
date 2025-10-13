@@ -77,6 +77,52 @@ lib.mkMerge [
     user = config.hostSpec.username;
     group = "users";
     workingDirectory = gameDir;
+    shutdownCommand = [
+      "${pkgs.busybox}/bin/timeout"
+      "30"
+      "${pkgs.writeShellScript "7dtd-shutdown" ''
+        #!/bin/bash
+        set -euo pipefail
+
+        # Read admin password from serverconfig.xml
+        config_file="${gameDir}/serverconfig.xml"
+        if [[ ! -f "$config_file" ]]; then
+          echo "Error: serverconfig.xml not found at $config_file"
+          exit 1
+        fi
+
+        # Extract telnet password using grep and sed (avoiding xmllint dependency)
+        telnet_password=$(grep -o 'name="TelnetPassword".*value="[^"]*"' "$config_file" | sed 's/.*value="\([^"]*\)".*/\1/' || true)
+
+        if [[ -z "$telnet_password" ]]; then
+          echo "Warning: Could not find telnet password in serverconfig.xml"
+          echo "Using fallback method: systemctl stop"
+          exit 1
+        fi
+
+        echo "Initiating graceful 7DTD shutdown via telnet..."
+
+        # Use expect to automate telnet session
+        ${pkgs.expect}/bin/expect -c "
+        set timeout 30
+        spawn ${pkgs.busybox}/bin/telnet localhost 8081
+        expect {
+          \"Please enter password:\" {
+            send \"$telnet_password\r\"
+            expect \"***\"
+            send \"shutdown\r\"
+            expect eof
+          }
+          timeout {
+            puts \"Timeout connecting to telnet interface\"
+            exit 1
+          }
+        }
+        "
+
+        echo "Shutdown command sent successfully"
+      ''}"
+    ];
     cleanFilters = [
       # Add specific paths to clean for 7 Days to Die user data
       # Examples:
