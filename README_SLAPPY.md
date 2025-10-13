@@ -67,15 +67,13 @@ git merge upstream/dev
 # How to add a new host, from dworkin
 - hosts/<host>/
 - home/jeff/<host>.nix
-- home/jeff/common/core/zsh alias
 - nixos-installer/flake.nix
-- flake.nix
 
 ## if proxmox VM
 BIOS: OVMF(UEFI)
-Hard Disk: virtio not SCSI (so we will use /dev/vda)
 EFI:
 do not pre-enroll EFI keys
+Hard Disk: virtio not SCSI (so we will use /dev/vda)
 
 
 ## steps

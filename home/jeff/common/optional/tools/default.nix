@@ -14,7 +14,7 @@
       # Productivity
       # drawio
       # grimblast
-      libreoffice
+      # libreoffice
 
       # Privacy
       #veracrypt
@@ -26,7 +26,7 @@
       # Media production
       # audacity
       # blender-hip # -hip variant includes h/w accelrated rendering with AMD RNDA gpus
-      gimp
+      # gimp
       # inkscape
       # obs-studio
       # VM and RDP
