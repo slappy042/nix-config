@@ -54,7 +54,6 @@ let
     };
   };
 
-  preferencesFile = "${config.home.homeDirectory}/dev/dotfiles/nix/config/brave-preferences.json";
 in
 {
   programs.brave = {
