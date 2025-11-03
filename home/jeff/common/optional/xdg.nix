@@ -25,7 +25,7 @@ let
     "application/xhtml+xml" = browser;
     "application/x-extension-xhtml" = browser;
     "application/x-extension-xht" = browser;
-    "application/pdf" = browser;
+    "application/pdf" = [ "org.kde.okular.desktop" ];
     "application/mxf" = media;
     "application/sdp" = media;
     "application/smil" = media;
