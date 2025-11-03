@@ -115,7 +115,7 @@ in
             signingKey = "${sshFolder}/id_github_benway.pub";
           };
           core = {
-            sshCommand = "ssh -i ~/.ssh/id_github_benway";
+            sshCommand = "ssh -o IdentitiesOnly=yes -i ~/.ssh/id_github_benway";
           };
           commit = {
             gpgsign = true;
@@ -135,7 +135,7 @@ in
             signingKey = "${sshFolder}/id_github_slappy.pub";
           };
           core = {
-            sshCommand = "ssh -i ~/.ssh/id_github_slappy";
+            sshCommand = "ssh -o IdentitiesOnly=yes -i ~/.ssh/id_github_slappy";
           };
           commit = {
             gpgsign = true;
