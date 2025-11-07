@@ -85,3 +85,20 @@ nix develop
 ./scripts/bootstrap-nixos.sh -n gameserver -d 192.168.1.223 -k /home/jeff/.ssh/id_camelot
 
 ```
+
+# how to add a new ssh key
+(Untested, I hope this works)
+
+1. generate a ed25519 key, id_foo
+1. copy the id_foo.pub to `hosts/common/users/primary/keys`
+1. get the keygrip of the SSH key
+    1. run `gpg-connect-agent 'keyinfo --ssh-list' /bye`, note the output
+    1. run `ssh-add id_foo`
+    1. run `gpg-connect-agent 'keyinfo --ssh-list' /bye`, note the keygrip of the new key
+1. Update SOPS encrypted file:
+    1. `sops ../nix-secrets/sops/shared.yaml`
+    1. add a new attribute `foo` under `keys/ssh`.
+    1. add a `private_key` attribute with the text of id_foo
+    1. add a `keygrip` attribute with the keygrip from 3c.
+    1. save, commit, push
+1. rebuild

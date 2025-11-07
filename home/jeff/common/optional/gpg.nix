@@ -25,6 +25,8 @@
   '';
 
   # Create activation script to pre-load SSH keys for PAM integration
+  # 1. Load SSH keys into GPG agent (converts & saves to ~/.gnupg; auto-populates sshcontrol with keygrips)
+  # 2. Recreate pam-gnupg with keygrips from SOPS
   home.activation.setupGpgSshKeys = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         # Ensure GPG directory exists
         mkdir -p ~/.gnupg
@@ -46,34 +48,21 @@
           echo "Pre-loading SSH key into GPG agent: $key_name"
 
           # Add the key to GPG agent (this converts and stores it in GPG format)
-          ${pkgs.openssh}/bin/ssh-add "$ssh_key" 2>/dev/null || {
-            echo "Failed to add $key_name (may be encrypted - will be unlocked on login)"
-          }
+          # Use || true to ignore errors if key is already loaded
+          ${pkgs.openssh}/bin/ssh-add "$ssh_key" 2>/dev/null || true
         done
-
-        # Create sshcontrol file (GPG agent should have populated it now)
-        if [ ! -f ~/.gnupg/sshcontrol ]; then
-          cat > ~/.gnupg/sshcontrol << 'EOF'
-    # GPG agent SSH control file
-    # Contains keygrips for SSH keys managed by GPG agent
-
-    EOF
-          chmod 600 ~/.gnupg/sshcontrol
-        fi
 
         # Extract keygrips from SOPS-decrypted files for PAM integration
         echo "Setting up PAM integration using SOPS-stored keygrips..."
 
-        # Create pam-gnupg file with keygrips from SOPS
-        if [ ! -f ~/.pam-gnupg ]; then
-          cat > ~/.pam-gnupg << 'EOF'
+        # Always recreate pam-gnupg file with keygrips from SOPS
+        cat > ~/.pam-gnupg << 'EOF'
     # PAM-GNUPG keygrips file
     # Keygrips for keys that should be unlocked during PAM authentication
     # Populated from SOPS-encrypted keygrip data
 
     EOF
-          chmod 600 ~/.pam-gnupg
-        fi
+        chmod 600 ~/.pam-gnupg
 
         # Add keygrips from SOPS-decrypted files
         keygrip_dir="$HOME/.ssh/.keygrips"
@@ -84,30 +73,13 @@
               keygrip=$(cat "$keygrip_file" 2>/dev/null | tr -d '\n\r' || true)
               # Check if keygrip is exactly 40 hex characters (GPG keygrip format)
               if echo "$keygrip" | grep -q '^[A-F0-9]\{40\}$'; then
-                if ! grep -q "$keygrip" ~/.pam-gnupg 2>/dev/null; then
-                  echo "$keygrip" >> ~/.pam-gnupg
-                  echo "Added SOPS keygrip for PAM unlock: $keygrip (from $(basename "$keygrip_file"))"
-                fi
+                echo "$keygrip" >> ~/.pam-gnupg
+                echo "Added SOPS keygrip for PAM unlock: $keygrip (from $(basename "$keygrip_file"))"
               fi
             fi
           done
         else
           echo "No SOPS keygrip directory found at $keygrip_dir"
-          echo "Falling back to runtime keygrip extraction..."
-
-          # Fallback: try to get keygrips from GPG agent if available
-          sleep 2
-          keygrips=$(${pkgs.gnupg}/bin/gpg-connect-agent 'keyinfo --ssh-list' /bye 2>/dev/null | grep '^S KEYINFO' | awk '{print $3}' || true)
-
-          if [ -n "$keygrips" ]; then
-            echo "Adding runtime keygrips to ~/.pam-gnupg..."
-            for keygrip in $keygrips; do
-              if ! grep -q "$keygrip" ~/.pam-gnupg 2>/dev/null; then
-                echo "$keygrip" >> ~/.pam-gnupg
-                echo "Added runtime keygrip: $keygrip"
-              fi
-            done
-          fi
         fi
 
         # List currently loaded keys
