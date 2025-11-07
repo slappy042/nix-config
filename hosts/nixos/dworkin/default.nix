@@ -38,7 +38,6 @@
       #
       # ========== Optional Configs ==========
       #
-      "hosts/common/optional/services/openssh.nix"
       "hosts/common/optional/smbclient.nix"
     ])
   ];

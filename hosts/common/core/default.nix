@@ -25,6 +25,7 @@ in
       "hosts/common/core/${platform}.nix"
       "hosts/common/core/sops.nix" # Core because it's used for backups, mail
       "hosts/common/core/ssh.nix"
+      "hosts/common/core/openssh.nix" # SSH server with GPG agent integration
       #"hosts/common/core/services" #not used yet
       "hosts/common/users/primary"
       "hosts/common/users/primary/${platform}.nix"

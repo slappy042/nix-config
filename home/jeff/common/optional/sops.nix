@@ -36,9 +36,14 @@ let
     }
     // lib.attrsets.mergeAttrsList (
       lib.lists.map (name: {
-        "keys/ssh/${name}" = {
+        "keys/ssh/${name}/private_key" = {
           sopsFile = "${sopsFolder}/shared.yaml";
           path = "${homeDirectory}/.ssh/id_${name}";
+        };
+        "keys/ssh/${name}/keygrip" = {
+          sopsFile = "${sopsFolder}/shared.yaml";
+          path = "${homeDirectory}/.ssh/.keygrips/id_${name}_keygrip";
+          mode = "0400";
         };
       }) (yubikeys ++ nonYubikeys)
     );

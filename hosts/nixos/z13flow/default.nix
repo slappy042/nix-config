@@ -44,7 +44,6 @@
       #
       # "hosts/common/optional/services/greetd.nix" # display manager
       "hosts/common/optional/services/bluetooth.nix" # Bluetooth
-      "hosts/common/optional/services/openssh.nix" # allow remote SSH access
       "hosts/common/optional/services/printing.nix" # CUPS
       "hosts/common/optional/services/tailscale.nix" # Tailscale
       "hosts/common/optional/audio.nix" # pipewire and cli controls
