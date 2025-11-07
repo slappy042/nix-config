@@ -39,7 +39,6 @@
       #
       # ========== Optional Configs ==========
       #
-      "hosts/common/optional/smbclient.nix"
       "hosts/common/optional/gaming/serving/default.nix"
       "hosts/common/optional/gaming/serving/gameserver-manager.nix"
     ])

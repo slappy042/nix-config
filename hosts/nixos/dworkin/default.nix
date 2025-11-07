@@ -38,7 +38,6 @@
       #
       # ========== Optional Configs ==========
       #
-      "hosts/common/optional/smbclient.nix"
     ])
   ];
 

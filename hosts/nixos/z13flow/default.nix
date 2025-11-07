@@ -58,7 +58,6 @@
       # "hosts/common/optional/plymouth.nix" # fancy boot screen
       # "hosts/common/optional/protonvpn.nix" # vpn
       # "hosts/common/optional/scanning.nix" # SANE and simple-scan
-      "hosts/common/optional/smbclient.nix" # for mounting samba shares
       # "hosts/common/optional/thunar.nix" # file manager
       "hosts/common/optional/vlc.nix" # media player
       # "hosts/common/optional/wayland.nix" # wayland components and pkgs not available in home-manager
