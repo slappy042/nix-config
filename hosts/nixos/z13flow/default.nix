@@ -46,6 +46,7 @@
       "hosts/common/optional/services/bluetooth.nix" # Bluetooth
       "hosts/common/optional/services/printing.nix" # CUPS
       "hosts/common/optional/services/tailscale.nix" # Tailscale
+      "hosts/common/optional/amdgpu_top.nix" # GPU monitor
       "hosts/common/optional/audio.nix" # pipewire and cli controls
       # "hosts/common/optional/libvirt.nix" # vm tools
       "hosts/common/optional/gaming/minecraft.nix" # Minecraft launcher
@@ -53,7 +54,7 @@
       # "hosts/common/optional/hyprland.nix" # window manager
       "hosts/common/optional/kde.nix" # KDE
       # "hosts/common/optional/msmtp.nix" # for sending email notifications
-      # "hosts/common/optional/nvtop.nix" # GPU monitor (not available in home-manager)
+      "hosts/common/optional/nvtop.nix" # GPU monitor (not available in home-manager)
       # "hosts/common/optional/obsidian.nix" # wiki
       # "hosts/common/optional/plymouth.nix" # fancy boot screen
       # "hosts/common/optional/protonvpn.nix" # vpn
@@ -110,10 +111,13 @@
   # Will use 2 monitors for now to avoid MST/DSC boot hang issues
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # see https://github.com/kyuz0/amd-strix-halo-toolboxes?tab=readme-ov-file#62-kernel-parameters-tested-on-fedora-42
   # Standard AMD GPU kernel parameters
   boot.kernelParams = [
-    "amdgpu.modeset=1"
-    "amdgpu.dc=1"
+    #   "amdgpu.modeset=1"
+    #   "amdgpu.dc=1"
+    "amd_iommu=off" # Disables IOMMU for lower latency
+    "ttm.pages_limit=33554432" # 128GB VRAM limit
   ];
 
   # Enable Bluetooth kernel modules
@@ -131,9 +135,8 @@
   ];
 
   hardware.graphics.enable = true;
-  hardware.amdgpu.initrd.enable = true;
+  # hardware.amdgpu.initrd.enable = true;
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu
-  hardware.amdgpu.amdvlk.enable = true; # additional, alternative drivers
 
   # https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.05";

@@ -4,14 +4,15 @@ TODO:
 
   - .domain
   - .networking
+  - total rewrite of user handling, see EM's latest
 
 - plasma-manager
 
   - generate existing config
 
-- ✅ pam ssh agent setup to not need to type in github passphrases
-
 DONE
+
+- ✅ pam ssh agent setup to not need to type in github passphrases
 
 - user creation removed - switched to primary instead
 
