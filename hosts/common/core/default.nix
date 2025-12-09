@@ -130,4 +130,13 @@ in
   # https://wiki.nixos.org/wiki/Visual_Studio_Code # Remote_SSH
   programs.nix-ld.enable = true;
   programs.nix-ld.package = pkgs.nix-ld-rs;
+
+  security.pam.loginLimits = [
+    {
+      domain = "*";
+      type = "soft";
+      item = "nofile";
+      value = "8192";
+    }
+  ];
 }
