@@ -1,3 +1,4 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 SOPS_FILE := "../nix-secrets/.sops.yaml"
 
 # Define path to helpers

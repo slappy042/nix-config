@@ -125,6 +125,7 @@ in
     enableCompletion = true;
     # promptInit = "source ''${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
   };
+  environment.variables.SHELL = "${pkgs.zsh}/bin/zsh";
 
   # This is a fix to enable VSCode to successfully remote SSH on a client to a NixOS host
   # https://wiki.nixos.org/wiki/Visual_Studio_Code # Remote_SSH
