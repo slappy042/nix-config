@@ -10,7 +10,7 @@
 }:
 {
   imports = [
-    inputs.nixvim.homeManagerModules.nixvim
+    inputs.nixvim.homeModules.nixvim
     ./plugins
     ./colorschemes.nix
     ./keymaps.nix

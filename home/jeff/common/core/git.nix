@@ -9,7 +9,7 @@
 {
   programs.git = {
     enable = true;
-    package = pkgs.gitAndTools.gitFull;
+    package = pkgs.git;
 
     ignores = [
       ".csvignore"

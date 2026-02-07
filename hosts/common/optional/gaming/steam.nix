@@ -66,7 +66,7 @@
 
   # https://journix.dev/posts/gaming-on-nixos/
   environment.systemPackages = with pkgs; [
-    protonup
+    protonup-ng
   ];
 
   environment.sessionVariables = {

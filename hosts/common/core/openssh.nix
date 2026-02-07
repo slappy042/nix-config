@@ -77,13 +77,13 @@ in
     };
 
     # Also enable for display managers if they exist
-    sddm.gnupg = lib.mkIf config.services.xserver.displayManager.sddm.enable {
+    sddm.gnupg = lib.mkIf config.services.displayManager.sddm.enable {
       enable = true;
       noAutostart = true;
       storeOnly = false;
     };
 
-    gdm.gnupg = lib.mkIf config.services.xserver.displayManager.gdm.enable {
+    gdm.gnupg = lib.mkIf config.services.displayManager.gdm.enable {
       enable = true;
       noAutostart = true;
       storeOnly = false;
