@@ -12,8 +12,7 @@ in
   programs.zsh = {
     enable = true;
 
-    # relative to ~
-    dotDir = ".config/zsh";
+    dotDir = "${config.xdg.configHome}/zsh";
     enableCompletion = true;
     syntaxHighlighting.enable = true;
     autocd = true;

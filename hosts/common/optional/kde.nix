@@ -5,7 +5,6 @@
   ...
 }:
 {
-
   services = {
     xserver = {
       enable = true;
@@ -56,6 +55,9 @@
       exec ${pkgs.kdePackages.plasma-workspace}/libexec/plasma-dbus-run-session-if-needed \
            ${pkgs.kdePackages.plasma-workspace}/bin/startplasma-wayland
     '')
+
+    # Klassy theme from unstable
+    pkgs.unstable.klassy
   ];
 
   # Keep only generic Wayland-friendly app vars; drop KWIN overrides
