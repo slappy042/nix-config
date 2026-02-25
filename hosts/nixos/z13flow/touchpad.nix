@@ -73,7 +73,7 @@
     after = [ "asusd.service" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.unstable.asusctl}/bin/asusctl aura static -c ffffff";
+      ExecStart = "${pkgs.unstable.asusctl}/bin/asusctl aura effect static -c ffffff";
       RemainAfterExit = true;
     };
   };

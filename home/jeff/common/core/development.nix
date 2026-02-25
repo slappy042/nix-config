@@ -65,11 +65,10 @@ in
 
   #NOTE: Already enabled earlier, this is just extra config
   programs.git = {
-    userName = stdGitName;
-    userEmail = stdGitEmail;
-
     # Enforce SSH to leverage yubikey
-    extraConfig = {
+    settings = {
+      user.name = stdGitName;
+      user.email = stdGitEmail;
 
       # FIXME(git): better place for this?
       save.directory = "${config.home.homeDirectory}/sync/obsidian-vault-01/wiki";

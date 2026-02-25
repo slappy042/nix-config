@@ -10,15 +10,13 @@
 }:
 {
   imports = [
-    inputs.nixvim.homeManagerModules.nixvim
+    inputs.nixvim.homeModules.nixvim
     ./plugins
     ./colorschemes.nix
     ./keymaps.nix
   ];
 
   programs.nixvim = {
-    nixpkgs.pkgs = import <nixpkgs> { };
-
     enable = true;
     enableMan = true; # install man pages for nixvim options
 

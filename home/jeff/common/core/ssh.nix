@@ -72,23 +72,14 @@ in
 {
   programs.ssh =
     let
-      workConfig = if config.hostSpec.isWork then ''Include config.d/work'' else "";
+      workConfig = if config.hostSpec.isWork then "Include config.d/work" else "";
       sshIdentities = lib.strings.concatMapStrings (
         file: "IdentityFile ${config.home.homeDirectory}/.ssh/${file}\n"
       ) sshIdentityFiles;
     in
     {
       enable = true;
-
-      # FIXME(ssh): This should probably be for git systems only?
-      controlMaster = "auto";
-      controlPath = "${config.home.homeDirectory}/.ssh/sockets/S.%r@%h:%p";
-      controlPersist = "20m";
-      # Avoids infinite hang if control socket connection interrupted. ex: vpn goes down/up
-      serverAliveCountMax = 3;
-      serverAliveInterval = 5; # 3 * 5s
-      hashKnownHosts = true;
-      addKeysToAgent = "yes";
+      enableDefaultConfig = false;
 
       # Bring in decrypted config
       extraConfig = ''
@@ -97,7 +88,20 @@ in
         ${workConfig}
       '';
 
-      matchBlocks =
+      matchBlocks = {
+        "*" = {
+          # FIXME(ssh): This should probably be for git systems only?
+          controlMaster = "auto";
+          controlPath = "${config.home.homeDirectory}/.ssh/sockets/S.%r@%h:%p";
+          controlPersist = "20m";
+          # Avoids infinite hang if control socket connection interrupted. ex: vpn goes down/up
+          serverAliveCountMax = 3;
+          serverAliveInterval = 5; # 3 * 5s
+          hashKnownHosts = true;
+          addKeysToAgent = "yes";
+        };
+      }
+      //
         # let
         #   workHosts = if config.hostSpec.isWork then inputs.nix-secrets.work.git.servers else "";
         # in

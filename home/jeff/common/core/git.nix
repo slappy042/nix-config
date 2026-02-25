@@ -9,7 +9,7 @@
 {
   programs.git = {
     enable = true;
-    package = pkgs.gitAndTools.gitFull;
+    package = pkgs.git;
 
     ignores = [
       ".csvignore"
@@ -27,7 +27,7 @@
     # Anytime I use auth, I want to use my yubikey. But I don't want to always be having to touch it
     # for things that don't need it. So I have to hardcode repos that require auth, and default to ssh for
     # actions that require auth.
-    extraConfig =
+    settings =
       let
         # privateRepos = inputs.nix-secrets.git.repos or { };
         # privateWorkRepos = inputs.nix-secrets.git.work.repos or { };
