@@ -1,16 +1,6 @@
 { pkgs, ... }:
 {
+  # Font packages are now installed system-wide via hosts/common/optional/fonts.nix
+  # Keep fontconfig enabled for user-level font configuration
   fonts.fontconfig.enable = true;
-  home.packages = builtins.attrValues {
-    inherit (pkgs)
-
-      noto-fonts
-      meslo-lgs-nf
-      ;
-
-    inherit (pkgs.nerd-fonts)
-
-      fira-code
-      ;
-  };
 }

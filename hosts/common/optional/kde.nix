@@ -5,6 +5,11 @@
   ...
 }:
 {
+  # TODO: make a better way install fonts along with a desktop, ie by defining a higher-level config like "kde desktop"
+  imports = [
+    ./fonts.nix
+  ];
+
   services = {
     xserver = {
       enable = true;
