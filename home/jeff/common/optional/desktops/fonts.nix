@@ -1,16 +1,5 @@
 { pkgs, ... }:
 {
-
-  # TODO add ttf-font-awesome or font-awesome for waybar
-  fontProfiles = {
-    enable = true;
-    monospace = {
-      family = "FiraCode Nerd Font";
-      package = pkgs.nerd-fonts.fira-code;
-    };
-    regular = {
-      family = "Fira Sans";
-      package = pkgs.fira;
-    };
-  };
+  # Font configuration is now handled system-wide via hosts/common/optional/fonts.nix
+  # This file can be removed or used for user-specific font overrides
 }
