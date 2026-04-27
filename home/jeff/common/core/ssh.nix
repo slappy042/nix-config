@@ -99,6 +99,7 @@ in
           serverAliveInterval = 5; # 3 * 5s
           hashKnownHosts = true;
           addKeysToAgent = "yes";
+          forwardAgent = false; # safe default; desktop hosts override via homelab Match block below
         };
       }
       //
@@ -148,7 +149,14 @@ in
           #     "~/.ssh/id_borg"
           #   ];
           # };
+        }
+      // lib.optionalAttrs config.hostSpec.hasDesktop {
+        # Desktop hosts forward their (pam_gnupg-loaded) agent to known homelab hosts.
+        "homelab" = lib.hm.dag.entryAfter [ "*" ] {
+          host = "brand dworkin gameserver nixnas nixxy1 nixxy2 nixxy3 steam-idle";
+          forwardAgent = true;
         };
+      };
       # // (inputs.nix-secrets.networking.ssh.matchBlocks lib)
       # // vanillaHostsConfig;
 

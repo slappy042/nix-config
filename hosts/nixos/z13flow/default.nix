@@ -45,6 +45,7 @@
       # "hosts/common/optional/services/greetd.nix" # display manager
       "hosts/common/optional/services/bluetooth.nix" # Bluetooth
       "hosts/common/optional/services/printing.nix" # CUPS
+      "hosts/common/optional/services/openssh-desktop.nix" # GPG agent + SSH_AUTH_SOCK for desktop
       "hosts/common/optional/services/tailscale.nix" # Tailscale
       "hosts/common/optional/amdgpu_top.nix" # GPU monitor
       "hosts/common/optional/audio.nix" # pipewire and cli controls
@@ -78,6 +79,7 @@
 
   hostSpec = {
     hostName = "z13flow";
+    hasDesktop = true;
     persistFolder = "/persist"; # added for "completion" because of the disko spec that was used even though impermanence isn't actually enabled here yet.
   };
 

@@ -88,6 +88,11 @@
       default = false;
       description = "Used to indicate a server host";
     };
+    hasDesktop = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Whether this host has an interactive graphical desktop login. Enables pam_gnupg SSH_AUTH_SOCK setup and outbound SSH agent forwarding to the homelab subnet.";
+    };
     isWork = lib.mkOption {
       type = lib.types.bool;
       default = false;
