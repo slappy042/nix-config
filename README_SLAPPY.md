@@ -24,6 +24,11 @@ This is "my" nix-config which is almost entirely lifted from [EmergentMind](http
 * copy .pub ssh keys alongside private keys
 * fix .ssh/config not having id_camelot as IdentityFile as default
 * nvim not installed? "vi" not working: "nvim is not found"
+* tang/clevis for LUKS
+    * https://www.ogselfhosting.com/index.php/2023/12/25/tang-clevis-for-a-luks-encrypted-debian-server/
+* flake-parts
+    * https://github.com/hercules-ci/flake-parts
+    * https://github.com/EmergentMind/nix-config/blob/dev/flake.nix
 
 ## Useful(?) links
 
@@ -65,7 +70,7 @@ git merge upstream/dev
 
 
 # How to add a new host, from dworkin
-- hosts/<host>/
+- hosts/nixos/<host>/
 - home/jeff/<host>.nix
 - nixos-installer/flake.nix
 

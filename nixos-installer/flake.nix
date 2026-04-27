@@ -71,6 +71,17 @@
         z13flow = newConfig "z13flow" "/dev/nvme0n1" 8 true true;
         gameserver = newConfig "gameserver" "/dev/vda" 0 false true;
         steam-idle = newConfig "steam-idle" "/dev/vda" 0 false true;
+        nixnas = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = minimalSpecialArgs;
+          modules = [
+            inputs.disko.nixosModules.disko
+            ../hosts/nixos/nixnas/disks.nix
+            ./minimal-configuration.nix
+            { networking.hostName = "nixnas"; }
+            ../hosts/nixos/nixnas/hardware-configuration.nix
+          ];
+        };
 
         # EmergentMind's stuff, left here for reference
         # host = newConfig "name" disk" "swapSize" "useLuks" "useImpermanence"
