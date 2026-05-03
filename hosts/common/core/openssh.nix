@@ -35,7 +35,7 @@ in
     ];
   };
 
-  # yubikey login / sudo
+  # SSH key-based sudo/login via agent (pam_rssh - works with any SSH key, not just YubiKey)
   security.pam = {
     rssh.enable = true;
     services.sudo.rssh = true;

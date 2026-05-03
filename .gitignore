@@ -4,3 +4,4 @@ tmp
 result
 latest.iso
 debug
+.claude/settings.local.json

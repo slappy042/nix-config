@@ -451,10 +451,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1777790074,
-        "narHash": "sha256-anWRr0+1vWlKW0JzOJuF0gSuW9HVsEpiXqstL6ukWu0=",
+        "lastModified": 1777796314,
+        "narHash": "sha256-l1bHkd4omArFO83SMTsNk8aPPYcCtUI4nM7s6fFXUrc=",
         "ref": "main",
-        "rev": "ee22035ad061a92d1a6612c384a999cea79fdf2e",
+        "rev": "2b442a2ba8df77127e963cf89f5dce580fcb8e26",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/slappy042/nix-secrets.git"
