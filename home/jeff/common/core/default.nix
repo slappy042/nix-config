@@ -22,7 +22,7 @@ in
     ./atuin.nix
     ./bash.nix
     ./bat.nix
-    ./development.nix
+    ./development
     ./direnv.nix
     ./fonts.nix
     ./git.nix

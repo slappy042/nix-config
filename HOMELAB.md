@@ -29,3 +29,6 @@
   - nixarr installs service, but basically no config
   - https://github.com/recyclarr/recyclarr
     - syncs trash guide settings to local settings
+
+
+## Tang / Clevis

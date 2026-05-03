@@ -209,5 +209,17 @@
       url = "github:slappy042/gameserver-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Claude Code CLI (updated frequently)
+    claude-code-nix = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Superpowers plugin for Claude Code (flake = false, update with: nix flake update superpowers)
+    superpowers = {
+      url = "github:obra/superpowers";
+      flake = false;
+    };
   };
 }

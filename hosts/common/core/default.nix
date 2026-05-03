@@ -76,6 +76,7 @@ in
     overlays = [
       outputs.overlays.default
       inputs.nix-vscode-extensions.overlays.default
+      inputs.claude-code-nix.overlays.default
     ];
     config = {
       allowUnfree = true;
