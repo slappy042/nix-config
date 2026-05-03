@@ -58,6 +58,7 @@ ssh-add /root/.ssh/id_github_slappy
 ```
 nix develop
 ./scripts/bootstrap-nixos.sh -n dworkin -d 192.168.1.171 -k /root/.ssh/id_camelot
+./scripts/bootstrap-nixos.sh -n nixnas -d iso -k /root/.ssh/id_camelot
 ```
 
 ### git fork update
