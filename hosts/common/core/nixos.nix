@@ -30,18 +30,19 @@
   # it makes /bin appear empty, although it works fine
   # services.envfs.enable = true;
 
-  services.keyd = {
-    enable = true;
-    keyboards.default = {
-      ids = [ "*" ]; # Apply to all keyboards
-      settings = {
-        main = {
-          capslock = "noop"; # TODO(keyboard): should change this to be overload(\, |) to match moonlander
-          numlock = "noop"; # numlock state on by default via hyprland config
-        };
-      };
-    };
-  };
+  # JEFF: I don't think I need this
+  # services.keyd = {
+  #   enable = true;
+  #   keyboards.default = {
+  #     ids = [ "*" ]; # Apply to all keyboards
+  #     settings = {
+  #       main = {
+  #         capslock = "noop"; # TODO(keyboard): should change this to be overload(\, |) to match moonlander
+  #         numlock = "noop"; # numlock state on by default via hyprland config
+  #       };
+  #     };
+  #   };
+  # };
 
   #
   # ========== Generation Label ==========
