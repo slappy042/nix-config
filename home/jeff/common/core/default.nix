@@ -30,6 +30,7 @@ in
     ./screen.nix
     ./ssh.nix
     ./zoxide.nix
+    ./diagnostics.nix
   ];
 
   inherit hostSpec;
@@ -135,32 +136,25 @@ in
       inherit (pkgs)
 
         # Packages that don't have custom configs go here
-        btop # resource monitor
         copyq # clipboard manager
         coreutils # basic gnu utils
         curl
         eza # ls replacement
-        dust # disk usage
         fd # tree style ls
         file # file command
         findutils # find
         fzf # fuzzy search
         glow # markdown viewer
-        htop # top viewer
         jq # json pretty printer and manipulator
         killall # kill processes by name
         micro # a small editor
         nix-tree # nix package tree viewer
         neofetch # fancier system info than pfetch
-        ncdu # TUI disk usage
-        pciutils
         pfetch # system info
         pre-commit # git hooks
         p7zip # compression & encryption
         ripgrep # better grep
         steam-run # for running non-NixOS-packaged binaries on Nix
-        usbutils
-        inetutils # for ifconfig, ftp, telnet, etc
         tree # cli dir tree viewer
         unzip # zip extraction
         unrar # rar extraction
