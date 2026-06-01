@@ -70,7 +70,8 @@
     #
     # ========== Host Specific Configs ==========
     #
-    ./touchpad.nix # touchpad configuration
+    ./touchpad.nix # libinput, touchpad udev rules
+    ./z13.nix # ASUS Z13 hardware: z13ctl/z13gui, keyboard backlight/RGB, udev rules
   ];
 
   #
