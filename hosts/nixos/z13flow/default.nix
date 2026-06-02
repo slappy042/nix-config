@@ -9,6 +9,7 @@
   inputs,
   pkgs,
   lib,
+  config,
   ...
 }:
 {
@@ -123,10 +124,12 @@
     "ttm.pages_limit=33554432" # 128GB VRAM limit
   ];
 
+  boot.extraModulePackages = [ config.boot.kernelPackages.ryzen-smu ];
+
   # Enable Bluetooth kernel modules
   boot.kernelModules = [
     "kvm-amd"
-    "ryzen_smu" # AMD SMU (System Management Unit) access for CPU power monitoring
+    "ryzen_smu"
     "btusb" # USB Bluetooth adapters
     "bluetooth" # Core Bluetooth stack
     "btrtl" # Realtek Bluetooth driver
