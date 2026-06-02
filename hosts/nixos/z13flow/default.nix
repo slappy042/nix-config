@@ -126,6 +126,7 @@
   # Enable Bluetooth kernel modules
   boot.kernelModules = [
     "kvm-amd"
+    "ryzen_smu" # AMD SMU (System Management Unit) access for CPU power monitoring
     "btusb" # USB Bluetooth adapters
     "bluetooth" # Core Bluetooth stack
     "btrtl" # Realtek Bluetooth driver
