@@ -43,6 +43,7 @@ in
   environment.systemPackages = with pkgs; [
     z13ctl
     z13gui
+    mprime
   ];
 
   # ASUS WMI platform driver for keyboard backlight and firmware attributes
