@@ -1,5 +1,8 @@
 # Core functionality for every nixos host
 { config, lib, ... }:
+let
+  cfg = config.networking;
+in
 {
   # Database for aiding terminal-based programs
   environment.enableAllTerminfo = true;
@@ -59,4 +62,12 @@
   #
   i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
   time.timeZone = lib.mkDefault "America/Los_Angeles";
+
+  # During activation, NM is stopped before NetworkManager-predefined-connections.service
+  # is reloaded, causing `nmcli connection reload` to fail (NM not running). Disabling
+  # reloadIfChanged makes activation restart the service instead (ExecStart=true), which
+  # always succeeds. NM reloads connections fresh on its own restart anyway.
+  systemd.services."NetworkManager-predefined-connections" = lib.mkIf cfg.networkmanager.enable {
+    reloadIfChanged = lib.mkForce false;
+  };
 }
