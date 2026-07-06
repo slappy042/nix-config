@@ -61,7 +61,8 @@ in
   # ========== Localization ==========
   #
   i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
-  time.timeZone = lib.mkDefault "America/Los_Angeles";
+  time.timeZone = lib.mkDefault null;
+  services.automatic-timezoned.enable = true;
 
   # During activation, NM is stopped before NetworkManager-predefined-connections.service
   # is reloaded, causing `nmcli connection reload` to fail (NM not running). Disabling
