@@ -70,45 +70,52 @@ in
   programs.vscode = {
     enable = true;
     profiles.default = {
-      extensions = with pkgs.vscode-extensions; [
-        # Language support
-        ms-python.python
-        ms-python.debugpy
-        ms-vscode.cpptools
-        # ms-dotnettools.csharp
-        # golang.go
-        # rust-lang.rust-analyzer
-        # bradlc.vscode-tailwindcss
-        ms-azuretools.vscode-docker
+      extensions =
+        with pkgs.vscode-extensions;
+        [
+          # Language support
+          ms-python.python
+          ms-python.debugpy
+          ms-vscode.cpptools
+          # ms-dotnettools.csharp
+          # golang.go
+          # rust-lang.rust-analyzer
+          # bradlc.vscode-tailwindcss
+          ms-azuretools.vscode-docker
 
-        # Nix support
-        bbenoist.nix
-        jnoortheen.nix-ide
+          # Nix support
+          bbenoist.nix
+          jnoortheen.nix-ide
 
-        # Git
-        eamodio.gitlens
-        github.vscode-pull-request-github
-        github.github-vscode-theme
+          # Git
+          eamodio.gitlens
+          github.vscode-pull-request-github
+          github.github-vscode-theme
 
-        # Productivity
-        ms-vscode.hexeditor
-        # ms-vsliveshare.vsliveshare
-        esbenp.prettier-vscode
-        redhat.vscode-yaml
-        ms-vscode-remote.remote-ssh
-        # ms-vscode.remote-explorer
+          # Productivity
+          ms-vscode.hexeditor
+          # ms-vsliveshare.vsliveshare
+          esbenp.prettier-vscode
+          redhat.vscode-yaml
+          ms-vscode-remote.remote-ssh
+          # ms-vscode.remote-explorer
 
-        # Themes
-        pkief.material-icon-theme
-        zhuangtongfa.material-theme
+          # Themes
+          pkief.material-icon-theme
+          zhuangtongfa.material-theme
 
-        # Additional extensions
-        johnpapa.vscode-peacock
-        tomoki1207.pdf
-        github.copilot
-        nefrob.vscode-just-syntax
+          # Additional extensions
+          johnpapa.vscode-peacock
+          tomoki1207.pdf
+          nefrob.vscode-just-syntax
 
-      ];
+          # AI
+          # github.copilot
+        ]
+        ++ (with pkgs.vscode-marketplace; [
+          anthropic.claude-code
+          openai.chatgpt
+        ]);
       #   # ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       #   #     # Additional extensions from marketplace
       #   #     {
