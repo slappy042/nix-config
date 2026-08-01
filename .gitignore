@@ -5,3 +5,5 @@ result
 latest.iso
 debug
 .claude/settings.local.json
+
+*.code-workspace
