@@ -45,7 +45,7 @@
     "systemd.journald.forward_to_console=1"
   ];
 
-  # allow sudo over ssh with yubikey
+  # SSH key-based sudo/login via agent (pam_rssh - works with any SSH key, not just YubiKey)
   security.pam = {
     rssh.enable = true;
     services.sudo = {
