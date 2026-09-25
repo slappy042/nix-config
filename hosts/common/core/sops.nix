@@ -17,6 +17,12 @@ in
     #    defaultSopsFile = "${secretsFile}";
     defaultSopsFile = "${sopsFolder}/${config.hostSpec.hostName}.yaml";
     validateSopsFiles = false;
+    # sops-nix's go.mod now requires go >= 1.26, but nixos-25.11's pinned go is still 1.25.x.
+    # Build sops-install-secrets with unstable's go until 25.11 catches up.
+    # See: https://github.com/Mic92/sops-nix (go.mod bumped in 2bd00bd)
+    package = (pkgs.callPackage inputs.sops-nix { }).sops-install-secrets.override {
+      buildGoModule = pkgs.buildGoModule.override { go = pkgs.unstable.go; };
+    };
     age = {
       # automatically import host SSH keys as age keys
       sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
