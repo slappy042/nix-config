@@ -88,6 +88,17 @@
   networking = {
     networkmanager.enable = true;
     enableIPv6 = false;
+    hosts."192.168.1.7" = [
+      "bazarr.hefecello.com"
+      "lidarr.hefecello.com"
+      "nzbhydra2.hefecello.com"
+      "radarr.hefecello.com"
+      "sabnzbd.hefecello.com"
+      "scrutiny.hefecello.com"
+      "sonarr.hefecello.com"
+      "tautulli.hefecello.com"
+      "deepthought"
+    ];
   };
 
   boot.loader = {
