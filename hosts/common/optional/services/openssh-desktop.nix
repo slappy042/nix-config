@@ -76,4 +76,6 @@
 
   # gpg-agent handles SSH; the stock ssh-agent must not run alongside it.
   programs.ssh.startAgent = lib.mkForce false;
+  # Home Manager's ssh-agent would otherwise take over SSH_AUTH_SOCK.
+  home-manager.users.${config.hostSpec.username}.services.ssh-agent.enable = lib.mkForce false;
 }
