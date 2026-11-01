@@ -19,6 +19,8 @@
   programs.nixvim = {
     enable = true;
     enableMan = true; # install man pages for nixvim options
+    # we make nixvim follow our nixpkgs in flake.nix; set it explicitly to silence the pin mismatch warning
+    nixpkgs.source = inputs.nixpkgs;
 
     clipboard.register = "unnamedplus"; # use system clipboard instead of internal registers
 

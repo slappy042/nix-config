@@ -17,7 +17,7 @@
 
       # nix
       nixpkgs-review
-      nixfmt-rfc-style
+      nixfmt
 
       # networking
       nmap

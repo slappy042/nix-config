@@ -33,6 +33,19 @@ rebuild LABEL="": rebuild-pre && rebuild-post
   TS="$(date +%Y%m%d-%H%M%S)"; \
   GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh
 
+# Rebuild the system and make it the next boot default without activating it (reboot to apply)
+rebuild-boot LABEL="": rebuild-pre
+  if [ -z "{{LABEL}}" ]; then \
+    GEN_LABEL="$(git -c log.showSignature=false log -1 --pretty=%s | head -n1)"; \
+  else \
+    GEN_LABEL="{{LABEL}}"; \
+  fi; \
+  GEN_LABEL_SAFE="$(printf '%s' "$GEN_LABEL" | sed -E 's/[^A-Za-z0-9:_\.-]+/_/g' | sed -E 's/_+/_/g; s/^_|_$//g')"; \
+  SHORT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"; \
+  TS="$(date +%Y%m%d-%H%M%S)"; \
+  REBUILD_ACTION=boot GENERATION_LABEL="${GEN_LABEL_SAFE}-${SHORT_SHA}-${TS}" scripts/rebuild.sh
+  @echo "Reboot to activate the new generation."
+
 # Rebuild the system and run a flake check
 rebuild-full LABEL="": rebuild-pre && rebuild-post
   if [ -z "{{LABEL}}" ]; then \

@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  # These touchpad options only apply to X11 sessions; on Wayland, KWin uses
+  # Plasma's touchpad settings instead.
   services.libinput = {
     enable = true;
     touchpad = {
@@ -17,32 +19,14 @@
   };
 
   environment.systemPackages = with pkgs; [
-    libinput
-    xorg.xinput
+    xinput # X11 input device inspection/config
   ];
 
   services.udev.extraRules = ''
-    # Asus touchpad fixes - ensure proper device classification
-    SUBSYSTEM=="input", ATTRS{name}=="*ASUS*", ATTRS{name}=="*TouchPad*", ENV{LIBINPUT_IGNORE_DEVICE}="0", TAG+="libinput"
-    SUBSYSTEM=="input", ATTRS{name}=="ASUSTeK Computer Inc. GZ302EA-Keyboard Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="0", TAG+="libinput"
-
-    # Ensure touchscreen is properly identified (not confused with touchpad)
-    SUBSYSTEM=="input", ATTRS{name}=="ELAN9008:00 04F3:43C7", ENV{ID_INPUT_TOUCHSCREEN}="1", ENV{ID_INPUT_TOUCHPAD}="0"
-
-    # Force touchpad identification for the Asus device
-    SUBSYSTEM=="input", ATTRS{name}=="ASUSTeK Computer Inc. GZ302EA-Keyboard Touchpad", ENV{ID_INPUT_TOUCHPAD}="1", ENV{ID_INPUT_MOUSE}="0"
+    # The keyboard cover also exposes a generic HID mouse node on the same USB
+    # interface as the touchpad. libinput tags any USB/Bluetooth ID_INPUT_MOUSE
+    # device as an "external mouse", so "Disable while mouse is connected"
+    # always kept the touchpad off. Hide it from libinput.
+    SUBSYSTEM=="input", ATTRS{name}=="ASUSTeK Computer Inc. GZ302EA-Keyboard Mouse", ENV{ID_INPUT_MOUSE}="", ENV{LIBINPUT_IGNORE_DEVICE}="1"
   '';
-
-  services.xserver.inputClassSections = [
-    ''
-      Identifier "Asus Touchpad"
-      MatchProduct "ASUSTeK Computer Inc. GZ302EA-Keyboard Touchpad"
-      Driver "libinput"
-      Option "Tapping" "on"
-      Option "TappingDrag" "on"
-      Option "DisableWhileTyping" "on"
-      Option "ScrollMethod" "twofinger"
-      Option "NaturalScrolling" "false"
-    ''
-  ];
 }

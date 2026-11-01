@@ -17,6 +17,8 @@ in
   # - Port bookmarks and other profile settings over from existing profile
   programs.firefox = {
     enable = true;
+    # HM 26.05 default moved to ~/.config/mozilla/firefox; keep existing profiles where they are
+    configPath = ".mozilla/firefox";
 
     # Refer to https://mozilla.github.io/policy-templates or `about:policies#documentation` in firefox
     policies = {

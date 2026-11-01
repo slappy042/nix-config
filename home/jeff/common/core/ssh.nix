@@ -88,18 +88,20 @@ in
         ${workConfig}
       '';
 
-      matchBlocks = {
+      # NOTE: settings uses upstream OpenSSH directive names. Attr names are Host patterns.
+      # The commented blocks below still use the legacy matchBlocks option names.
+      settings = {
         "*" = {
           # FIXME(ssh): This should probably be for git systems only?
-          controlMaster = "auto";
-          controlPath = "${config.home.homeDirectory}/.ssh/sockets/S.%r@%h:%p";
-          controlPersist = "20m";
+          ControlMaster = "auto";
+          ControlPath = "${config.home.homeDirectory}/.ssh/sockets/S.%r@%h:%p";
+          ControlPersist = "20m";
           # Avoids infinite hang if control socket connection interrupted. ex: vpn goes down/up
-          serverAliveCountMax = 3;
-          serverAliveInterval = 5; # 3 * 5s
-          hashKnownHosts = true;
-          addKeysToAgent = "yes";
-          forwardAgent = false; # safe default; desktop hosts override via homelab Match block below
+          ServerAliveCountMax = 3;
+          ServerAliveInterval = 5; # 3 * 5s
+          HashKnownHosts = true;
+          AddKeysToAgent = "yes";
+          ForwardAgent = false; # safe default; desktop hosts override via homelab Match block below
         };
       }
       //
@@ -120,12 +122,11 @@ in
           #   forwardAgent = true;
           # };
 
-          "git" = {
-            host = "gitlab.com github.com";
-            user = "git";
-            forwardAgent = true;
-            identitiesOnly = true;
-            identityFile = lib.lists.forEach gitIdentityFiles (
+          "gitlab.com github.com" = {
+            User = "git";
+            ForwardAgent = true;
+            IdentitiesOnly = true;
+            IdentityFile = lib.lists.forEach gitIdentityFiles (
               file: "${config.home.homeDirectory}/.ssh/${file}"
             );
           };
@@ -153,8 +154,8 @@ in
       // lib.optionalAttrs config.hostSpec.hasDesktop {
         # Desktop hosts forward their (pam_gnupg-loaded) agent to known homelab hosts.
         "homelab" = lib.hm.dag.entryAfter [ "*" ] {
-          host = "brand dworkin gameserver nixnas nixxy1 nixxy2 nixxy3 steam-idle";
-          forwardAgent = true;
+          header = "Host brand dworkin gameserver nixnas nixxy1 nixxy2 nixxy3 steam-idle";
+          ForwardAgent = true;
         };
       };
       # // (inputs.nix-secrets.networking.ssh.matchBlocks lib)

@@ -14,9 +14,23 @@ let
       directory = ../pkgs/common;
     });
 
-  linuxModifications = final: prev: prev.lib.mkIf final.stdenv.isLinux { };
+  # NOTE: must be optionalAttrs, not mkIf. mkIf adds `_type`/`content` attrs to pkgs, which makes
+  # the module system treat the whole package set as an (empty) mkIf wherever pkgs is passed as a value
+  linuxModifications = _final: prev: prev.lib.optionalAttrs prev.stdenv.hostPlatform.isLinux { };
 
   modifications = final: prev: {
+    # FIXME: remove once nixpkgs fixes the src. download.mersenne.ca now redirects to a Google Drive
+    # virus-scan page instead of the zip; the official mersenne.org mirror serves the same file
+    mprime = prev.mprime.overrideAttrs (old: {
+      src = prev.fetchzip {
+        url = "https://www.mersenne.org/download/software/v31/31.04/p95v${
+          prev.lib.replaceStrings [ "." ] [ "" ] old.version
+        }.source.zip";
+        hash = "sha256-W8ic709bgm9KbVxe1fvIEC8J8LrwwMfAajX1bKhv6EM=";
+        stripRoot = false;
+      };
+    });
+
     # example = prev.example.overrideAttrs (oldAttrs: let ... in {
     # ...
     # });

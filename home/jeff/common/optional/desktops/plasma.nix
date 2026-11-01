@@ -8,14 +8,10 @@
     enable = true;
 
     workspace = {
-      # Set the global theme (look and feel)
+      # Set the global theme (look and feel). It also sets the Klassy window
+      # decoration, so windowDecorations isn't set separately (plasma-manager
+      # warns when both are set).
       lookAndFeel = "org.kde.klassykitedarkleftpanel.desktop";
-
-      # Set Klassy as the window decoration theme
-      windowDecorations = {
-        library = "org.kde.klassy";
-        theme = "Klassy";
-      };
     };
 
     # You can add more plasma-manager configurations here

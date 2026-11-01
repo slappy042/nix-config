@@ -63,6 +63,7 @@ in
     userDirs = {
       enable = true;
       createDirectories = true;
+      setSessionVariables = true; # export XDG_*_DIR vars (legacy default prior to HM 26.05)
       desktop = "${config.home.homeDirectory}/.desktop";
       documents = "${config.home.homeDirectory}/doc";
       download = "${config.home.homeDirectory}/downloads";
@@ -74,8 +75,8 @@ in
 
       extraConfig = {
         # publicshare and templates defined as null here instead of as options because
-        XDG_PUBLICSHARE_DIR = "/var/empty";
-        XDG_TEMPLATES_DIR = "/var/empty";
+        PUBLICSHARE = "/var/empty";
+        TEMPLATES = "/var/empty";
       };
     };
   };
@@ -149,7 +150,7 @@ in
         killall # kill processes by name
         micro # a small editor
         nix-tree # nix package tree viewer
-        neofetch # fancier system info than pfetch
+        fastfetch # fancier system info than pfetch
         pfetch # system info
         pre-commit # git hooks
         p7zip # compression & encryption

@@ -33,7 +33,10 @@ elif [[ -n $1 ]]; then
 else
 	HOST=$(hostname)
 fi
-switch_args="$switch_args .#$HOST switch"
+# switch (default) activates now; boot only installs the generation as the next boot default.
+# Use boot for changes that can't be applied live (e.g. dbus implementation swaps). NixOS only.
+REBUILD_ACTION=${REBUILD_ACTION:-switch}
+switch_args="$switch_args .#$HOST"
 
 os=$(uname -s)
 if [ "$os" == "Darwin" ]; then
@@ -70,19 +73,35 @@ if [ "$os" == "Darwin" ]; then
 	# Test if there's no darwin-rebuild, then use nix build and then run it
 	if ! which darwin-rebuild &>/dev/null; then
 		nix build --show-trace .#darwinConfigurations."$HOST".system
-		./result/sw/bin/darwin-rebuild $switch_args
+		./result/sw/bin/darwin-rebuild $switch_args switch
 	else
-		echo $switch_args
-		darwin-rebuild $switch_args
+		echo $switch_args switch
+		darwin-rebuild $switch_args switch
 	fi
 else
 	green "====== REBUILD ======"
 	if command -v nh &>/dev/null; then
 		REPO_PATH=$(pwd)
 		export REPO_PATH
-		nh os switch . -- --impure --show-trace
+		if [ "$REBUILD_ACTION" == "switch" ]; then
+			# nh switch activates first and only installs the boot entry if activation fully succeeds, so a
+			# partial failure (e.g. a dbus implementation swap) leaves the old generation as the boot default.
+			# Install the boot entry first so a failed live activation is always fixed by a reboot, matching
+			# nixos-rebuild switch. The second invocation re-uses the cached build.
+			if nh os boot . -- --impure --show-trace; then
+				nh os test . -- --impure --show-trace ||
+					{
+						red "Live activation failed, but the new generation is the boot default. Reboot to finish."
+						false
+					}
+			else
+				false
+			fi
+		else
+			nh os "$REBUILD_ACTION" . -- --impure --show-trace
+		fi
 	else
-		sudo nixos-rebuild $switch_args
+		sudo nixos-rebuild $switch_args "$REBUILD_ACTION"
 	fi
 fi
 

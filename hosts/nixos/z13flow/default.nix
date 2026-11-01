@@ -135,7 +135,14 @@
     "ttm.pages_limit=33554432" # 128GB VRAM limit
   ];
 
-  boot.extraModulePackages = [ config.boot.kernelPackages.ryzen-smu ];
+  # FIXME: drop the override once 26.05's ryzen-smu builds against linux_latest. The 2025-10-22 source
+  # fails on kernel 7.3 (cpuid_eax/cpuid_ebx moved to <asm/cpuid/api.h>); unstable's source has the fix.
+  # Only the source is swapped, so it's still built against our kernel.
+  boot.extraModulePackages = [
+    (config.boot.kernelPackages.ryzen-smu.overrideAttrs {
+      inherit (pkgs.unstable.linuxPackages_latest.ryzen-smu) version src;
+    })
+  ];
 
   # Enable Bluetooth kernel modules
   boot.kernelModules = [

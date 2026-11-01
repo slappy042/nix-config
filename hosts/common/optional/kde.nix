@@ -49,10 +49,11 @@
 
     libsecret
     keepass
+    obsidian # Markdown knowledge base / note-taking app
 
     # Input device management tools
     libinput # Input device management
-    xorg.xinput # X input device configuration tool
+    xinput # X input device configuration tool
     kdePackages.kdebugsettings # runtime GUI to toggle Qt logging categories
 
     # Wrapper script ensuring correct arg splitting for Plasma Wayland
