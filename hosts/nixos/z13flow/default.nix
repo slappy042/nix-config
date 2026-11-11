@@ -122,8 +122,8 @@
     ];
   };
 
-  # Using standard kernel until 6.17 stable is available with MST/DSC fixes
-  # Will use 2 monitors for now to avoid MST/DSC boot hang issues
+  # Latest kernel for Strix Halo / amdgpu fixes. The docked MST/DSC black-screen at the greeter
+  # is handled by the SDDM output config below (systemd.services.display-manager.preStart).
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # see https://github.com/kyuz0/amd-strix-halo-toolboxes?tab=readme-ov-file#62-kernel-parameters-tested-on-fedora-42
