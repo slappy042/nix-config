@@ -58,7 +58,9 @@ in
 {
   programs.brave = {
     enable = true;
-    package = pkgs.unstable.brave;
+    # Build unstable brave against the system's Qt. Otherwise brave's Qt (unstable) clashes with
+    # the Plasma session's Qt plugins (stable) and brave aborts on startup.
+    package = pkgs.unstable.brave.override { inherit (pkgs) qt6; };
     extensions = [
       "kbmfpngjjgdllneeigpgjifpgocmfgmb" # RES
       "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
