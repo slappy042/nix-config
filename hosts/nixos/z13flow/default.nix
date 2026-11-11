@@ -159,6 +159,16 @@
     "hid_multitouch" # Multitouch HID devices
   ];
 
+  # Give SDDM's KWin the same monitor layout as my Plasma session. With no saved config it lights
+  # every dock monitor at full res; the 4K + 2x1440p MST/DSC combo is rejected by amdgpu and the
+  # greeter comes up on a black screen. Refresh this file from ~/.config/kwinoutputconfig.json
+  # when the monitor setup changes.
+  systemd.services.display-manager.preStart = lib.mkAfter ''
+    ${pkgs.coreutils}/bin/install -d -o sddm -g sddm -m 0755 /var/lib/sddm/.config
+    ${pkgs.coreutils}/bin/install -o sddm -g sddm -m 0644 ${./sddm-kwinoutputconfig.json} \
+      /var/lib/sddm/.config/kwinoutputconfig.json
+  '';
+
   hardware.graphics.enable = true;
   # hardware.amdgpu.initrd.enable = true;
   hardware.amdgpu.opencl.enable = true; # OpenCL support - general compute API for gpu

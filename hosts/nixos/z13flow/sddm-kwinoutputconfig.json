@@ -1,0 +1,990 @@
+[
+    {
+        "data": [
+            {
+                "allowDdcCi": true,
+                "allowSdrSoftwareBrightness": false,
+                "autoBrightnessCurve": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "autoRotation": "InTabletMode",
+                "automaticBrightness": false,
+                "brightness": 0.1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "eDP-1",
+                "customModes": [
+                ],
+                "detectedDdcCi": false,
+                "edidHash": "2c838977e44a464805c13255ccadfb35",
+                "edidIdentifier": "TMA 2051 0 10 2024 0",
+                "edrPolicy": "always",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "maxBitsPerColor": 0,
+                "mode": {
+                    "flags": 1,
+                    "height": 1600,
+                    "refreshRate": 59987,
+                    "width": 2560
+                },
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1.5,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "sharpness": 0,
+                "transform": "Normal",
+                "uuid": "f11793c2-f206-4712-92ff-93be4d6767c6",
+                "vrrPolicy": "Automatic",
+                "wideColorGamut": false
+            },
+            {
+                "allowDdcCi": true,
+                "allowSdrSoftwareBrightness": true,
+                "autoBrightnessCurve": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "autoRotation": "InTabletMode",
+                "automaticBrightness": false,
+                "brightness": 1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "DP-9",
+                "customModes": [
+                ],
+                "detectedDdcCi": false,
+                "edidHash": "0a65e8f3b18f01be6fdd2bc7d305407e",
+                "edidIdentifier": "GSM 40580 547145 5 2022 0",
+                "edrPolicy": "always",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "maxBitsPerColor": 0,
+                "mode": {
+                    "flags": 1,
+                    "height": 2160,
+                    "refreshRate": 59997,
+                    "width": 3840
+                },
+                "mstPath": "-2\u0000",
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "sharpness": 0,
+                "transform": "Normal",
+                "uuid": "9c2206f6-c432-4161-b9e7-adf8620818aa",
+                "vrrPolicy": "Automatic",
+                "wideColorGamut": false
+            },
+            {
+                "allowDdcCi": true,
+                "allowSdrSoftwareBrightness": true,
+                "autoBrightnessCurve": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "autoRotation": "InTabletMode",
+                "automaticBrightness": false,
+                "brightness": 1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "DP-8",
+                "customModes": [
+                ],
+                "detectedDdcCi": false,
+                "edidHash": "a9dd26c3009c0d9b82a47d9929c50399",
+                "edidIdentifier": "VSC 31290 16843023 14 2022 0",
+                "edrPolicy": "always",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "maxBitsPerColor": 0,
+                "mode": {
+                    "flags": 1,
+                    "height": 1440,
+                    "refreshRate": 59951,
+                    "width": 2560
+                },
+                "mstPath": "-1\u0000",
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1.15,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "sharpness": 0,
+                "transform": "Rotated90",
+                "uuid": "0f25c67d-52e1-4316-b75c-b9f911fda700",
+                "vrrPolicy": "Automatic",
+                "wideColorGamut": false
+            },
+            {
+                "allowDdcCi": true,
+                "allowSdrSoftwareBrightness": true,
+                "autoBrightnessCurve": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "autoRotation": "InTabletMode",
+                "automaticBrightness": false,
+                "brightness": 1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "DP-10",
+                "customModes": [
+                ],
+                "detectedDdcCi": false,
+                "edidHash": "6b0753b290031f3080fb8ec38b22ac88",
+                "edidIdentifier": "VSC 31290 16843026 14 2022 0",
+                "edrPolicy": "always",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "maxBitsPerColor": 0,
+                "mode": {
+                    "flags": 1,
+                    "height": 1440,
+                    "refreshRate": 59951,
+                    "width": 2560
+                },
+                "mstPath": "-3\u0000",
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1.15,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "sharpness": 0,
+                "transform": "Rotated270",
+                "uuid": "2fac18af-8bdc-4355-8b2b-a612c01f7662",
+                "vrrPolicy": "Automatic",
+                "wideColorGamut": false
+            },
+            {
+                "allowSdrSoftwareBrightness": true,
+                "autoRotation": "InTabletMode",
+                "brightness": 1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "DP-12",
+                "edidHash": "6b0753b290031f3080fb8ec38b22ac88",
+                "edidIdentifier": "VSC 31290 16843026 14 2022 0",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "mode": {
+                    "height": 1440,
+                    "refreshRate": 59951,
+                    "width": 2560
+                },
+                "mstPath": "-3\u0000",
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1.15,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "transform": "Rotated270",
+                "vrrPolicy": "Automatic",
+                "wideColorGamut": false
+            },
+            {
+                "allowSdrSoftwareBrightness": true,
+                "autoRotation": "InTabletMode",
+                "brightness": 1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "DP-13",
+                "edidHash": "6b0753b290031f3080fb8ec38b22ac88",
+                "edidIdentifier": "VSC 31290 16843026 14 2022 0",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "mode": {
+                    "height": 1440,
+                    "refreshRate": 59951,
+                    "width": 2560
+                },
+                "mstPath": "-3\u0000",
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1.15,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "transform": "Rotated270",
+                "vrrPolicy": "Never",
+                "wideColorGamut": false
+            },
+            {
+                "allowDdcCi": true,
+                "allowSdrSoftwareBrightness": true,
+                "autoRotation": "InTabletMode",
+                "brightness": 1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "DP-11",
+                "detectedDdcCi": false,
+                "edidHash": "6b0753b290031f3080fb8ec38b22ac88",
+                "edidIdentifier": "VSC 31290 16843026 14 2022 0",
+                "edrPolicy": "always",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "mode": {
+                    "height": 1440,
+                    "refreshRate": 59951,
+                    "width": 2560
+                },
+                "mstPath": "-3\u0000",
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1.15,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "transform": "Normal",
+                "uuid": "c1605715-a1d5-4b86-9200-b4db6d5ff324",
+                "vrrPolicy": "Automatic",
+                "wideColorGamut": false
+            },
+            {
+                "allowSdrSoftwareBrightness": true,
+                "autoRotation": "InTabletMode",
+                "brightness": 1,
+                "colorPowerTradeoff": "PreferEfficiency",
+                "colorProfileSource": "sRGB",
+                "connectorName": "DP-11",
+                "edidHash": "a9dd26c3009c0d9b82a47d9929c50399",
+                "edidIdentifier": "VSC 31290 16843023 14 2022 0",
+                "highDynamicRange": false,
+                "iccProfilePath": "",
+                "mode": {
+                    "height": 1440,
+                    "refreshRate": 59951,
+                    "width": 2560
+                },
+                "mstPath": "-1\u0000",
+                "overscan": 0,
+                "rgbRange": "Automatic",
+                "scale": 1.15,
+                "sdrBrightness": 200,
+                "sdrGamutWideness": 0,
+                "transform": "Rotated90",
+                "vrrPolicy": "Automatic",
+                "wideColorGamut": false
+            }
+        ],
+        "name": "outputs"
+    },
+    {
+        "data": [
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 2133,
+                            "y": 2160
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 3840,
+                            "y": -67
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 3,
+                        "position": {
+                            "x": -1253,
+                            "y": -67
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 4,
+                        "position": {
+                            "x": -1253,
+                            "y": -67
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 2330,
+                            "y": 2193
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 3840,
+                            "y": 0
+                        },
+                        "priority": 2,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 33
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 2330,
+                            "y": 2193
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 3840,
+                            "y": 0
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 33
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 2133,
+                            "y": 2160
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 3840,
+                            "y": -67
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 4,
+                        "position": {
+                            "x": -1253,
+                            "y": -67
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 3840,
+                            "y": 1093
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 3,
+                        "position": {
+                            "x": 5547,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 5093,
+                            "y": 0
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 1253,
+                            "y": 33
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 5,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 2,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 2133,
+                            "y": 2160
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 3840,
+                            "y": -67
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 4,
+                        "position": {
+                            "x": -1253,
+                            "y": -67
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 3,
+                        "position": {
+                            "x": 5547,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 3840,
+                            "y": 1093
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 6,
+                        "position": {
+                            "x": 5547,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 6,
+                        "position": {
+                            "x": 5547,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 2,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 3,
+                        "position": {
+                            "x": 2960,
+                            "y": 0
+                        },
+                        "priority": 2,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 3840,
+                            "y": 1093
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 7,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 5,
+                        "position": {
+                            "x": 5547,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 7,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 1,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": false,
+                        "outputIndex": 5,
+                        "position": {
+                            "x": 5547,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": true,
+                "outputs": [
+                    {
+                        "enabled": false,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": -1,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 3,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    }
+                ]
+            },
+            {
+                "lidClosed": false,
+                "outputs": [
+                    {
+                        "enabled": true,
+                        "outputIndex": 0,
+                        "position": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "priority": 0,
+                        "replicationSource": ""
+                    },
+                    {
+                        "enabled": true,
+                        "outputIndex": 7,
+                        "position": {
+                            "x": 1707,
+                            "y": 0
+                        },
+                        "priority": 1,
+                        "replicationSource": ""
+                    }
+                ]
+            }
+        ],
+        "name": "setups"
+    }
+]
